@@ -5,8 +5,15 @@ import { safeRender } from './logger.js';
 const side = document.getElementById('side');
 const stage = document.getElementById('stage');
 
-function renderSideShell() {
-  side.innerHTML = `<h2>Filters</h2>
+function renderCustomerGuide() {
+  side.innerHTML = `<h2>Start Here</h2>
+    <div class="details-panel"><h3>1. Print the sample</h3><p>Try the Goblin card first. No account. No setup.</p></div>
+    <div class="details-panel"><h3>2. Browse cards</h3><p>Compare simple, boss, and accordion layouts.</p></div>
+    <div class="details-panel"><h3>3. Create homebrew</h3><p>Use guided fields and live preview to make your own card.</p></div>`;
+}
+
+function renderFilterShell() {
+  side.innerHTML = `<h2>Find Cards</h2>
     <div class="filter"><label>Ruleset</label><select id="ruleset"><option value="5e-2014">5E 2014</option><option value="5e-2024">5E 2024</option><option value="all">All / Explicit Mix</option></select></div>
     <div class="filter"><label>Creature Type</label><select id="type"><option value="all">All Types</option><option value="humanoid">Humanoid</option><option value="dragon">Dragon</option><option value="undead">Undead</option><option value="giant">Giant</option></select></div>
     <div id="monsterList" class="monster-list"></div>`;
@@ -33,15 +40,17 @@ function mountView(view) {
 function render() {
   safeRender('app render failed', null, () => {
     document.querySelectorAll('.tab[data-tab]').forEach((tab) => tab.classList.toggle('active', tab.dataset.tab === state.tab));
-    renderSideShell();
 
-    if (state.tab === 'homebrew') {
-      mountView(renderHomebrewView(state, (values) => { updateHomebrew(values); render(); }, () => { resetHomebrew(); render(); }));
+    if (state.tab === 'free') {
+      renderCustomerGuide();
+      mountView(renderFreeSampleView(() => { setTab('library'); setSelectedMonster('goblin-2014'); render(); }));
       return;
     }
 
-    if (state.tab === 'free') {
-      mountView(renderFreeSampleView(() => { setTab('library'); setSelectedMonster('goblin-2014'); render(); }));
+    renderFilterShell();
+
+    if (state.tab === 'homebrew') {
+      mountView(renderHomebrewView(state, (values) => { updateHomebrew(values); render(); }, () => { resetHomebrew(); render(); }));
       return;
     }
 
