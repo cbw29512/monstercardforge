@@ -1,4 +1,5 @@
 import { safeRender } from './logger.js';
+import { artThemeFor } from './artThemes.js';
 
 export const DAMAGE_TYPES = {
   S: 'Slashing',
@@ -74,10 +75,25 @@ export function renderItems(items, options = {}) {
   });
 }
 
+function renderArt(monster) {
+  return safeRender('renderArt failed', '<div class="art"><span>ART</span></div>', () => {
+    const theme = artThemeFor(monster.type);
+    const monsterClass = typeClass(monster.type);
+    return `<div class="art art-${monsterClass}">
+      <div class="art-glow"></div>
+      <div class="art-moon"></div>
+      <div class="art-sigil">${theme.icon}</div>
+      <div class="art-ground"></div>
+      <div class="art-label">${theme.title}</div>
+    </div>`;
+  });
+}
+
 export function renderCardFront(monster) {
   return safeRender('renderCardFront failed', '<div class="card">Card failed</div>', () => `<div class="card ${typeClass(monster.type)}" data-card-face="front">
-    <div class="art"><span>${String(monster.type || 'monster').toUpperCase()} ART SLOT</span></div>
+    ${renderArt(monster)}
     <div class="badge">CR ${monster.cr}</div>
+    <div class="type-chip">${monster.type}</div>
     <div class="card-title"><strong>${monster.name}</strong><span>${monster.size} ${monster.type}</span></div>
   </div>`);
 }
