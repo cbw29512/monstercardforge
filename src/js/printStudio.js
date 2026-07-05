@@ -18,8 +18,8 @@ export function recommendedPrintMode(monster) {
 }
 
 export function renderFoldOverSheet(monster) {
-  return safeRender('renderFoldOverSheet failed', '<p>Fold-over print sheet failed.</p>', () => `<div class="print-card-option">
-    <div class="details-panel"><h3>Option A: Cut-and-Fold Card</h3><p>Works on any normal printer. Print on cardstock, cut the whole connected rectangle, fold on the middle spine, then laminate so it becomes one thick card.</p></div>
+  return safeRender('renderFoldOverSheet failed', '<p>Fold-over print sheet failed.</p>', () => `<div class="print-card-option print-pane fold-pane">
+    <div class="details-panel"><h3>Cut-and-Fold Card</h3><p>Works on any normal printer. Print on cardstock, cut the whole connected rectangle, fold on the middle spine, then laminate so it becomes one thick card.</p></div>
     <div class="print-page letter-page">
       <div class="sheet-note"><b>Cut-and-Fold:</b> front and back stay attached. Cut one piece. Fold in the middle.</div>
       <div class="starter-print-sheet">
@@ -35,8 +35,8 @@ export function renderFoldOverSheet(monster) {
 }
 
 export function renderDuplexSheet(monster) {
-  return safeRender('renderDuplexSheet failed', '<p>Duplex print sheet failed.</p>', () => `<div class="print-card-option">
-    <div class="details-panel"><h3>Option B: Duplex Front/Back</h3><p>Use this only if your printer supports accurate double-sided printing. Print the front page, then the back page on the reverse side at 100% scale.</p></div>
+  return safeRender('renderDuplexSheet failed', '<p>Duplex print sheet failed.</p>', () => `<div class="print-card-option print-pane duplex-pane">
+    <div class="details-panel"><h3>Duplex Front/Back</h3><p>Use this only if your printer supports accurate double-sided printing. Print the front page, then the back page on the reverse side at 100% scale.</p></div>
     <div class="duplex-pages">
       <div class="print-page letter-page duplex-page">
         <div class="sheet-note"><b>Duplex Page 1:</b> card front.</div>
@@ -51,9 +51,15 @@ export function renderDuplexSheet(monster) {
 }
 
 export function renderStarterPrintSheet(monster) {
-  return safeRender('renderStarterPrintSheet failed', '<p>Print sheet failed.</p>', () => `<div class="print-choice-panel">
+  return safeRender('renderStarterPrintSheet failed', '<p>Print sheet failed.</p>', () => `<div class="print-choice-panel standard-print-choice">
     <h3>Choose Your Print Method</h3>
     <p>Most users should choose cut-and-fold. Duplex is optional for printers that align front and back accurately.</p>
+    <input class="print-mode-radio" type="radio" name="standard-print-${monster.id}" id="fold-${monster.id}" checked>
+    <input class="print-mode-radio" type="radio" name="standard-print-${monster.id}" id="duplex-${monster.id}">
+    <div class="print-choice-tabs">
+      <label class="print-choice-tab" for="fold-${monster.id}">Cut-and-Fold</label>
+      <label class="print-choice-tab" for="duplex-${monster.id}">Duplex Front/Back</label>
+    </div>
     ${renderFoldOverSheet(monster)}
     ${renderDuplexSheet(monster)}
     <div class="legend-card print-legend-card">
@@ -67,7 +73,7 @@ export function renderStarterPrintSheet(monster) {
 }
 
 export function renderBossFolioSheet(monster) {
-  return safeRender('renderBossFolioSheet failed', '<p>Boss folio failed.</p>', () => `<div class="boss-folio-wrap">
+  return safeRender('renderBossFolioSheet failed', '<p>Boss folio failed.</p>', () => `<div class="boss-folio-wrap print-pane folio-pane">
     <div class="details-panel"><h3>Boss Folio Print Mode</h3><p>Best for legendary monsters, spellcasters, and bosses. Print on standard letter cardstock at 100%, cut the outer dashed edge, accordion-fold on every spine mark, then laminate as a folded reference card.</p></div>
     <div class="print-page letter-page boss-page">
       <div class="boss-strip">
@@ -89,13 +95,28 @@ export function renderBossFolioSheet(monster) {
 }
 
 export function renderBossDeckletSheet(monster) {
-  return safeRender('renderBossDeckletSheet failed', '<p>Boss decklet failed.</p>', () => `<div class="boss-folio-wrap">
-    <div class="details-panel"><h3>Alternate Boss Decklet</h3><p>If accordion lamination feels bulky, print three separate cut-and-fold cards and sleeve them together as a boss mini-deck.</p></div>
+  return safeRender('renderBossDeckletSheet failed', '<p>Boss decklet failed.</p>', () => `<div class="boss-folio-wrap print-pane decklet-pane">
+    <div class="details-panel"><h3>Boss Decklet</h3><p>If accordion lamination feels bulky, print three separate cut-and-fold cards and sleeve them together as a boss mini-deck.</p></div>
     <div class="decklet-grid">
       <div class="fold-unit standard-fold-unit">${renderCardFront(monster)}<div class="spine-mark">FOLD</div>${renderCombatBack(monster)}</div>
       <div class="fold-unit standard-fold-unit">${renderPanel(PANEL_TYPES.ACTIONS, monster)}<div class="spine-mark">FOLD</div>${renderPanel(PANEL_TYPES.TRAITS, monster)}</div>
       <div class="fold-unit standard-fold-unit">${renderPanel(PANEL_TYPES.LEGENDARY, monster)}<div class="spine-mark">FOLD</div>${monster.spellcasting ? renderPanel(PANEL_TYPES.SPELLS, monster) : renderPanel(PANEL_TYPES.NOTES, monster)}</div>
     </div>
+  </div>`);
+}
+
+export function renderBossPrintChoice(monster) {
+  return safeRender('renderBossPrintChoice failed', '<p>Boss print choice failed.</p>', () => `<div class="print-choice-panel boss-print-choice">
+    <h3>Choose Your Boss Print Method</h3>
+    <p>Boss Folio keeps everything attached as one fold-out reference. Boss Decklet creates separate fold-over cards that are easier to laminate.</p>
+    <input class="print-mode-radio" type="radio" name="boss-print-${monster.id}" id="folio-${monster.id}" checked>
+    <input class="print-mode-radio" type="radio" name="boss-print-${monster.id}" id="decklet-${monster.id}">
+    <div class="print-choice-tabs">
+      <label class="print-choice-tab" for="folio-${monster.id}">Boss Folio</label>
+      <label class="print-choice-tab" for="decklet-${monster.id}">Boss Decklet</label>
+    </div>
+    ${renderBossFolioSheet(monster)}
+    ${renderBossDeckletSheet(monster)}
   </div>`);
 }
 
@@ -109,6 +130,6 @@ export function renderPrintModePreview(monster) {
     if (mode === PRINT_MODES.FOLD_OVER) {
       return `<div class="print-mode-grid"><div><h3>Recommended for This Monster</h3>${renderStarterPrintSheet(monster)}</div></div>`;
     }
-    return `<div class="print-mode-grid"><div><h3>Table View</h3>${renderAccordion(monster)}</div><div><h3>Recommended: Boss Folio</h3>${renderBossFolioSheet(monster)}</div><div><h3>Backup Option: Boss Decklet</h3>${renderBossDeckletSheet(monster)}</div></div>`;
+    return `<div class="print-mode-grid"><div><h3>Table View</h3>${renderAccordion(monster)}</div><div>${renderBossPrintChoice(monster)}</div></div>`;
   });
 }
