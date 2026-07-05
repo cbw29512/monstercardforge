@@ -3,6 +3,7 @@ import { safeRender } from './logger.js';
 
 export const PRINT_MODES = {
   FOLD_OVER: 'fold-over',
+  DUPLEX: 'duplex',
   BOSS_FOLIO: 'boss-folio',
   BOSS_DECKLET: 'boss-decklet',
 };
@@ -16,23 +17,51 @@ export function recommendedPrintMode(monster) {
   });
 }
 
+export function renderFoldOverSheet(monster) {
+  return safeRender('renderFoldOverSheet failed', '<p>Fold-over print sheet failed.</p>', () => `<div class="print-card-option">
+    <div class="details-panel"><h3>Option A: Cut-and-Fold Card</h3><p>Works on any normal printer. Print on cardstock, cut the whole connected rectangle, fold on the middle spine, then laminate so it becomes one thick card.</p></div>
+    <div class="print-page letter-page">
+      <div class="sheet-note"><b>Cut-and-Fold:</b> front and back stay attached. Cut one piece. Fold in the middle.</div>
+      <div class="starter-print-sheet">
+        <div class="fold-unit standard-fold-unit">
+          <div class="crop crop-tl"></div><div class="crop crop-tr"></div><div class="crop crop-bl"></div><div class="crop crop-br"></div>
+          ${renderCardFront(monster)}
+          <div class="spine-mark">FOLD SPINE</div>
+          ${renderCombatBack(monster)}
+        </div>
+      </div>
+    </div>
+  </div>`);
+}
+
+export function renderDuplexSheet(monster) {
+  return safeRender('renderDuplexSheet failed', '<p>Duplex print sheet failed.</p>', () => `<div class="print-card-option">
+    <div class="details-panel"><h3>Option B: Duplex Front/Back</h3><p>Use this only if your printer supports accurate double-sided printing. Print the front page, then the back page on the reverse side at 100% scale.</p></div>
+    <div class="duplex-pages">
+      <div class="print-page letter-page duplex-page">
+        <div class="sheet-note"><b>Duplex Page 1:</b> card front.</div>
+        <div class="duplex-card-slot">${renderCardFront(monster)}</div>
+      </div>
+      <div class="print-page letter-page duplex-page">
+        <div class="sheet-note"><b>Duplex Page 2:</b> matching card back. Print on reverse side.</div>
+        <div class="duplex-card-slot">${renderCombatBack(monster)}</div>
+      </div>
+    </div>
+  </div>`);
+}
+
 export function renderStarterPrintSheet(monster) {
-  return safeRender('renderStarterPrintSheet failed', '<p>Print sheet failed.</p>', () => `<div class="print-page letter-page">
-    <div class="sheet-note"><b>Fold-Over Card:</b> print at 100% on letter-size cardstock, cut the outer dashed edge, fold on the spine, then laminate.</div>
-    <div class="starter-print-sheet">
-      <div class="fold-unit standard-fold-unit">
-        <div class="crop crop-tl"></div><div class="crop crop-tr"></div><div class="crop crop-bl"></div><div class="crop crop-br"></div>
-        ${renderCardFront(monster)}
-        <div class="spine-mark">FOLD</div>
-        ${renderCombatBack(monster)}
-      </div>
-      <div class="legend-card">
-        <h3>Legend</h3>
-        <p>🛡 AC · ❤️ HP · 👣 Speed · 👁 Senses · PP Passive Perception</p>
-        <p>⚔ Melee · 🏹 Ranged · BA Bonus Action · RX Reaction · TR Trait · LA Legendary Action</p>
-        <p>S Slashing · P Piercing · B Bludgeoning · A Acid · F Fire · C Cold · N Necrotic</p>
-        <p class="tiny"><b>Print:</b> 100% actual size. Cut outside edge. Fold on spine. Laminate if desired.</p>
-      </div>
+  return safeRender('renderStarterPrintSheet failed', '<p>Print sheet failed.</p>', () => `<div class="print-choice-panel">
+    <h3>Choose Your Print Method</h3>
+    <p>Most users should choose cut-and-fold. Duplex is optional for printers that align front and back accurately.</p>
+    ${renderFoldOverSheet(monster)}
+    ${renderDuplexSheet(monster)}
+    <div class="legend-card print-legend-card">
+      <h3>Legend</h3>
+      <p>AC · HP · Speed · Senses · PP Passive Perception</p>
+      <p>Melee · Ranged · BA Bonus Action · RX Reaction · TR Trait · LA Legendary Action</p>
+      <p>S Slashing · P Piercing · B Bludgeoning · A Acid · F Fire · C Cold · N Necrotic</p>
+      <p class="tiny"><b>Print:</b> 100% actual size. Do not use fit to page.</p>
     </div>
   </div>`);
 }
@@ -61,7 +90,7 @@ export function renderBossFolioSheet(monster) {
 
 export function renderBossDeckletSheet(monster) {
   return safeRender('renderBossDeckletSheet failed', '<p>Boss decklet failed.</p>', () => `<div class="boss-folio-wrap">
-    <div class="details-panel"><h3>Alternate Boss Decklet</h3><p>If accordion lamination feels bulky, print three separate fold-over cards and sleeve them together as a boss mini-deck.</p></div>
+    <div class="details-panel"><h3>Alternate Boss Decklet</h3><p>If accordion lamination feels bulky, print three separate cut-and-fold cards and sleeve them together as a boss mini-deck.</p></div>
     <div class="decklet-grid">
       <div class="fold-unit standard-fold-unit">${renderCardFront(monster)}<div class="spine-mark">FOLD</div>${renderCombatBack(monster)}</div>
       <div class="fold-unit standard-fold-unit">${renderPanel(PANEL_TYPES.ACTIONS, monster)}<div class="spine-mark">FOLD</div>${renderPanel(PANEL_TYPES.TRAITS, monster)}</div>
@@ -71,14 +100,14 @@ export function renderBossDeckletSheet(monster) {
 }
 
 export function renderPrintChecklist() {
-  return `<div class="details-panel print-checklist"><h3>Home Printer Checklist</h3><ol><li>Use letter-size cardstock.</li><li>Printer scale: 100% / Actual Size.</li><li>Do not use Fit to Page.</li><li>Cut on the outside dashed boundary.</li><li>Fold on every spine mark before laminating.</li><li>For Boss Folios, test accordion fold before laminating.</li></ol></div>`;
+  return `<div class="details-panel print-checklist"><h3>Home Printer Checklist</h3><ol><li>Use letter-size cardstock.</li><li>Printer scale: 100% / Actual Size.</li><li>Do not use Fit to Page.</li><li>For cut-and-fold, cut front/back together as one connected piece.</li><li>Fold on the center spine so the front and back match.</li><li>Laminate after folding if you want one reusable thick card.</li></ol></div>`;
 }
 
 export function renderPrintModePreview(monster) {
   return safeRender('renderPrintModePreview failed', '<p>Print preview failed.</p>', () => {
     const mode = recommendedPrintMode(monster);
     if (mode === PRINT_MODES.FOLD_OVER) {
-      return `<div class="print-mode-grid"><div><h3>Recommended: Fold-Over Card</h3>${renderStarterPrintSheet(monster)}</div></div>`;
+      return `<div class="print-mode-grid"><div><h3>Recommended for This Monster</h3>${renderStarterPrintSheet(monster)}</div></div>`;
     }
     return `<div class="print-mode-grid"><div><h3>Table View</h3>${renderAccordion(monster)}</div><div><h3>Recommended: Boss Folio</h3>${renderBossFolioSheet(monster)}</div><div><h3>Backup Option: Boss Decklet</h3>${renderBossDeckletSheet(monster)}</div></div>`;
   });
