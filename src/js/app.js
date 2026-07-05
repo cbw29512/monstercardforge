@@ -6,14 +6,18 @@ const side = document.getElementById('side');
 const stage = document.getElementById('stage');
 
 function renderCustomerGuide() {
-  side.innerHTML = `<h2>Start Here</h2>
-    <div class="details-panel"><h3>1. Print the sample</h3><p>Try the Goblin card first. No account. No setup.</p></div>
-    <div class="details-panel"><h3>2. Browse cards</h3><p>Compare simple, boss, and accordion layouts.</p></div>
-    <div class="details-panel"><h3>3. Create homebrew</h3><p>Use guided fields and live preview to make your own card.</p></div>`;
+  side.innerHTML = `<h2>Quick Path</h2>
+    <button class="side-action primary" data-jump="free">Print free sample</button>
+    <button class="side-action" data-jump="library">Browse card examples</button>
+    <button class="side-action" data-jump="homebrew">Create homebrew</button>
+    <div class="details-panel"><h3>What this fixes</h3><p>No more flipping through books during combat. Print one reference and keep the encounter moving.</p></div>
+    <div class="details-panel"><h3>Best first step</h3><p>Print the Goblin sample. If the size and fold feel right, test the Lich Boss Folio next.</p></div>`;
+  attachSideActions();
 }
 
 function renderFilterShell() {
   side.innerHTML = `<h2>Find Cards</h2>
+    <div class="details-panel"><h3>What do you need tonight?</h3><p>Pick a ruleset and type, then choose a monster. The site recommends the print format.</p></div>
     <div class="filter"><label>Ruleset</label><select id="ruleset"><option value="5e-2014">5E 2014</option><option value="5e-2024">5E 2024</option><option value="all">All / Explicit Mix</option></select></div>
     <div class="filter"><label>Creature Type</label><select id="type"><option value="all">All Types</option><option value="humanoid">Humanoid</option><option value="dragon">Dragon</option><option value="undead">Undead</option><option value="giant">Giant</option></select></div>
     <div id="monsterList" class="monster-list"></div>`;
@@ -32,6 +36,31 @@ function renderFilterShell() {
   });
 }
 
+function renderHomebrewGuide() {
+  side.innerHTML = `<h2>Create a Card</h2>
+    <button class="side-action" data-jump="free">See sample first</button>
+    <button class="side-action primary" data-jump="homebrew">Edit example monster</button>
+    <button class="side-action" data-jump="library">Compare to official examples</button>
+    <div class="details-panel"><h3>How it works</h3><p>Use the example monster, replace fields, then print the live preview.</p></div>
+    <div class="details-panel"><h3>Rule</h3><p>If the monster gets complex, the engine expands the layout instead of shrinking text.</p></div>`;
+  attachSideActions();
+}
+
+function renderLegalGuide() {
+  side.innerHTML = `<h2>Trust & Licensing</h2>
+    <button class="side-action" data-jump="free">Back to sample</button>
+    <div class="details-panel"><h3>Customer promise</h3><p>Rulesets, sources, and attribution must stay clear before anything is sold.</p></div>
+    <div class="details-panel"><h3>Product rule</h3><p>Only open-license, original, or user-created homebrew content can be published.</p></div>`;
+  attachSideActions();
+}
+
+function attachSideActions() {
+  document.querySelectorAll('[data-jump]').forEach((button) => button.addEventListener('click', () => {
+    setTab(button.dataset.jump);
+    render();
+  }));
+}
+
 function mountView(view) {
   stage.innerHTML = view.stage;
   if (typeof view.attach === 'function') view.attach();
@@ -47,18 +76,19 @@ function render() {
       return;
     }
 
-    renderFilterShell();
-
     if (state.tab === 'homebrew') {
+      renderHomebrewGuide();
       mountView(renderHomebrewView(state, (values) => { updateHomebrew(values); render(); }, () => { resetHomebrew(); render(); }));
       return;
     }
 
     if (state.tab === 'legal') {
+      renderLegalGuide();
       mountView(renderLegalView());
       return;
     }
 
+    renderFilterShell();
     const view = renderLibraryView(state, (id) => { setSelectedMonster(id); render(); });
     const monsterList = document.getElementById('monsterList');
     if (monsterList) monsterList.innerHTML = view.sideList;
