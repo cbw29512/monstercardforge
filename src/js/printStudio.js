@@ -19,24 +19,23 @@ export function recommendedPrintMode(monster) {
 
 export function renderFoldOverSheet(monster) {
   return safeRender('renderFoldOverSheet failed', '<p>Fold-over print sheet failed.</p>', () => `<div class="print-card-option print-pane fold-pane">
-    <div class="details-panel"><h3>Cut-and-Fold Card</h3><p>Works on any normal printer. Print on cardstock, cut the whole connected rectangle, fold on the middle spine, then laminate so it becomes one thick card.</p></div>
-    <div class="print-page letter-page">
-      <div class="sheet-note"><b>Cut-and-Fold:</b> front and back stay attached. Cut one piece. Fold in the middle.</div>
-      <div class="starter-print-sheet">
-        <div class="fold-unit standard-fold-unit">
-          <div class="crop crop-tl"></div><div class="crop crop-tr"></div><div class="crop crop-bl"></div><div class="crop crop-br"></div>
-          ${renderCardFront(monster)}
-          <div class="spine-mark">FOLD SPINE</div>
-          ${renderCombatBack(monster)}
-        </div>
+    <div class="details-panel"><h3>Cut-and-Fold Card</h3><p>Finished size is 2.5" × 3.5". The unfolded piece is exactly 5" × 3.5". The front and back touch edge-to-edge with only a dotted fold line between them.</p></div>
+    <div class="print-page letter-page standard-card-page">
+      <div class="sheet-note"><b>MCF-001:</b> cut outer crop marks only. Fold on the dotted seam. No spacer. No hinge.</div>
+      <div class="fold-unit standard-fold-unit edge-touch-fold">
+        <div class="crop crop-tl"></div><div class="crop crop-tr"></div><div class="crop crop-bl"></div><div class="crop crop-br"></div>
+        <div class="fold-panel front-panel">${renderCardFront(monster)}</div>
+        <div class="fold-score-line" aria-hidden="true"><span>FOLD</span></div>
+        <div class="fold-panel back-panel">${renderCombatBack(monster)}</div>
       </div>
+      <div class="finished-size-note">Unfolded: 5" × 3.5" · Folded: 2.5" × 3.5" · Fits standard sleeves and 9-pocket binder pages.</div>
     </div>
   </div>`);
 }
 
 export function renderDuplexSheet(monster) {
   return safeRender('renderDuplexSheet failed', '<p>Duplex print sheet failed.</p>', () => `<div class="print-card-option print-pane duplex-pane">
-    <div class="details-panel"><h3>Duplex Front/Back</h3><p>Use this only if your printer supports accurate double-sided printing. Print the front page, then the back page on the reverse side at 100% scale.</p></div>
+    <div class="details-panel"><h3>Duplex Front/Back</h3><p>Use this only if your printer supports accurate double-sided printing. Each card is finished at 2.5" × 3.5".</p></div>
     <div class="duplex-pages">
       <div class="print-page letter-page duplex-page">
         <div class="sheet-note"><b>Duplex Page 1:</b> card front.</div>
@@ -53,7 +52,7 @@ export function renderDuplexSheet(monster) {
 export function renderStarterPrintSheet(monster) {
   return safeRender('renderStarterPrintSheet failed', '<p>Print sheet failed.</p>', () => `<div class="print-choice-panel standard-print-choice">
     <h3>Choose Your Print Method</h3>
-    <p>Most users should choose cut-and-fold. Duplex is optional for printers that align front and back accurately.</p>
+    <p>Cut-and-fold is recommended: one 5" × 3.5" connected piece folds into one standard 2.5" × 3.5" card.</p>
     <input class="print-mode-radio" type="radio" name="standard-print-${monster.id}" id="fold-${monster.id}" checked>
     <input class="print-mode-radio" type="radio" name="standard-print-${monster.id}" id="duplex-${monster.id}">
     <div class="print-choice-tabs">
@@ -74,21 +73,21 @@ export function renderStarterPrintSheet(monster) {
 
 export function renderBossFolioSheet(monster) {
   return safeRender('renderBossFolioSheet failed', '<p>Boss folio failed.</p>', () => `<div class="boss-folio-wrap print-pane folio-pane">
-    <div class="details-panel"><h3>Boss Folio Print Mode</h3><p>Best for legendary monsters, spellcasters, and bosses. Print on standard letter cardstock at 100%, cut the outer dashed edge, accordion-fold on every spine mark, then laminate as a folded reference card.</p></div>
-    <div class="print-page letter-page boss-page">
-      <div class="boss-strip">
+    <div class="details-panel"><h3>Boss Folio Print Mode</h3><p>High-CR accordion cards use edge-touching panels. Every fold is a dotted seam where two 2.5" × 3.5" panels touch.</p></div>
+    <div class="print-page letter-page boss-page edge-touch-boss-page">
+      <div class="boss-strip edge-touch-boss-strip">
         <div class="boss-panel cover-panel">${renderCardFront(monster)}</div>
-        <div class="spine-mark boss-spine">FOLD</div>
+        <div class="boss-fold-score"><span>FOLD</span></div>
         <div class="boss-panel combat-panel">${renderCombatBack(monster)}</div>
-        <div class="spine-mark boss-spine">FOLD</div>
-        ${renderPanel(PANEL_TYPES.ACTIONS, monster)}
+        <div class="boss-fold-score"><span>FOLD</span></div>
+        <div class="boss-panel action-panel">${renderPanel(PANEL_TYPES.ACTIONS, monster)}</div>
       </div>
-      <div class="boss-strip">
-        ${renderPanel(PANEL_TYPES.TRAITS, monster)}
-        <div class="spine-mark boss-spine">FOLD</div>
-        ${renderPanel(PANEL_TYPES.LEGENDARY, monster)}
-        <div class="spine-mark boss-spine">FOLD</div>
-        ${monster.spellcasting ? renderPanel(PANEL_TYPES.SPELLS, monster) : renderPanel(PANEL_TYPES.NOTES, monster)}
+      <div class="boss-strip edge-touch-boss-strip">
+        <div class="boss-panel trait-panel">${renderPanel(PANEL_TYPES.TRAITS, monster)}</div>
+        <div class="boss-fold-score"><span>FOLD</span></div>
+        <div class="boss-panel legendary-panel">${renderPanel(PANEL_TYPES.LEGENDARY, monster)}</div>
+        <div class="boss-fold-score"><span>FOLD</span></div>
+        <div class="boss-panel spell-panel">${monster.spellcasting ? renderPanel(PANEL_TYPES.SPELLS, monster) : renderPanel(PANEL_TYPES.NOTES, monster)}</div>
       </div>
     </div>
   </div>`);
@@ -96,11 +95,11 @@ export function renderBossFolioSheet(monster) {
 
 export function renderBossDeckletSheet(monster) {
   return safeRender('renderBossDeckletSheet failed', '<p>Boss decklet failed.</p>', () => `<div class="boss-folio-wrap print-pane decklet-pane">
-    <div class="details-panel"><h3>Boss Decklet</h3><p>If accordion lamination feels bulky, print three separate cut-and-fold cards and sleeve them together as a boss mini-deck.</p></div>
+    <div class="details-panel"><h3>Boss Decklet</h3><p>Three separate cut-and-fold cards. Each unfolded piece is 5" × 3.5" and folds to 2.5" × 3.5".</p></div>
     <div class="decklet-grid">
-      <div class="fold-unit standard-fold-unit">${renderCardFront(monster)}<div class="spine-mark">FOLD</div>${renderCombatBack(monster)}</div>
-      <div class="fold-unit standard-fold-unit">${renderPanel(PANEL_TYPES.ACTIONS, monster)}<div class="spine-mark">FOLD</div>${renderPanel(PANEL_TYPES.TRAITS, monster)}</div>
-      <div class="fold-unit standard-fold-unit">${renderPanel(PANEL_TYPES.LEGENDARY, monster)}<div class="spine-mark">FOLD</div>${monster.spellcasting ? renderPanel(PANEL_TYPES.SPELLS, monster) : renderPanel(PANEL_TYPES.NOTES, monster)}</div>
+      <div class="fold-unit standard-fold-unit edge-touch-fold">${renderCardFront(monster)}<div class="fold-score-line"><span>FOLD</span></div>${renderCombatBack(monster)}</div>
+      <div class="fold-unit standard-fold-unit edge-touch-fold">${renderPanel(PANEL_TYPES.ACTIONS, monster)}<div class="fold-score-line"><span>FOLD</span></div>${renderPanel(PANEL_TYPES.TRAITS, monster)}</div>
+      <div class="fold-unit standard-fold-unit edge-touch-fold">${renderPanel(PANEL_TYPES.LEGENDARY, monster)}<div class="fold-score-line"><span>FOLD</span></div>${monster.spellcasting ? renderPanel(PANEL_TYPES.SPELLS, monster) : renderPanel(PANEL_TYPES.NOTES, monster)}</div>
     </div>
   </div>`);
 }
@@ -108,7 +107,7 @@ export function renderBossDeckletSheet(monster) {
 export function renderBossPrintChoice(monster) {
   return safeRender('renderBossPrintChoice failed', '<p>Boss print choice failed.</p>', () => `<div class="print-choice-panel boss-print-choice">
     <h3>Choose Your Boss Print Method</h3>
-    <p>Boss Folio keeps everything attached as one fold-out reference. Boss Decklet creates separate fold-over cards that are easier to laminate.</p>
+    <p>Boss Folio keeps everything attached as a fold-out reference. Boss Decklet makes multiple sleeve-ready cards.</p>
     <input class="print-mode-radio" type="radio" name="boss-print-${monster.id}" id="folio-${monster.id}" checked>
     <input class="print-mode-radio" type="radio" name="boss-print-${monster.id}" id="decklet-${monster.id}">
     <div class="print-choice-tabs">
@@ -121,7 +120,7 @@ export function renderBossPrintChoice(monster) {
 }
 
 export function renderPrintChecklist() {
-  return `<div class="details-panel print-checklist"><h3>Home Printer Checklist</h3><ol><li>Use letter-size cardstock.</li><li>Printer scale: 100% / Actual Size.</li><li>Do not use Fit to Page.</li><li>For cut-and-fold, cut front/back together as one connected piece.</li><li>Fold on the center spine so the front and back match.</li><li>Laminate after folding if you want one reusable thick card.</li></ol></div>`;
+  return `<div class="details-panel print-checklist"><h3>Home Printer Checklist</h3><ol><li>Use letter-size cardstock.</li><li>Printer scale: 100% / Actual Size.</li><li>Do not use Fit to Page.</li><li>For cut-and-fold, cut one 5" × 3.5" connected piece.</li><li>Fold on the dotted seam where both card edges touch.</li><li>Finished card must be 2.5" × 3.5" and fit a standard sleeve.</li></ol></div>`;
 }
 
 export function renderPrintModePreview(monster) {
