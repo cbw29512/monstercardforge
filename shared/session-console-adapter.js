@@ -4,6 +4,15 @@
   const LEGACY_KEY = 'dmforge-session-console-v1';
   let syncTimer = null;
 
+  function ensureStyles() {
+    if (document.getElementById('dmforgeSharedContextStyles')) return;
+    const link = document.createElement('link');
+    link.id = 'dmforgeSharedContextStyles';
+    link.rel = 'stylesheet';
+    link.href = 'shared/shared-context.css';
+    document.head.append(link);
+  }
+
   function uid() {
     return root.crypto?.randomUUID?.() || `id-${Date.now()}-${Math.random().toString(16).slice(2)}`;
   }
@@ -83,6 +92,7 @@
   function renderContext(legacy) {
     const store = root.DMForgeStore;
     if (!store) return;
+    ensureStyles();
     let bar = document.getElementById('dmforgeSharedContext');
     if (!bar) {
       bar = document.createElement('section');
