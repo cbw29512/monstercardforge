@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#25120d">
+  <title>Loot Forge | DM Forge</title>
+  <meta name="description" content="Create, distribute, print, and transfer campaign treasure parcels.">
+  <link rel="stylesheet" href="loot-forge.css">
+</head>
+<body>
+<div class="shell">
+  <header class="site-header">
+    <a class="back" href="index.html">← DM Forge Toolkit</a>
+    <div class="brand-row">
+      <div>
+        <p class="eyebrow">Treasure with a destination</p>
+        <h1>Loot Forge</h1>
+        <p class="tagline">Build and generate campaign treasure parcels, track what happened to them, print player-safe handouts, and move rewards into Session Console or Magic Item Forge.</p>
+      </div>
+      <div class="header-actions no-print"><a class="btn light" href="campaigns.html">Campaign Hub</a><button class="btn light" id="exportLoot" type="button">Export JSON</button><label class="btn light">Import JSON<input id="importLoot" type="file" accept="application/json" hidden></label></div>
+    </div>
+  </header>
+
+  <main>
+    <section id="sharedContext" class="shared-context no-print"></section>
+    <div class="workspace">
+      <section class="panel editor-panel">
+        <div class="section-head"><div><p class="eyebrow dark">Treasure parcel</p><h2>Build the Reward</h2></div><span id="saveState" class="save-state">Unsaved draft</span></div>
+        <form id="lootForm" class="form-grid">
+          <fieldset class="wide"><legend>Identity and campaign</legend><div class="form-grid">
+            <label>Parcel name<input name="title" maxlength="120" required value="The Smuggler’s Lockbox"></label>
+            <label>Campaign<input name="campaign" list="campaignNames" maxlength="100" value="My Campaign"></label>
+            <label>Source or scene<input name="source" maxlength="180" value="Hidden beneath the river warehouse"></label>
+            <label>Status<select name="status"><option>Planned</option><option selected>Found</option><option>Distributed</option><option>Sold</option><option>Lost</option><option>Returned</option></select></label>
+            <label>Parcel scale<select name="tier"><option>Minor</option><option selected>Moderate</option><option>Major</option><option>Legendary</option></select></label>
+            <label>Assigned to<input name="assignedTo" maxlength="160" placeholder="Party, character, faction, or unassigned"></label>
+            <label>Rules label<select name="ruleset"><option>2014</option><option>2024</option><option>Edition Neutral</option><option selected>Homebrew</option></select></label>
+            <label>Date found<input name="foundDate" type="date"></label>
+          </div></fieldset>
+
+          <fieldset class="wide"><legend>Coins</legend><div class="coin-grid">
+            <label>CP<input name="cp" type="number" min="0" max="9999999" value="0"></label>
+            <label>SP<input name="sp" type="number" min="0" max="9999999" value="120"></label>
+            <label>EP<input name="ep" type="number" min="0" max="9999999" value="0"></label>
+            <label>GP<input name="gp" type="number" min="0" max="9999999" value="85"></label>
+            <label>PP<input name="pp" type="number" min="0" max="9999999" value="0"></label>
+          </div></fieldset>
+
+          <fieldset class="wide"><legend>Contents</legend><div class="form-grid">
+            <label class="wide">Valuables and trade goods<textarea name="valuables" maxlength="1800">Three moonstone brooches worth whatever the local jeweler will pay
+A sealed bottle of saffron ink</textarea><span class="help">One item per line. Values may be written into the description.</span></label>
+            <label class="wide">Mundane gear and curios<textarea name="mundaneItems" maxlength="1800">A brass key stamped with a heron
+Two healer’s kits
+A waterproof map case</textarea></label>
+            <label class="wide">Magic-item candidates<textarea name="magicItems" maxlength="1600">Lantern of the Last Ferry</textarea><span class="help">One name per line. Sending to Magic Item Forge creates unidentified placeholder items for the DM to finish.</span></label>
+            <label class="wide">Clues, documents, or story rewards<textarea name="clues" maxlength="1800">A shipping ledger names the magistrate’s private courier.</textarea></label>
+          </div></fieldset>
+
+          <fieldset class="wide"><legend>Player and DM notes</legend><div class="form-grid">
+            <label class="wide">Player-facing note<textarea name="playerNotes" maxlength="1800">The lockbox smells faintly of river water and incense. None of the contents bear a visible owner’s mark.</textarea></label>
+            <label class="wide">Private DM notes<textarea name="dmNotes" maxlength="2200">The brass key opens a cell beneath the magistrate’s house. The lantern is dormant until carried onto the ferryman’s boat.</textarea></label>
+          </div></fieldset>
+        </form>
+
+        <div class="actions no-print">
+          <button class="btn gold" id="saveParcel" type="button">Save Parcel</button>
+          <button class="btn light" id="newParcel" type="button">New Blank Parcel</button>
+          <button class="btn blue" id="generateParcel" type="button">Generate Original Parcel</button>
+          <button class="btn light" id="sendCurrentSession" type="button">Send to Session Rewards</button>
+          <button class="btn light" id="sendCurrentMagic" type="button">Send Magic Items to Forge</button>
+        </div>
+        <div class="notice">The built-in generator is original DM Forge content, not an official treasure table. Magic-item transfers create editable unidentified placeholders and never invent rules text.</div>
+      </section>
+
+      <section class="preview-wrap">
+        <div class="preview-toolbar no-print"><div><b>Live Preview</b><div id="previewModeLabel">Player Handout</div></div><div class="actions compact"><button class="btn light" id="playerView" type="button">Player Handout</button><button class="btn light" id="dmView" type="button">DM Parcel</button></div></div>
+        <div class="preview-stage"><div id="preview"></div></div>
+        <div class="actions no-print"><button class="btn blue" id="printCurrent" type="button">Print Current Parcel</button></div>
+      </section>
+    </div>
+
+    <section class="panel library no-print">
+      <div class="section-head"><div><p class="eyebrow dark">Campaign treasure</p><h2>Loot Library</h2><p>Search, filter, update status, print, and transfer saved treasure parcels.</p></div><div class="library-tools"><label>Campaign<select id="campaignFilter"><option value="all">All campaigns</option></select></label><label>Status<select id="statusFilter"><option value="all">All statuses</option><option>Planned</option><option>Found</option><option>Distributed</option><option>Sold</option><option>Lost</option><option>Returned</option></select></label><label>Search<input id="lootSearch" placeholder="Parcel, item, source, owner…"></label></div></div>
+      <div id="libraryGrid" class="library-grid"></div>
+      <div class="actions"><button class="btn light" id="printSelectedPlayer" type="button">Print Selected Handouts</button><button class="btn light" id="printSelectedDm" type="button">Print Selected DM Parcels</button><button class="btn light" id="printLedger" type="button">Print Campaign Loot Ledger</button></div>
+    </section>
+
+    <section id="printSheet" class="print-sheet" aria-hidden="true"></section>
+  </main>
+</div>
+<datalist id="campaignNames"></datalist>
+<script src="shared/dmforge-store.js"></script>
+<script src="loot-forge.js"></script>
+</body>
+</html>
