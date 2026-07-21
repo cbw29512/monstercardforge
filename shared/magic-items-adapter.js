@@ -4,6 +4,15 @@
   const ITEMS_KEY = 'dmforge-magic-items-v2';
   let syncTimer = null;
 
+  function ensureStyles() {
+    if (document.getElementById('dmforgeSharedContextStyles')) return;
+    const link = document.createElement('link');
+    link.id = 'dmforgeSharedContextStyles';
+    link.rel = 'stylesheet';
+    link.href = 'shared/shared-context.css';
+    document.head.append(link);
+  }
+
   function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>"']/g, (character) => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -36,6 +45,7 @@
   function renderContext() {
     const store = root.DMForgeStore;
     if (!store) return;
+    ensureStyles();
     let bar = document.getElementById('dmforgeSharedContext');
     if (!bar) {
       bar = document.createElement('section');
