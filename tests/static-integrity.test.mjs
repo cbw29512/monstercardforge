@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const pages = ['index.html', 'campaigns.html', 'monster-cards.html', 'magic-items.html', 'session-console.html', 'encounter-forge.html', 'player-display.html', 'npc-forge.html', 'loot-forge.html', 'backup-center.html'];
+const pages = ['index.html', 'campaigns.html', 'campaign-search.html', 'monster-cards.html', 'magic-items.html', 'session-console.html', 'encounter-forge.html', 'player-display.html', 'npc-forge.html', 'loot-forge.html', 'backup-center.html'];
 
 function localAssetReferences(html) {
   const references = [];
@@ -31,6 +31,18 @@ function javascriptFiles(directory) {
   return files;
 }
 
+function cssFiles(directory) {
+  const files = [];
+  for (const entry of readdirSync(directory)) {
+    if (['.git', 'node_modules'].includes(entry)) continue;
+    const fullPath = join(directory, entry);
+    const stats = statSync(fullPath);
+    if (stats.isDirectory()) files.push(...cssFiles(fullPath));
+    else if (entry.endsWith('.css')) files.push(fullPath);
+  }
+  return files;
+}
+
 test('all primary pages and their local JS/CSS assets exist', () => {
   for (const page of pages) {
     const pagePath = join(root, page);
@@ -51,6 +63,20 @@ test('every production JavaScript file parses successfully', () => {
     if (result.status !== 0) failures.push(`${relative(root, file)}\n${result.stderr || result.stdout}`);
   }
   assert.deepEqual(failures, []);
+});
+
+test('retired IM Fell UI font does not return and Google Fonts are centralized', () => {
+  const designSystem = join(root, 'shared/design-system.css');
+  const remoteFontImports = [];
+  const retiredFontUses = [];
+  for (const file of cssFiles(root)) {
+    const css = readFileSync(file, 'utf8');
+    if (/fonts\.googleapis\.com/i.test(css)) remoteFontImports.push(relative(root, file));
+    if (/IM Fell English/i.test(css)) retiredFontUses.push(relative(root, file));
+  }
+  assert.deepEqual(retiredFontUses, []);
+  assert.deepEqual(remoteFontImports, ['shared/design-system.css']);
+  assert.match(readFileSync(designSystem, 'utf8'), /family=Cinzel/);
 });
 
 test('Magic Item Forge retains overflow detection and continuation printing', () => {
@@ -96,6 +122,7 @@ test('Encounter Forge retains official rules data and Session Console handoff', 
   const sessionAdapter = readFileSync(join(root, 'shared/session-console-adapter.js'), 'utf8');
   assert.equal(engine.includes('THRESHOLDS_2014'), true);
   assert.equal(engine.includes('BUDGETS_2024'), true);
+  assert.equal(engine.includes("return 'Above High'"), true);
   assert.equal(app.includes('dmforge-pending-encounter-v1'), true);
   assert.equal(page.includes('Launch in Session Console'), true);
   assert.equal(sharedStore.includes('function syncEncounters'), true);
@@ -144,13 +171,13 @@ test('Backup Center validates recognized keys and excludes transient handoffs', 
   const page = readFileSync(join(root, 'backup-center.html'), 'utf8');
   const script = readFileSync(join(root, 'backup-center.js'), 'utf8');
   for (const control of ['downloadBackup', 'importBackup', 'confirmRestore', 'applyImport', 'storageGrid']) assert.equal(page.includes(`id="${control}"`), true, `Backup Center is missing ${control}`);
-  for (const requirement of ['function acceptedKey', 'function buildBackup', 'function validateBackup', 'function applyImport', "const MAX_IMPORT_BYTES", 'SHA-256']) assert.equal(script.includes(requirement), true, `Backup Center is missing ${requirement}`);
+  for (const requirement of ['function acceptedKey', 'function buildBackup', 'function validateBackup', 'function applyImport', 'const MAX_IMPORT_BYTES', 'SHA-256']) assert.equal(script.includes(requirement), true, `Backup Center is missing ${requirement}`);
   assert.equal(script.includes("'dmforge-pending-encounter-v1'"), true);
-  assert.equal(script.includes("/^cleric-box-"), true);
+  assert.equal(script.includes('/^cleric-box-'), true);
   assert.equal(script.includes('record.sha256'), true);
 });
 
 test('DM Forge homepage links every live tool', () => {
   const html = readFileSync(join(root, 'index.html'), 'utf8');
-  for (const route of ['campaigns.html', 'session-console.html', 'encounter-forge.html', 'player-display.html', 'npc-forge.html', 'loot-forge.html', 'backup-center.html', 'monster-cards.html', 'magic-items.html', 'https://cbw29512.github.io/healingbox/']) assert.equal(html.includes(route), true, `Homepage is missing ${route}`);
+  for (const route of ['campaigns.html', 'campaign-search.html', 'session-console.html', 'encounter-forge.html', 'player-display.html', 'npc-forge.html', 'loot-forge.html', 'backup-center.html', 'monster-cards.html', 'magic-items.html', 'https://cbw29512.github.io/healingbox/']) assert.equal(html.includes(route), true, `Homepage is missing ${route}`);
 });
