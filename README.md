@@ -16,15 +16,25 @@ Route: `monster-cards.html`
 
 ### Magic Item Forge
 
-- Simple, detailed, and artifact card templates
-- Live player-handout preview
-- Separate DM view for hidden properties and curses
+- Simple 2.5×3.5 cards, detailed cards, and full 5×7 artifact cards
+- Player-front, player-back, and private DM-back previews
+- Unidentified, partially identified, and fully identified player handouts
+- Dormant, awakened, and exalted evolving-item stages
+- Uploaded artwork with automatic browser-side resizing
+- Campaign folders, owner assignments, and campaign filtering
 - Browser-saved magic item library
 - Duplicate, edit, and delete saved cards
 - Export and import JSON backups
-- Print one card or selected multi-card sheets
+- Nine-card letter-size print sheets with cut guides
+- Mirrored duplex backs for long-edge printing
+- Full-size artifact front/back printing
+- Finished Cleric in a Box Unique Artifact showcase
 
-Route: `magic-items.html`
+Routes:
+
+- `magic-items.html` — editor and library
+- `magic-items.css` — responsive and print layouts
+- `magic-items.js` — card model, storage, artwork, identification, evolution, and printing
 
 ### Cleric in a Box
 
@@ -55,14 +65,17 @@ Every tool should be:
 
 Open `index.html` in a browser. The toolkit currently uses static HTML, CSS, and JavaScript and requires no build step.
 
-The Magic Item Forge library is stored in browser local storage. Use its JSON export function to create backups or move the library between computers.
+The Magic Item Forge library and resized artwork are stored in browser local storage. Use its JSON export function to create backups or move the library between computers.
 
 ## Project structure
 
 - `index.html` — DM Forge toolkit homepage
 - `monster-cards.html` — preserved Monster Card Forge application
-- `magic-items.html` — Magic Item Forge MVP
+- `magic-items.html` — production Magic Item Forge editor
+- `magic-items.css` — responsive card and duplex print layouts
+- `magic-items.js` — Magic Item Forge logic and local library
 - `src/` — existing monster-card data, rendering, styles, and print engine
+- `ROADMAP.md` — staged product roadmap
 
 ## Licensing
 
