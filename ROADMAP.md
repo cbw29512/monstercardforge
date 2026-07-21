@@ -14,7 +14,7 @@
 - Simple, detailed, and 5×7 artifact formats
 - Uploaded artwork with automatic resizing
 - Unidentified, partially identified, and fully identified states
-- Dormant, awakened, and exalted evolving-item stages
+- Dormant, Awakened, and Exalted evolving-item stages
 - Campaign folders and owner fields
 - Local save, edit, duplicate, delete, export, and import
 - Nine-card letter-size sheets with cut guides
@@ -22,16 +22,43 @@
 - Full-size artifact duplex printing
 - Finished Cleric in a Box Unique Artifact showcase
 
-## Phase 3 — Run the Session — Next
+## Phase 3 — Run the Session — Active
 
-### Encounter Forge
+### Session Console — Complete
 
-- Encounter creation and saved encounters
-- Enemy groups connected to Monster Card Forge
-- Initiative order
-- Round counter
-- Conditions and concentration
+- Multiple locally saved campaigns
+- Reusable current-session prep sheet
+- Opening beat, likely scenes, secrets, NPCs, locations, rewards, and loose notes
+- Timestamped session log
+- Initiative order with Dexterity tiebreaks
+- Round and current-turn tracking
+- Enemy and NPC HP, AC, and conditions
+- Player initiative without player HP tracking
+- Persistent campaign player roster
+- Combat chronicle
+- Secure dice with advantage and disadvantage
+- NPC, inn, rumor, weather, treasure, complication, and name generators
+- Session archive
+- Printable session packet
+- JSON backup and import
+
+### Encounter Forge — Next
+
+- Separate 2014 and 2024 difficulty models
+- Party profiles and encounter budgets
+- Environment, type, CR, size, source, and legendary filters
+- Random encounter styles
+- Custom monsters from Monster Card Forge
+- Saved encounter history
+- Direct launch into Session Console
 - Printable encounter packet
+
+### Shared Player Display
+
+- Phone and tablet initiative view
+- Current turn and round
+- Public conditions and visible combatants
+- No private enemy HP or DM notes
 
 ### NPC Forge
 
@@ -39,6 +66,7 @@
 - Motives, mannerisms, secrets, and relationships
 - Player-safe and DM-only cards
 - Campaign folders and reusable NPC library
+- Direct addition to Session Console prep
 
 ### Loot Forge
 
@@ -49,12 +77,13 @@
 
 ## Phase 4 — Campaign Library
 
-- Shared campaign dashboard
-- Unified monster, item, encounter, NPC, and loot collections
+- One campaign selector shared by all tools
+- Unified monster, item, encounter, NPC, loot, and session collections
 - Optional accounts and cloud synchronization
 - Shareable player handouts
+- Maps and uploaded campaign assets
 - Backup, import, and campaign transfer
 
 ## Product Rule
 
-Every DM Forge tool must be fast enough to use during a session, readable on an ordinary printer, and attractive enough to hand directly to a player.
+Every DM Forge tool must be fast enough to use during a session, readable on an ordinary printer, attractive enough to hand directly to a player, and portable without a required account.
