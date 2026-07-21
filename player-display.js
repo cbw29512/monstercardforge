@@ -6,7 +6,8 @@ let hostConnection = null;
 let roomCode = '';
 let reconnectTimer = null;
 let wakeLock = null;
-let latestState = null;
+let keepAwakeRequested = false;
+let manualDisconnect = false;
 
 function esc(value) {
   return String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[character]);
@@ -28,7 +29,6 @@ function renderSetup() {
 }
 
 function renderState(state) {
-  latestState = state;
   $('#setup').classList.add('hidden');
   $('#display').classList.remove('hidden');
   $('#campaignName').textContent = state.campaign || 'DM Forge Campaign';
@@ -45,6 +45,14 @@ function renderState(state) {
   document.title = current && state.active ? `${current.name}'s Turn | DM Forge` : 'Player Display | DM Forge';
 }
 
+function teardownConnection() {
+  clearTimeout(reconnectTimer);
+  try { hostConnection?.close(); } catch (error) { console.error(error); }
+  try { peer?.destroy(); } catch (error) { console.error(error); }
+  hostConnection = null;
+  peer = null;
+}
+
 function connect(code) {
   roomCode = String(code || '').trim().toUpperCase();
   if (roomCode.length !== 6) {
@@ -52,9 +60,8 @@ function connect(code) {
     renderSetup();
     return;
   }
-  clearTimeout(reconnectTimer);
-  try { hostConnection?.close(); } catch (error) { console.error(error); }
-  try { peer?.destroy(); } catch (error) { console.error(error); }
+  manualDisconnect = false;
+  teardownConnection();
   setStatus('Connecting…');
   if (!window.Peer) {
     setStatus('Network library unavailable. Reload while online.');
@@ -81,8 +88,24 @@ function connect(code) {
 }
 
 function disconnected(message = 'DM host disconnected. Retrying…') {
+  if (manualDisconnect) return;
+  clearTimeout(reconnectTimer);
   setStatus(message, false);
   reconnectTimer = setTimeout(() => connect(roomCode), 3000);
+}
+
+async function requestWakeLock() {
+  if (!keepAwakeRequested || !('wakeLock' in navigator) || document.visibilityState !== 'visible') return;
+  try {
+    wakeLock = await navigator.wakeLock.request('screen');
+    wakeLock.addEventListener('release', () => {
+      wakeLock = null;
+      if (keepAwakeRequested && document.visibilityState === 'visible') setTimeout(requestWakeLock, 250);
+    });
+  } catch (error) {
+    console.error(error);
+    wakeLock = null;
+  }
 }
 
 async function toggleWakeLock() {
@@ -92,26 +115,21 @@ async function toggleWakeLock() {
     button.disabled = true;
     return;
   }
-  try {
-    if (wakeLock) {
-      await wakeLock.release();
-      wakeLock = null;
-      button.textContent = 'Keep Screen Awake';
-    } else {
-      wakeLock = await navigator.wakeLock.request('screen');
-      button.textContent = 'Allow Screen Sleep';
-      wakeLock.addEventListener('release', () => { wakeLock = null; button.textContent = 'Keep Screen Awake'; });
-    }
-  } catch (error) {
-    console.error(error);
-    button.textContent = 'Wake Lock Unavailable';
+  keepAwakeRequested = !keepAwakeRequested;
+  if (keepAwakeRequested) {
+    await requestWakeLock();
+    button.textContent = wakeLock ? 'Allow Screen Sleep' : 'Wake Lock Unavailable';
+  } else {
+    try { await wakeLock?.release(); } catch (error) { console.error(error); }
+    wakeLock = null;
+    button.textContent = 'Keep Screen Awake';
   }
 }
 
 function enterFullscreen() {
-  const target = document.documentElement;
   if (document.fullscreenElement) document.exitFullscreen?.();
-  else target.requestFullscreen?.();
+  else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+  else $('#fullscreen').textContent = 'Full Screen Unsupported';
 }
 
 $('#joinForm').addEventListener('submit', (event) => {
@@ -122,15 +140,22 @@ $('#joinForm').addEventListener('submit', (event) => {
   history.replaceState({}, '', url);
   connect(code);
 });
-$('#changeRoom').onclick = () => { clearTimeout(reconnectTimer); try { peer?.destroy(); } catch (error) { console.error(error); } latestState = null; renderSetup(); setStatus('Not connected'); };
+$('#changeRoom').onclick = () => {
+  manualDisconnect = true;
+  teardownConnection();
+  roomCode = '';
+  const url = new URL(location.href);
+  url.searchParams.delete('join');
+  history.replaceState({}, '', url);
+  renderSetup();
+  setStatus('Not connected');
+};
 $('#wakeLock').onclick = toggleWakeLock;
 $('#fullscreen').onclick = enterFullscreen;
-document.addEventListener('visibilitychange', async () => {
-  if (document.visibilityState === 'visible' && wakeLock) {
-    try { wakeLock = await navigator.wakeLock.request('screen'); } catch (error) { console.error(error); }
-  }
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && keepAwakeRequested && !wakeLock) requestWakeLock();
 });
-window.addEventListener('beforeunload', () => { clearTimeout(reconnectTimer); try { peer?.destroy(); } catch (error) { console.error(error); } });
+window.addEventListener('beforeunload', () => { manualDisconnect = true; teardownConnection(); });
 
 const requested = new URLSearchParams(location.search).get('join');
 if (requested) connect(requested);
