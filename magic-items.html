@@ -18,7 +18,7 @@
         <h1>Magic Item Forge</h1>
         <p class="tagline">Build player-safe cards, private DM backs, unidentified versions, and evolving relics—then print them at standard card size.</p>
       </div>
-      <div class="header-badges"><span>Artwork Uploads</span><span>Campaign Folders</span><span>Duplex Print</span></div>
+      <div class="header-badges"><span>Artwork Uploads</span><span>Campaign Folders</span><span>Overflow-Safe Print</span></div>
     </div>
   </header>
 
@@ -104,6 +104,7 @@ Banish Shadow: Once per long rest, creatures of shadow within 20 feet must make 
             <button class="btn light" id="dmBack" type="button">DM Back</button>
           </div>
         </div>
+        <div id="fitStatus" class="fit-status ready no-print" role="status" aria-live="polite">Checking card fit…</div>
         <div class="preview-stage"><div id="preview"></div></div>
       </section>
     </div>
@@ -122,7 +123,7 @@ Banish Shadow: Once per long rest, creatures of shadow within 20 feet must make 
 
     <section class="print-instructions no-print">
       <h2>Duplex printing</h2>
-      <p>Print at <b>100% scale</b> on letter-size cardstock, choose <b>double-sided</b>, and flip on the <b>long edge</b>. Back cards are mirrored by row so they align behind the fronts. Dashed borders are cut guides.</p>
+      <p>Print at <b>100% scale</b> on letter-size cardstock, choose <b>double-sided</b>, and flip on the <b>long edge</b>. Back cards are mirrored by row so they align behind the fronts. Dashed borders are cut guides. When a card face is too full, Magic Item Forge automatically appends a continuation sheet so no rules are lost.</p>
     </section>
 
     <section id="printSheet" class="print-sheet" aria-hidden="true"></section>
