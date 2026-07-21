@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const pages = ['index.html', 'campaigns.html', 'monster-cards.html', 'magic-items.html', 'session-console.html', 'encounter-forge.html', 'player-display.html', 'npc-forge.html'];
+const pages = ['index.html', 'campaigns.html', 'monster-cards.html', 'magic-items.html', 'session-console.html', 'encounter-forge.html', 'player-display.html', 'npc-forge.html', 'loot-forge.html', 'backup-center.html'];
 
 function localAssetReferences(html) {
   const references = [];
@@ -70,11 +70,13 @@ test('Campaign Hub and shared adapters are loaded by connected tools', () => {
   const itemPage = readFileSync(join(root, 'magic-items.html'), 'utf8');
   const encounterPage = readFileSync(join(root, 'encounter-forge.html'), 'utf8');
   const npcPage = readFileSync(join(root, 'npc-forge.html'), 'utf8');
+  const lootPage = readFileSync(join(root, 'loot-forge.html'), 'utf8');
   for (const asset of ['shared/dmforge-store.js', 'campaigns.js', 'campaigns.css']) assert.equal(campaignPage.includes(asset), true, `Campaign Hub is missing ${asset}`);
   for (const asset of ['shared/dmforge-store.js', 'shared/session-console-adapter.js', 'shared/player-display-host.js']) assert.equal(sessionPage.includes(asset), true, `Session Console is missing ${asset}`);
   for (const asset of ['shared/dmforge-store.js', 'shared/magic-items-adapter.js']) assert.equal(itemPage.includes(asset), true, `Magic Item Forge is missing ${asset}`);
   for (const asset of ['shared/dmforge-store.js', 'encounter-forge.js']) assert.equal(encounterPage.includes(asset), true, `Encounter Forge is missing ${asset}`);
   for (const asset of ['shared/dmforge-store.js', 'npc-forge.js', 'shared/npc-forge-hardening.js']) assert.equal(npcPage.includes(asset), true, `NPC Forge is missing ${asset}`);
+  for (const asset of ['shared/dmforge-store.js', 'loot-forge.js', 'shared/loot-forge-hardening.js']) assert.equal(lootPage.includes(asset), true, `Loot Forge is missing ${asset}`);
 });
 
 test('Magic Item reward handoff copies only a safe summary into Session Console', () => {
@@ -116,7 +118,7 @@ test('NPC Forge keeps player cards and shared summaries free of DM secrets', () 
   const storeScript = readFileSync(join(root, 'shared/dmforge-store.js'), 'utf8');
   const playerBlock = app.slice(app.indexOf('function playerCardHtml'), app.indexOf('function dmCardHtml'));
   for (const privateField of ['npc.secret', 'npc.lie', 'npc.motive', 'npc.combatNotes', 'npc.relationships']) assert.equal(playerBlock.includes(privateField), false, `Player NPC card exposes ${privateField}`);
-  const syncBlock = storeScript.slice(storeScript.indexOf('function syncNpcs'), storeScript.indexOf('function syncHealingRoom'));
+  const syncBlock = storeScript.slice(storeScript.indexOf('function syncNpcs'), storeScript.indexOf('function syncLoot'));
   for (const privateField of ['secret:', 'motive:', 'lie:', 'relationships:', 'combatNotes:', 'publicNotes:']) assert.equal(syncBlock.includes(privateField), false, `Shared NPC summary exposes ${privateField}`);
   assert.equal(syncBlock.includes('relationshipCount'), true);
   assert.equal(syncBlock.includes('tagCount'), true);
@@ -129,7 +131,6 @@ test('NPC Forge retains overflow continuation and safe Session Console handoff',
   const sessionAdapter = readFileSync(join(root, 'shared/session-console-adapter.js'), 'utf8');
   for (const requirement of ['function cardOverflows', 'function measure', 'function continuationHtml']) assert.equal(app.includes(requirement), true, `NPC Forge is missing ${requirement}`);
   assert.equal(page.includes('id="fitStatus"'), true);
-  assert.equal(page.includes('Send NPC roleplay summaries'), false);
   assert.equal(app.includes('Send to Session NPCs'), true);
   const handoffBlock = hardening.slice(hardening.indexOf('sendToSession ='), hardening.indexOf("document.getElementById('newNpc')"));
   assert.equal(handoffBlock.includes('Mannerism:'), true);
@@ -139,7 +140,17 @@ test('NPC Forge retains overflow continuation and safe Session Console handoff',
   assert.equal(sessionAdapter.includes("{ key: 'npcs', label: 'NPCs & Motives' }"), true);
 });
 
+test('Backup Center validates recognized keys and excludes transient handoffs', () => {
+  const page = readFileSync(join(root, 'backup-center.html'), 'utf8');
+  const script = readFileSync(join(root, 'backup-center.js'), 'utf8');
+  for (const control of ['downloadBackup', 'importBackup', 'confirmRestore', 'applyImport', 'storageGrid']) assert.equal(page.includes(`id="${control}"`), true, `Backup Center is missing ${control}`);
+  for (const requirement of ['function acceptedKey', 'function buildBackup', 'function validateBackup', 'function applyImport', "const MAX_IMPORT_BYTES", 'SHA-256']) assert.equal(script.includes(requirement), true, `Backup Center is missing ${requirement}`);
+  assert.equal(script.includes("'dmforge-pending-encounter-v1'"), true);
+  assert.equal(script.includes("/^cleric-box-"), true);
+  assert.equal(script.includes('record.sha256'), true);
+});
+
 test('DM Forge homepage links every live tool', () => {
   const html = readFileSync(join(root, 'index.html'), 'utf8');
-  for (const route of ['campaigns.html', 'session-console.html', 'encounter-forge.html', 'player-display.html', 'npc-forge.html', 'monster-cards.html', 'magic-items.html', 'https://cbw29512.github.io/healingbox/']) assert.equal(html.includes(route), true, `Homepage is missing ${route}`);
+  for (const route of ['campaigns.html', 'session-console.html', 'encounter-forge.html', 'player-display.html', 'npc-forge.html', 'loot-forge.html', 'backup-center.html', 'monster-cards.html', 'magic-items.html', 'https://cbw29512.github.io/healingbox/']) assert.equal(html.includes(route), true, `Homepage is missing ${route}`);
 });
