@@ -26,27 +26,38 @@
 - Live fit warnings and automatic continuation sheets
 - Finished Cleric in a Box Unique Artifact showcase
 
-## Phase 3 — Run the Session — Active
+## Phase 3 — Run the Session — Complete
 
 ### Session Console — Complete
 
 - Multiple locally saved campaigns
 - Reusable current-session prep sheet
-- Opening beat, likely scenes, secrets, NPCs, locations, rewards, and loose notes
-- Timestamped session log
+- Session log, archive, secure dice, generators, and printable packet
 - Initiative order with Dexterity tiebreaks
-- Round and current-turn tracking
 - Enemy and NPC HP, AC, and conditions
 - Player initiative without player HP tracking
 - Persistent campaign player roster
 - Combat chronicle
-- Secure dice with advantage and disadvantage
-- NPC, inn, rumor, weather, treasure, complication, and name generators
-- Session archive
-- Printable session packet
-- JSON backup and import
 - Shared campaign context
 - Live receipt of safe Magic Item reward summaries
+- Direct Encounter Forge enemy imports
+
+### Encounter Forge — Complete
+
+- Official 2014 Easy, Medium, Hard, and Deadly XP thresholds
+- Official 2014 multiple-monster and party-size multipliers
+- Official 2024 Low, Moderate, and High direct XP budgets
+- Mixed-level saved party profiles
+- CR-to-XP table through CR 30
+- Monster Card Forge sample imports
+- Reusable custom monster catalog
+- Search and type/rules filters
+- Automatic CR, creature-count, and stat-block warnings
+- Saved encounters in shared campaign summaries
+- Secure random, 10 + Dexterity, or zeroed initiative modes
+- Direct enemy handoff into Session Console
+- Printable encounter packets
+- Rules and integration regression tests
 
 ### Cleric in a Box Rules and Security — Complete for supported content
 
@@ -57,39 +68,6 @@
 - Version-2 room migration to version 3
 - Campaign Hub room summaries
 
-### Encounter Forge — Next
-
-- Separate 2014 and 2024 difficulty models
-- Party profiles and encounter budgets
-- Environment, type, CR, size, source, and legendary filters
-- Random encounter styles
-- Custom monsters from Monster Card Forge
-- Saved encounter history in the shared campaign store
-- Direct launch into Session Console
-- Printable encounter packet
-
-### Shared Player Display
-
-- Phone and tablet initiative view
-- Current turn and round
-- Public conditions and visible combatants
-- No private enemy HP or DM notes
-
-### NPC Forge
-
-- Fast NPC builder
-- Motives, mannerisms, secrets, and relationships
-- Player-safe and DM-only cards
-- Campaign folders and reusable NPC library
-- Direct addition to Session Console prep
-
-### Loot Forge
-
-- Treasure parcel builder
-- Mundane and magic loot
-- Send magic items directly into Magic Item Forge
-- Player-safe handouts and party loot sheets
-
 ## Phase 4 — Campaign Foundation — Active
 
 ### Complete
@@ -97,19 +75,39 @@
 - Versioned `DMForgeStore` shared summary schema
 - Campaign Hub page
 - One active campaign across connected tools
-- Existing Session Console and Magic Item campaign discovery
-- Cleric in a Box room-summary discovery
+- Session, encounter, magic-item, and artifact-room discovery
 - Safe campaign counts and source labels
-- Query-based handoff into Session Console and Magic Item Forge
+- Query-based handoff into Session Console, Encounter Forge, Magic Item Forge, and Cleric in a Box
 - Safe Magic Item → Session Rewards handoff
-- Privacy tests proving detailed notes, item secrets, artwork, and full rules stay compartmentalized
+- Encounter Forge → Session Console initiative handoff
+- Privacy tests proving detailed notes, item secrets, artwork, tactics, and full rules stay compartmentalized
 - Shared summary export
 
-### Next
+### Next — Shared Player Display
 
-- Encounter records in Campaign Hub
-- Monster Card → Encounter Forge → Session Console handoff
-- NPC and Loot shared summaries
+- Phone and tablet initiative view
+- Current turn and round
+- Public conditions and visible combatants
+- No private enemy HP, tactics, or DM notes
+- Join-by-link or room code
+
+### Next — NPC Forge
+
+- Fast NPC builder
+- Motives, mannerisms, secrets, and relationships
+- Player-safe and DM-only cards
+- Campaign folders and reusable NPC library
+- Direct addition to Session Console prep
+
+### Later — Loot Forge
+
+- Treasure parcel builder
+- Mundane and magic loot
+- Send magic items directly into Magic Item Forge
+- Player-safe handouts and party loot sheets
+
+### Later campaign work
+
 - Unified backup manifest with links to tool-specific backups
 - Storage quota and last-backup indicators
 - Optional accounts and cloud synchronization
