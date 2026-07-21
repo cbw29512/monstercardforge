@@ -14,7 +14,7 @@ D&D Beyond changed its display labels on March 2, 2026:
 - Revised 2024 fifth-edition rules are labeled **5.5e**.
 - The change is terminology only; it did not alter rules or saved content.
 
-DM Forge keeps internal values `2014` and `2024` so existing local data remains compatible. Public labels should show `5e (2014)` and `5.5e (2024)` during the migration period.
+DM Forge keeps internal values `2014` and `2024` so existing local data remains compatible. Public labels show `5e (2014)` and `5.5e (2024)` during the migration period.
 
 ## Authority hierarchy
 
@@ -35,7 +35,7 @@ Forums, wikis, videos, social posts, and memory may identify a question but may 
 - Checked against a named primary source
 - Verification date recorded
 - Relevant formulas or lists protected by tests
-- No known unresolved discrepancy
+- No known unresolved discrepancy inside the declared scope
 
 ### Verified with heuristic
 
@@ -62,15 +62,49 @@ A known omission, mismatch, unsupported claim, or unclear source exists. This st
 | Component | Status | Key result |
 |---|---|---|
 | Encounter Forge math | Verified with heuristic | 5e thresholds/multipliers and 5.5e budgets checked; CR 0 and above-High cases corrected |
-| Cleric spell-slot progression | Verified | Full-caster levels 1–20 checked against both Cleric tables |
+| Cleric spell-slot progression | Verified | Full-caster levels 1–20 checked against both Cleric tables; migration imports the same table |
 | Cleric leveled spell lists | Verified | 5e and 5.5e lists separated and checked |
 | Healing-potion formulas | Verified | Four standard tiers checked; artifact activation remains homebrew |
-| Cleric automatic spell effects | In progress | High-use formulas checked; edition-specific behavior is being expanded |
+| Cleric automatic spell effects | Verified for represented effects | Base-slot formulas, attack/save method, successful-save result, concentration, trigger differences, and high-impact riders are edition-aware |
 | Cleric in a Box artifact laws | Homebrew | Deity control and free-action artifact rules are campaign rules |
-| Monster sample cards | Needs correction | Dragon and Lich cards omit encounter-critical data and exact license metadata |
-| Session reference board | Names only | Correctly directs DMs to official text |
+| Monster sample cards | Verified for base SRD scope | Goblin, Adult Black Dragon, and Lich contain tested base stat-block data, source/license metadata, and source footers; optional lair/regional content is excluded |
+| Session reference board | Names only | Lists prompts and directs DMs to official text for exact adjudication |
 | Magic Item Forge content | Homebrew/template | User-authored rules require user/DM review |
 | NPC/Loot/Session generators | Homebrew | Original prompts, not official random tables |
+
+## Cleric effect scope
+
+Cleric in a Box automatically rolls only the effects represented in `rules-data.js#EFFECTS`. Every represented effect was reviewed for the base spell level because the artifact prohibits upcasting.
+
+Edition-specific behavior is explicit where the supported rules differ, including:
+
+- Inflict Wounds attack versus saving throw
+- Prayer of Healing target and Short Rest behavior
+- Spiritual Weapon concentration
+- Spirit Guardians trigger timing
+- Flame Strike dice split
+- Blade Barrier damage type and trigger timing
+- Heal condition removal
+- Fire Storm object ignition
+- Sunburst initial-save rider wording
+- Mass Heal condition removal
+
+Spells without an automatic-effect entry remain available as exact-level Cleric scrolls, but the site records them as utility/custom resolution and tells the table to use the official spell text. This avoids inventing a partial rule summary.
+
+## Monster-card scope
+
+The published sample records include the complete base SRD fields used by their card layouts:
+
+- ability scores
+- saves and skills
+- defenses, conditions, senses, and languages
+- traits
+- complete base actions
+- legendary-action costs and effects when present
+- spell save DC, spell attack bonus, and slot counts when present
+- CR, XP, source, license, and verification date
+
+Adult Black Dragon and Lich optional lair actions and regional effects are deliberately excluded. Their printed scope note says so. They may be added later only as separately sourced and tested records.
 
 ## Verification checklist for rules data
 
@@ -138,11 +172,10 @@ Recheck affected data when:
 7. Verify the live page after deployment.
 8. Preserve the change in the progress ledger and commit history.
 
-## Known active work
+## Remaining rules work
 
-1. Complete every automatic Cleric spell-effect comparison.
-2. Expand edition-specific trigger and concentration notes.
-3. Correct Flame Strike’s 5e versus 5.5e formula split.
-4. Replace incomplete monster samples with complete, traceable, licensed records.
-5. Add record-level source labels to printed outputs.
-6. Add a test that rejects future verification dates and unknown source IDs.
+1. Expand the licensed monster catalog beyond the three verified 5e samples.
+2. Add separately sourced optional lair and regional records where licensing and print scope permit.
+3. Add verified 5.5e monster records rather than relabeling 5e records.
+4. Add source/version labels to every future imported or user-created rule record.
+5. Reverify active production rules by 2027-01-21 or sooner after official errata/SRD changes.
