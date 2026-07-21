@@ -4,8 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#24120d">
-  <title>Session Console | DM Forge</title>
-  <meta name="description" content="A persistent session-prep, initiative, dice, generator, and campaign-notes console for Dungeon Masters.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <title>D&D Session Prep and Initiative Tracker | DM Forge</title>
+  <meta name="description" content="Prepare and run D&D sessions with persistent notes, initiative, enemy HP, conditions, secure dice, generators, archives, printing, and a player display.">
+  <link rel="canonical" href="https://cbw29512.github.io/monstercardforge/session-console.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="DM Forge">
+  <meta property="og:title" content="D&D Session Prep and Initiative Tracker | DM Forge">
+  <meta property="og:description" content="A persistent Dungeon Master command center for session prep, initiative, dice, notes, archives, and privacy-safe player displays.">
+  <meta property="og:url" content="https://cbw29512.github.io/monstercardforge/session-console.html">
   <link rel="stylesheet" href="session-console.css">
 </head>
 <body>
@@ -37,12 +44,12 @@
     </section>
 
     <nav class="tabs no-print" aria-label="Session Console sections">
-      <button class="tab active" data-tab="prep">Session Prep</button>
-      <button class="tab" data-tab="initiative">Initiative</button>
-      <button class="tab" data-tab="dice">Dice Tray</button>
-      <button class="tab" data-tab="generators">Quick Generators</button>
-      <button class="tab" data-tab="reference">Reference</button>
-      <button class="tab" data-tab="archive">Session Archive</button>
+      <button class="tab active" data-tab="prep" type="button">Session Prep</button>
+      <button class="tab" data-tab="initiative" type="button">Initiative</button>
+      <button class="tab" data-tab="dice" type="button">Dice Tray</button>
+      <button class="tab" data-tab="generators" type="button">Quick Generators</button>
+      <button class="tab" data-tab="reference" type="button">Reference</button>
+      <button class="tab" data-tab="archive" type="button">Session Archive</button>
     </nav>
 
     <section id="prepTab" class="tab-panel active">
@@ -83,7 +90,7 @@
         <section class="panel dice-controls no-print">
           <div class="form-row"><label>Quantity<input id="diceQuantity" type="number" min="1" max="100" value="1"></label><label>Die<select id="diceSides"><option value="4">d4</option><option value="6">d6</option><option value="8">d8</option><option value="10">d10</option><option value="12">d12</option><option value="20" selected>d20</option><option value="100">d100</option></select></label><label>Modifier<input id="diceModifier" type="number" value="0"></label><label>Mode<select id="diceMode"><option value="normal">Normal</option><option value="advantage">Advantage (d20)</option><option value="disadvantage">Disadvantage (d20)</option></select></label></div>
           <button class="btn gold big" id="rollDice" type="button">Roll Dice</button>
-          <div class="preset-row"><button class="chip" data-roll="1d20">d20</button><button class="chip" data-roll="2d20kh">Advantage</button><button class="chip" data-roll="2d20kl">Disadvantage</button><button class="chip" data-roll="1d100">d100</button><button class="chip" data-roll="4d6">4d6</button><button class="chip" data-roll="8d6">8d6</button></div>
+          <div class="preset-row"><button class="chip" data-roll="1d20" type="button">d20</button><button class="chip" data-roll="2d20kh" type="button">Advantage</button><button class="chip" data-roll="2d20kl" type="button">Disadvantage</button><button class="chip" data-roll="1d100" type="button">d100</button><button class="chip" data-roll="4d6" type="button">4d6</button><button class="chip" data-roll="8d6" type="button">8d6</button></div>
         </section>
         <section class="panel result-panel"><div id="diceResult" class="dice-result">Ready</div><div id="diceBreakdown" class="dice-breakdown">Choose dice and roll.</div></section>
       </div>
@@ -102,7 +109,7 @@
     <section id="referenceTab" class="tab-panel">
       <div class="section-head"><div><p class="eyebrow dark">Fast reminders</p><h2>DM Reference Board</h2><p>Names and prompts only—use the selected ruleset’s official text for exact adjudication.</p></div></div>
       <div class="reference-grid">
-        <section class="panel"><h2>Common Actions</h2><div class="reference-chips"><span>Attack</span><span>Cast a Spell</span><span>Dash</span><span>Disengage</span><span>Dodge</span><span>Help</span><span>Hide</span><span>Ready</span><span>Search</span><span>Use an Object</span></div></section>
+        <section class="panel"><h2>Common Actions</h2><div class="reference-chips"><span>Attack</span><span>Cast a Spell / Magic action</span><span>Dash</span><span>Disengage</span><span>Dodge</span><span>Help</span><span>Hide</span><span>Ready</span><span>Search</span><span>Use an Object / Utilize</span></div></section>
         <section class="panel"><h2>Conditions</h2><div class="reference-chips conditions"><span>Blinded</span><span>Charmed</span><span>Deafened</span><span>Frightened</span><span>Grappled</span><span>Incapacitated</span><span>Invisible</span><span>Paralyzed</span><span>Petrified</span><span>Poisoned</span><span>Prone</span><span>Restrained</span><span>Stunned</span><span>Unconscious</span><span>Exhaustion</span></div></section>
         <section class="panel"><h2>Concentration Check</h2><ol class="checklist"><li>Mark who is concentrating.</li><li>After relevant damage, remember the concentration save.</li><li>End the old concentration effect when a new one begins.</li><li>Remove concentration when the caster becomes incapacitated.</li></ol></section>
         <section class="panel"><h2>End-of-Turn Scan</h2><ol class="checklist"><li>Ongoing damage or healing</li><li>Saving throws that repeat</li><li>Conditions that expire</li><li>Recharge or legendary resources</li><li>Environmental changes</li></ol></section>
