@@ -8,6 +8,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const baseUrl = 'https://cbw29512.github.io/monstercardforge/';
 const publicPages = [
   'index.html',
+  'about.html',
   'campaigns.html',
   'campaign-search.html',
   'session-console.html',
@@ -94,7 +95,7 @@ test('design system retains canonical type, control, focus, and motion contracts
   for (const requirement of [
     '--font-display:', '--font-ui:', '--font-editorial:', '--dm-bg:', '--dm-surface:', '--dm-text:',
     '--dm-brand:', '--dm-gold:', '--dm-info:', '--dm-success:', '--dm-focus:', 'min-height: 44px',
-    ':focus-visible', 'prefers-reduced-motion', 'safe-area-inset-left'
+    ':focus-visible', 'prefers-reduced-motion', 'safe-area-inset-left', 'family=Cinzel'
   ]) assert.equal(css.includes(requirement), true, `Design system missing ${requirement}`);
 });
 
@@ -134,6 +135,24 @@ test('rules ledger references known primary sources and valid verification dates
       assert.ok(date <= today, `${component.id} has a future verification date`);
     }
   }
+});
+
+test('verified rules components declare scope rather than implying total coverage', () => {
+  const ledger = JSON.parse(content('rules/rules-sources.json'));
+  const monsters = ledger.components.find((component) => component.id === 'monster-card-samples');
+  const cleric = ledger.components.find((component) => component.id === 'cleric-automatic-effects');
+  assert.match(monsters.notes.join(' '), /base SRD stat-block/i);
+  assert.match(monsters.notes.join(' '), /lair actions and regional effects are deliberately excluded/i);
+  assert.match(cleric.notes.join(' '), /currently represented/i);
+  assert.match(cleric.notes.join(' '), /base level/i);
+});
+
+test('methodology page exposes rules, privacy, accessibility, and limitations', () => {
+  const page = content('about.html');
+  for (const phrase of ['Rules methodology', 'Privacy model', 'Design and accessibility', 'Testing and change control', 'Known boundaries']) {
+    assert.equal(page.includes(phrase), true, `About page is missing ${phrase}`);
+  }
+  assert.equal(page.includes('not an official Wizards of the Coast product'), true);
 });
 
 test('governance and rollback documents exist', () => {
