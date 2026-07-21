@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#24120d">
+  <title>Session Console | DM Forge</title>
+  <meta name="description" content="A persistent session-prep, initiative, dice, generator, and campaign-notes console for Dungeon Masters.">
+  <link rel="stylesheet" href="session-console.css">
+</head>
+<body>
+<div class="shell">
+  <header class="site-header">
+    <a class="back" href="index.html">← DM Forge Toolkit</a>
+    <div class="brand-row">
+      <div>
+        <p class="eyebrow">Prepare less. Run faster.</p>
+        <h1>Session Console</h1>
+        <p class="tagline">One persistent command center for session prep, initiative, dice, improvised details, and the notes you need next time.</p>
+      </div>
+      <div class="header-actions no-print">
+        <button class="btn light" id="printPacket" type="button">Print Session Packet</button>
+        <button class="btn light" id="exportData" type="button">Export Backup</button>
+        <label class="btn light file-button">Import Backup<input id="importData" type="file" accept="application/json"></label>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="campaign-bar no-print">
+      <label>Campaign<select id="campaignSelect"></select></label>
+      <button class="btn gold" id="newCampaign" type="button">New Campaign</button>
+      <button class="btn danger" id="deleteCampaign" type="button">Delete Campaign</button>
+      <label class="grow">Session title<input id="sessionTitle" placeholder="Session 12 — Beneath the Broken Moon"></label>
+      <label>Session date<input id="sessionDate" type="date"></label>
+      <span id="saveState" class="save-state">Saved locally</span>
+    </section>
+
+    <nav class="tabs no-print" aria-label="Session Console sections">
+      <button class="tab active" data-tab="prep">Session Prep</button>
+      <button class="tab" data-tab="initiative">Initiative</button>
+      <button class="tab" data-tab="dice">Dice Tray</button>
+      <button class="tab" data-tab="generators">Quick Generators</button>
+      <button class="tab" data-tab="reference">Reference</button>
+      <button class="tab" data-tab="archive">Session Archive</button>
+    </nav>
+
+    <section id="prepTab" class="tab-panel active">
+      <div class="section-head"><div><p class="eyebrow dark">Before the game</p><h2>Session Prep Sheet</h2></div><div class="actions no-print"><button class="btn gold" id="archiveSession" type="button">Archive This Session</button><button class="btn light" id="newSession" type="button">Start Fresh Session</button></div></div>
+      <div class="prep-grid">
+        <label class="prep-card"><span>Opening Beat</span><small>What happens in the first few minutes?</small><textarea data-prep="opening" placeholder="Begin with motion, danger, a decision, or an unanswered question."></textarea></label>
+        <label class="prep-card"><span>Likely Scenes</span><small>Flexible scenes, not a railroad.</small><textarea data-prep="scenes" placeholder="One possible scene per line."></textarea></label>
+        <label class="prep-card"><span>Secrets & Revelations</span><small>Facts the characters may uncover anywhere.</small><textarea data-prep="secrets" placeholder="One secret or clue per line."></textarea></label>
+        <label class="prep-card"><span>NPCs & Motives</span><small>Who matters tonight and what do they want?</small><textarea data-prep="npcs" placeholder="Name — role — motive — mannerism."></textarea></label>
+        <label class="prep-card"><span>Locations & Features</span><small>Three memorable details are usually enough.</small><textarea data-prep="locations" placeholder="Location — sight, sound, danger, useful feature."></textarea></label>
+        <label class="prep-card"><span>Rewards & Discoveries</span><small>Treasure, information, allies, and consequences.</small><textarea data-prep="rewards" placeholder="Reward or discovery — where it may appear."></textarea></label>
+        <label class="prep-card wide"><span>Loose Notes</span><small>Anything that must stay visible during the session.</small><textarea data-prep="notes" class="tall" placeholder="Rules reminders, names, unresolved questions, timing notes…"></textarea></label>
+      </div>
+      <section class="panel session-log-panel"><div class="section-head compact"><div><h2>Session Log</h2><p>Timestamp decisions, discoveries, rulings, and consequences as they happen.</p></div></div><div class="log-entry no-print"><input id="logText" placeholder="The party promised the ferryman they would return the bell…"><button class="btn" id="addLog" type="button">Add Note</button></div><ol id="sessionLog" class="event-log"></ol></section>
+    </section>
+
+    <section id="initiativeTab" class="tab-panel">
+      <div class="section-head"><div><p class="eyebrow dark">During combat</p><h2>Initiative Tracker</h2><p>Players keep their own HP. The console tracks turn order, enemy HP, AC, and conditions.</p></div><div class="round-box"><span>Round</span><strong id="roundNumber">1</strong></div></div>
+      <section class="panel combat-controls no-print">
+        <form id="combatantForm" class="combatant-form">
+          <label>Name<input name="name" required placeholder="Goblin Boss"></label>
+          <label>Type<select name="type"><option value="enemy">Enemy</option><option value="player">Player</option><option value="ally">Ally / NPC</option></select></label>
+          <label>Initiative<input name="initiative" type="number" value="10"></label>
+          <label>Dex tiebreak<input name="dex" type="number" value="0"></label>
+          <label>AC<input name="ac" type="number" min="0" placeholder="15"></label>
+          <label class="enemy-only">Enemy max HP<input name="maxHp" type="number" min="1" placeholder="21"></label>
+          <button class="btn gold" type="submit">Add Combatant</button>
+        </form>
+        <div class="actions"><button class="btn" id="startCombat" type="button">Start / Resort</button><button class="btn blue" id="previousTurn" type="button">Previous Turn</button><button class="btn blue" id="nextTurn" type="button">Next Turn</button><button class="btn light" id="loadRoster" type="button">Load Campaign Players</button><button class="btn danger" id="clearEncounter" type="button">Clear Encounter</button></div>
+      </section>
+      <div id="initiativeList" class="initiative-list"></div>
+      <section class="panel"><div class="section-head compact"><div><h2>Combat Chronicle</h2><p>Turn changes, HP adjustments, conditions, and round changes are recorded automatically.</p></div></div><ol id="combatLog" class="event-log"></ol></section>
+    </section>
+
+    <section id="diceTab" class="tab-panel">
+      <div class="section-head"><div><p class="eyebrow dark">Random, not mysterious</p><h2>Secure Dice Tray</h2><p>Uses the browser’s cryptographic random-number generator rather than ordinary page randomness.</p></div></div>
+      <div class="dice-layout">
+        <section class="panel dice-controls no-print">
+          <div class="form-row"><label>Quantity<input id="diceQuantity" type="number" min="1" max="100" value="1"></label><label>Die<select id="diceSides"><option value="4">d4</option><option value="6">d6</option><option value="8">d8</option><option value="10">d10</option><option value="12">d12</option><option value="20" selected>d20</option><option value="100">d100</option></select></label><label>Modifier<input id="diceModifier" type="number" value="0"></label><label>Mode<select id="diceMode"><option value="normal">Normal</option><option value="advantage">Advantage (d20)</option><option value="disadvantage">Disadvantage (d20)</option></select></label></div>
+          <button class="btn gold big" id="rollDice" type="button">Roll Dice</button>
+          <div class="preset-row"><button class="chip" data-roll="1d20">d20</button><button class="chip" data-roll="2d20kh">Advantage</button><button class="chip" data-roll="2d20kl">Disadvantage</button><button class="chip" data-roll="1d100">d100</button><button class="chip" data-roll="4d6">4d6</button><button class="chip" data-roll="8d6">8d6</button></div>
+        </section>
+        <section class="panel result-panel"><div id="diceResult" class="dice-result">Ready</div><div id="diceBreakdown" class="dice-breakdown">Choose dice and roll.</div></section>
+      </div>
+      <section class="panel"><h2>Dice History</h2><ol id="diceHistory" class="event-log"></ol></section>
+    </section>
+
+    <section id="generatorsTab" class="tab-panel">
+      <div class="section-head"><div><p class="eyebrow dark">When the players turn left</p><h2>Quick Generators</h2><p>Original table-ready prompts for improvised NPCs, inns, rumors, weather, treasure, complications, and names.</p></div></div>
+      <div class="generator-layout">
+        <section class="panel no-print"><label>Generator<select id="generatorType"><option value="npc">NPC</option><option value="inn">Inn or Tavern</option><option value="rumor">Rumor</option><option value="weather">Weather</option><option value="treasure">Treasure Parcel</option><option value="complication">Complication</option><option value="name">Fantasy Name</option></select></label><button class="btn gold big" id="generate" type="button">Generate</button></section>
+        <section class="panel generator-result"><div id="generatorOutput">Choose a generator and press Generate.</div><div class="actions no-print"><button class="btn" id="addGeneratedToNotes" type="button">Add to Loose Notes</button><button class="btn light" id="copyGenerated" type="button">Copy</button></div></section>
+      </div>
+      <section class="panel"><h2>Recent Generations</h2><ol id="generatorHistory" class="event-log"></ol></section>
+    </section>
+
+    <section id="referenceTab" class="tab-panel">
+      <div class="section-head"><div><p class="eyebrow dark">Fast reminders</p><h2>DM Reference Board</h2><p>Names and prompts only—use the selected ruleset’s official text for exact adjudication.</p></div></div>
+      <div class="reference-grid">
+        <section class="panel"><h2>Common Actions</h2><div class="reference-chips"><span>Attack</span><span>Cast a Spell</span><span>Dash</span><span>Disengage</span><span>Dodge</span><span>Help</span><span>Hide</span><span>Ready</span><span>Search</span><span>Use an Object</span></div></section>
+        <section class="panel"><h2>Conditions</h2><div class="reference-chips conditions"><span>Blinded</span><span>Charmed</span><span>Deafened</span><span>Frightened</span><span>Grappled</span><span>Incapacitated</span><span>Invisible</span><span>Paralyzed</span><span>Petrified</span><span>Poisoned</span><span>Prone</span><span>Restrained</span><span>Stunned</span><span>Unconscious</span><span>Exhaustion</span></div></section>
+        <section class="panel"><h2>Concentration Check</h2><ol class="checklist"><li>Mark who is concentrating.</li><li>After relevant damage, remember the concentration save.</li><li>End the old concentration effect when a new one begins.</li><li>Remove concentration when the caster becomes incapacitated.</li></ol></section>
+        <section class="panel"><h2>End-of-Turn Scan</h2><ol class="checklist"><li>Ongoing damage or healing</li><li>Saving throws that repeat</li><li>Conditions that expire</li><li>Recharge or legendary resources</li><li>Environmental changes</li></ol></section>
+      </div>
+    </section>
+
+    <section id="archiveTab" class="tab-panel">
+      <div class="section-head"><div><p class="eyebrow dark">Campaign memory</p><h2>Session Archive</h2><p>Archived prep and logs remain with the selected campaign.</p></div></div>
+      <div id="archiveList" class="archive-list"></div>
+    </section>
+
+    <section id="printPacketArea" class="print-packet" aria-hidden="true"></section>
+  </main>
+</div>
+<script src="session-console.js"></script>
+</body>
+</html>
