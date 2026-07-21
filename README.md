@@ -1,14 +1,14 @@
 # DM Forge
 
-DM Forge is a print-first toolkit and live session companion for Dungeon Masters. It combines campaign organization, encounter building, combat management, player-facing initiative, improvisation, printable cards, and shared table tools without requiring an account for local use.
+DM Forge is a print-first toolkit and live session companion for Dungeon Masters. It combines campaign organization, encounter building, reusable NPCs, combat management, player-facing initiative, improvisation, printable cards, and shared table tools without requiring an account for local use.
 
 ## Live tools
 
 ### Campaign Hub
 
 - One active campaign across connected tools
-- Discovers locally saved sessions, encounters, magic items, and Cleric in a Box rooms
-- Shows safe summary counts without copying private notes, curses, artwork, or tactics
+- Discovers locally saved sessions, encounters, NPCs, magic items, and Cleric in a Box rooms
+- Shows safe summary counts without copying private notes, NPC secrets, item curses, artwork, or tactics
 - Opens each tool in the selected campaign context
 - Exports a portable shared summary
 
@@ -31,6 +31,20 @@ Routes: `campaigns.html`, `campaigns.css`, `campaigns.js`, `shared/dmforge-store
 
 Routes: `encounter-forge.html`, `encounter-forge.css`, `encounter-forge.js`, `encounter-rules.js`
 
+### NPC Forge
+
+- Player-safe and private DM 5×7 cards
+- Public identity, appearance, faction, status, and known facts
+- Private voice, mannerism, personality, motive, fear, leverage, secrets, lies, and relationships
+- Optional combat shorthand
+- Secure original NPC, name, and roleplay-cue generators
+- Searchable campaign library with save, edit, duplicate, delete, import, and export
+- Live fit warnings and automatic continuation pages
+- Safe **Send to Session NPCs** handoff containing only the DM-selected roleplay summary
+- Campaign Hub summaries that exclude motives, secrets, lies, relationship text, and combat notes
+
+Routes: `npc-forge.html`, `npc-forge.css`, `npc-forge.js`, `shared/npc-forge-hardening.js`
+
 ### Session Console
 
 - Multiple locally saved campaigns
@@ -40,7 +54,7 @@ Routes: `encounter-forge.html`, `encounter-forge.css`, `encounter-forge.js`, `en
 - Persistent player roster
 - Secure dice tray and quick generators
 - Printable session packets and JSON backup
-- Receives safe Magic Item rewards
+- Receives safe Magic Item rewards and NPC roleplay summaries
 - Receives complete enemy rosters from Encounter Forge
 - Hosts a privacy-safe Player Display room
 
@@ -112,16 +126,16 @@ DMForgeStore
 └── settings
 ```
 
-Detailed records remain inside their source tools. The shared layer deliberately excludes session-prep bodies, complete logs, magic-item rules and secrets, uploaded artwork, encounter tactics, complete combat records, and Cleric in a Box history or deity information.
+Detailed records remain inside their source tools. The shared layer deliberately excludes session-prep bodies, complete logs, NPC motives and secrets, magic-item rules and curses, uploaded artwork, encounter tactics, complete combat records, and Cleric in a Box history or deity information.
 
 ## Next priorities
 
-1. NPC Forge and relationship tracker
-2. Loot Forge and Magic Item handoff
-3. Browser-level Playwright and axe accessibility tests
-4. Physical phone, tablet, cross-network, and printer validation
-5. Expanded open/SRD monster catalog with traceable source and license metadata
-6. Storage quota, backup-age, and recovery indicators
+1. Loot Forge and Magic Item handoff
+2. Browser-level Playwright and axe accessibility tests
+3. Physical phone, tablet, cross-network, and printer validation
+4. Expanded open/SRD monster catalog with traceable source and license metadata
+5. Storage quota, backup-age, and recovery indicators
+6. Unified backup manifest linking every tool-specific export
 
 ## Testing
 
@@ -136,9 +150,9 @@ The suite checks:
 - Hostile homebrew input escaping
 - JavaScript syntax
 - Local page assets and live-tool links
-- Magic Item overflow safeguards
+- Magic Item and NPC overflow safeguards
 - Shared-store privacy boundaries
-- Safe Magic Item reward transfer
+- Safe Magic Item reward and NPC roleplay transfers
 - Official 2014 and 2024 encounter calculations
 - Encounter Forge campaign and Session Console handoffs
 - Player Display privacy boundaries
@@ -154,11 +168,12 @@ Open `index.html` in a modern browser. DM Forge uses static HTML, CSS, and JavaS
 - `index.html` — toolkit homepage
 - `campaigns.*` — Campaign Hub
 - `encounter-forge.*` and `encounter-rules.js` — encounter builder and rules engine
+- `npc-forge.*` — NPC builder, library, private/public cards, and printing
 - `session-console.*` — session prep and live combat console
 - `player-display.*` and `shared/player-display-host.js` — read-only player initiative view
 - `monster-cards.html` and `src/` — Monster Card Forge
 - `magic-items.*` — Magic Item Forge
-- `shared/` — campaign store and cross-tool adapters
+- `shared/` — campaign store, cross-tool adapters, and hardening layers
 - `AUDIT-2026-07-21.md` — whole-site audit
 - `PROGRESS-2026-07-22.md` — implementation ledger
 - `ROADMAP.md` — staged roadmap
