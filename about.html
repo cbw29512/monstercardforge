@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#25120d">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <title>About DM Forge — Rules, Privacy, and Methodology</title>
+  <meta name="description" content="Learn how DM Forge verifies D&D rules, separates official content from homebrew, protects local campaign data, tests releases, and documents changes.">
+  <link rel="canonical" href="https://cbw29512.github.io/monstercardforge/about.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="DM Forge">
+  <meta property="og:title" content="About DM Forge — Rules, Privacy, and Methodology">
+  <meta property="og:description" content="Transparent rules sourcing, local-first privacy, accessibility standards, release testing, and public change control for DM Forge.">
+  <meta property="og:url" content="https://cbw29512.github.io/monstercardforge/about.html">
+  <link rel="stylesheet" href="shared/design-system.css" data-dmforge-design-system="1.0.0">
+  <style>
+    body{margin:0}.shell{width:min(1120px,100%);min-height:100vh;margin:auto;box-shadow:var(--shadow)}
+    .site-header{padding:clamp(1.25rem,4vw,3rem);border-bottom:4px solid var(--dm-gold)}
+    .back{color:#f6d785;font-weight:800;text-decoration:none}.site-header h1{font-size:clamp(2.4rem,7vw,5rem);line-height:1;margin:.35rem 0}.tagline{max-width:820px}
+    main{padding:clamp(1rem,4vw,3rem)}.intro,.panel{padding:clamp(1rem,3vw,1.6rem);border:1px solid var(--dm-border);border-radius:var(--radius-lg);background:var(--dm-surface);box-shadow:var(--shadow-sm)}
+    .intro{background:linear-gradient(135deg,#fff7db,#ead093);border-width:2px}.intro h2{font-size:clamp(1.7rem,4vw,2.8rem);margin:.2rem 0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin-top:1rem}.panel h2{margin-top:0}.panel h3{margin-bottom:.3rem;color:var(--dm-brand)}
+    .status-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem}.status-card{padding:.9rem;border:1px solid var(--dm-border);border-radius:var(--radius-md);background:var(--dm-surface-muted)}.status-card b{display:block;font-family:var(--font-display);color:var(--dm-brand)}
+    .source-list li{margin:.5rem 0}.callout{border-left:5px solid var(--dm-gold);padding:.8rem 1rem;background:#fff2c9}.actions{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1rem}.footer{text-align:center;padding:1.5rem;background:#26120d;color:#f8ddb0}.footer a{color:#f0c267}
+    @media(max-width:760px){.grid,.status-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header class="site-header">
+    <a class="back" href="index.html">← DM Forge Toolkit</a>
+    <p class="eyebrow">Transparent by design</p>
+    <h1>About DM Forge</h1>
+    <p class="tagline">DM Forge is an independent, browser-based toolkit for preparing, running, printing, searching, and protecting tabletop campaigns. It is maintained through the public <b>cbw29512/monstercardforge</b> GitHub repository.</p>
+  </header>
+
+  <main>
+    <section class="intro">
+      <p class="eyebrow dark">The product rule</p>
+      <h2>Fast enough for the table. Clear enough to trust. Portable without a required account.</h2>
+      <p>Every tool is designed to reduce pauses during play, produce readable player or DM materials, and keep private campaign details under the Dungeon Master’s control.</p>
+      <div class="actions"><a class="btn gold" href="campaigns.html">Open Campaign Hub</a><a class="btn light" href="backup-center.html">Protect Local Data</a><a class="btn light" href="monster-cards.html">See Printable Cards</a></div>
+    </section>
+
+    <div class="grid">
+      <section class="panel">
+        <h2>Rules methodology</h2>
+        <p>Edition-sensitive formulas, lists, encounter tables, and published monster records are checked against current primary sources from Wizards of the Coast or D&D Beyond. Licensed stat-block data identifies its SRD version and license.</p>
+        <div class="status-grid">
+          <div class="status-card"><b>Verified</b>Primary source, date, declared scope, and regression test.</div>
+          <div class="status-card"><b>Heuristic</b>Official data plus a clearly labeled DM Forge usability judgment.</div>
+          <div class="status-card"><b>Homebrew</b>Original, campaign, or user-created behavior—not represented as official.</div>
+        </div>
+        <p class="callout">Internal saved values remain <code>2014</code> and <code>2024</code> for compatibility. Public labels use <b>5e (2014)</b> and <b>5.5e (2024)</b>.</p>
+      </section>
+
+      <section class="panel">
+        <h2>Privacy model</h2>
+        <p>Detailed campaign data is stored in the current browser unless the DM deliberately exports or transfers it.</p>
+        <h3>Shared inside DM Forge</h3>
+        <p>Campaign names and privacy-safe record summaries used for navigation and counts.</p>
+        <h3>Kept inside each tool</h3>
+        <p>Session prep, full logs, NPC motives and secrets, loot details, item curses, artwork, encounter tactics, enemy HP, and complete combat records.</p>
+        <h3>Player displays</h3>
+        <p>Read-only allowlists send only public initiative information. They exclude enemy HP, AC, Dexterity, logs, prep, and DM notes.</p>
+      </section>
+
+      <section class="panel">
+        <h2>Design and accessibility</h2>
+        <p>The toolkit keeps a restrained fantasy identity while using modern application conventions:</p>
+        <ul>
+          <li>Cinzel for display headings</li>
+          <li>System UI fonts for controls, forms, tables, and long sessions</li>
+          <li>Editorial serif typography for printed handouts</li>
+          <li>Contrast-tested colors and visible keyboard focus</li>
+          <li>Large touch controls and mobile-safe layouts</li>
+          <li>Reduced-motion support</li>
+          <li>Overflow detection and continuation pages for print</li>
+        </ul>
+        <p>The active target is WCAG 2.2 AA. Physical device, screen-reader, and printer validation remains an ongoing release track.</p>
+      </section>
+
+      <section class="panel">
+        <h2>Testing and change control</h2>
+        <p>Automated tests protect:</p>
+        <ul>
+          <li>JavaScript syntax and local asset links</li>
+          <li>Rules tables, spell differences, encounter edge cases, and monster data</li>
+          <li>Player/DM privacy boundaries</li>
+          <li>Host-only multiplayer authority</li>
+          <li>Print overflow safeguards</li>
+          <li>SEO metadata, sitemap coverage, color contrast, and typography contracts</li>
+          <li>Backup validation and cross-tool handoffs</li>
+        </ul>
+        <p>Architectural decisions, rules sources, design tokens, rollback steps, and known limitations are recorded in the repository rather than relying on memory or chat history.</p>
+      </section>
+    </div>
+
+    <section class="panel" style="margin-top:1rem">
+      <h2>Primary sources and licensing</h2>
+      <ul class="source-list">
+        <li>Current official D&D rules pages and changelog entries from D&D Beyond / Wizards of the Coast</li>
+        <li>SRD 5.1 and SRD 5.2.1 where open-license content is published under CC-BY-4.0</li>
+        <li>Official Google Search Central, web.dev, and W3C guidance for discovery, performance, and accessibility standards</li>
+      </ul>
+      <p>DM Forge is independent and is not an official Wizards of the Coast product. D&D rules content, trademarks, and licensed material remain subject to their applicable ownership and license terms.</p>
+    </section>
+
+    <section class="panel" style="margin-top:1rem">
+      <h2>Known boundaries</h2>
+      <ul>
+        <li>The verified monster catalog currently contains a small 5e SRD sample set; expansion must remain source-traceable.</li>
+        <li>Optional lair and regional effects are excluded from current boss samples until separately sourced and tested.</li>
+        <li>Homebrew builders cannot guarantee that user-entered rules are balanced or rules-accurate.</li>
+        <li>Local browser storage requires regular backup; the Backup & Storage Center exists for that reason.</li>
+        <li>Multiplayer tools require internet signaling even when the rest of the local-first toolkit later gains offline support.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="footer"><b>DM Forge</b> · <a href="index.html">Toolkit</a> · <a href="campaigns.html">Campaign Hub</a> · <a href="campaign-search.html">Campaign Search</a> · <a href="backup-center.html">Backup Center</a></footer>
+</div>
+</body>
+</html>
