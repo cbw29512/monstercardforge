@@ -32,6 +32,21 @@
       "url": "https://www.dndbeyond.com/sources/dnd/basic-rules-2014/spells",
       "publisher": "D&D Beyond / Wizards of the Coast"
     },
+    "basic-2014-combat": {
+      "title": "Basic Rules (2014) — Combat",
+      "url": "https://www.dndbeyond.com/sources/dnd/basic-rules-2014/combat",
+      "publisher": "D&D Beyond / Wizards of the Coast"
+    },
+    "basic-2014-conditions": {
+      "title": "Basic Rules (2014) — Appendix A: Conditions",
+      "url": "https://www.dndbeyond.com/sources/dnd/basic-rules-2014/appendix-a-conditions",
+      "publisher": "D&D Beyond / Wizards of the Coast"
+    },
+    "basic-2014-magic-items": {
+      "title": "Basic Rules (2014) — Magic Items",
+      "url": "https://www.dndbeyond.com/sources/dnd/basic-rules-2014/magic-items",
+      "publisher": "D&D Beyond / Wizards of the Coast"
+    },
     "free-2024-cleric": {
       "title": "Free Rules (2024) — Cleric",
       "url": "https://www.dndbeyond.com/sources/dnd/br-2024/character-classes-cleric",
@@ -40,6 +55,21 @@
     "free-2024-spells": {
       "title": "Free Rules (2024) — Spell Descriptions",
       "url": "https://www.dndbeyond.com/sources/dnd/br-2024/spell-descriptions",
+      "publisher": "D&D Beyond / Wizards of the Coast"
+    },
+    "free-2024-playing": {
+      "title": "Free Rules (2024) — Playing the Game",
+      "url": "https://www.dndbeyond.com/sources/dnd/br-2024/playing-the-game",
+      "publisher": "D&D Beyond / Wizards of the Coast"
+    },
+    "free-2024-glossary": {
+      "title": "Free Rules (2024) — Rules Glossary",
+      "url": "https://www.dndbeyond.com/sources/dnd/br-2024/rules-glossary",
+      "publisher": "D&D Beyond / Wizards of the Coast"
+    },
+    "free-2024-magic-items": {
+      "title": "Free Rules (2024) — Magic Items A–Z",
+      "url": "https://www.dndbeyond.com/sources/dnd/br-2024/magic-items-a-z",
       "publisher": "D&D Beyond / Wizards of the Coast"
     },
     "basic-2014-encounters": {
@@ -88,7 +118,7 @@
         "Official 5.5e Low, Moderate, and High XP budgets are exact.",
         "CR 0 explicitly supports 0 or 10 XP; explicit zero values are preserved.",
         "Mixed-party average-level cautions and CR-spread review prompts are labeled DM Forge heuristics.",
-        "5.5e encounters above the High budget are now labeled Above High."
+        "5.5e encounters above the High budget are labeled Above High and receive a warning."
       ]
     },
     {
@@ -98,7 +128,7 @@
       "status": "verified",
       "verifiedAt": "2026-07-21",
       "sourceIds": ["basic-2014-classes", "free-2024-cleric"],
-      "notes": ["The full-caster slot progression used by the artifact is shared by the supported 5e and 5.5e Cleric tables."]
+      "notes": ["The full-caster slot progression used by the artifact is shared by the supported 5e and 5.5e Cleric tables. Legacy migration imports this same table rather than duplicating it."]
     },
     {
       "id": "cleric-spell-lists",
@@ -107,7 +137,7 @@
       "status": "verified",
       "verifiedAt": "2026-07-21",
       "sourceIds": ["basic-2014-spells", "free-2024-cleric", "free-2024-spells"],
-      "notes": ["Only leveled Cleric spells are included because the artifact exposes level 1-9 charges, not cantrips."]
+      "notes": ["Only leveled Cleric spells are included because the artifact exposes level 1–9 charges, not cantrips."]
     },
     {
       "id": "healing-potion-formulas",
@@ -115,21 +145,21 @@
       "path": "rules-data.js#POTIONS",
       "status": "verified",
       "verifiedAt": "2026-07-21",
-      "sourceIds": ["basic-2014-monsters", "free-2024-monsters"],
-      "notes": ["Potion formulas are the standard 2d4+2, 4d4+4, 8d4+8, and 10d4+20 progression. The artifact's free-action use is homebrew and documented separately."]
+      "sourceIds": ["basic-2014-magic-items", "free-2024-magic-items"],
+      "notes": ["Potion formulas are 2d4+2, 4d4+4, 8d4+8, and 10d4+20 in both supported rulesets. The artifact's free-action use is homebrew and documented separately."]
     },
     {
       "id": "cleric-automatic-effects",
       "repository": "cbw29512/healingbox",
-      "path": "rules-data.js#EFFECTS",
-      "status": "in-progress",
-      "verifiedAt": null,
+      "path": "rules-data.js#EFFECTS;app-v3.js#spellEffect",
+      "status": "verified",
+      "verifiedAt": "2026-07-21",
       "sourceIds": ["basic-2014-spells", "free-2024-spells"],
       "notes": [
-        "Base formulas for Cure Wounds, Healing Word, Guiding Bolt, Inflict Wounds, Aid, Prayer of Healing, Spiritual Weapon, Glyph of Warding, Mass Healing Word, Revivify, Spirit Guardians, Guardian of Faith, Insect Plague, Mass Cure Wounds, Blade Barrier, Harm, Heal, Regenerate, and Mass Heal have been checked in the current pass.",
-        "Flame Strike has a known edition difference: 8d6 total in 5e and 10d6 total in 5.5e; the current data model requires correction.",
-        "Spiritual Weapon and Spirit Guardians require edition-specific concentration and trigger notes.",
-        "Every remaining resurrection, radiant, and area-damage summary must be checked before this component becomes verified."
+        "All automatic effects currently represented in the tracker were checked for base-slot formula, attack or saving-throw resolution, important successful-save results, and high-impact riders.",
+        "Edition differences are explicit for Inflict Wounds, Prayer of Healing, Spiritual Weapon, Spirit Guardians, Flame Strike, Blade Barrier, Heal, Fire Storm, Sunburst, and Mass Heal.",
+        "The artifact forbids upcasting, so automatic calculations intentionally represent only the spell's base level.",
+        "Spells without an automatic effect entry are recorded as utility/custom resolution and direct the table to resolve the official spell normally."
       ]
     },
     {
@@ -144,15 +174,15 @@
     {
       "id": "monster-card-samples",
       "repository": "cbw29512/monstercardforge",
-      "path": "src/data/monsters.js",
-      "status": "needs-correction",
-      "verifiedAt": null,
-      "sourceIds": ["srd-5-1", "srd-5-2-1", "basic-2014-monsters", "free-2024-monsters"],
+      "path": "src/data/monsters.js;src/js/cardEngine.js",
+      "status": "verified",
+      "verifiedAt": "2026-07-21",
+      "sourceIds": ["srd-5-1", "basic-2014-monsters"],
       "notes": [
-        "Goblin 5e sample is substantially complete for its displayed fields.",
-        "Adult Black Dragon and Lich samples omit encounter-critical DCs, damage values, slot counts, and complete action text.",
-        "The generic source label SRD sample must be replaced by exact SRD version and license metadata.",
-        "These cards must not be described as complete production stat blocks until corrected."
+        "Goblin, Adult Black Dragon, and Lich records contain the complete base SRD stat-block fields used by their published card layouts.",
+        "Adult Black Dragon and Lich save DCs, damage values, legendary-action costs, and Lich spell-slot counts are protected by regression tests.",
+        "Optional lair actions and regional effects are deliberately excluded until separately sourced and verified.",
+        "Every rendered card carries ruleset, exact source, license, and verification metadata."
       ]
     },
     {
@@ -161,8 +191,8 @@
       "path": "session-console.html#referenceTab",
       "status": "names-only",
       "verifiedAt": "2026-07-21",
-      "sourceIds": ["basic-2014-spells", "free-2024-spells"],
-      "notes": ["The board intentionally lists names and prompts only and tells the DM to use the selected ruleset's official text for exact adjudication."]
+      "sourceIds": ["basic-2014-combat", "basic-2014-conditions", "free-2024-playing", "free-2024-glossary"],
+      "notes": ["The board intentionally lists action and condition names plus workflow prompts only and tells the DM to use the selected ruleset's official text for exact adjudication."]
     },
     {
       "id": "magic-item-templates",
@@ -180,7 +210,7 @@
       "status": "homebrew",
       "verifiedAt": "2026-07-21",
       "sourceIds": [],
-      "notes": ["Generator tables are original prompts and must not be labeled official treasure, NPC, or encounter tables."]
+      "notes": ["Generator tables are original prompts and are not labeled official treasure, NPC, or encounter tables."]
     }
   ]
 }
