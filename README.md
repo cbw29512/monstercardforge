@@ -1,6 +1,6 @@
 # DM Forge
 
-DM Forge is a print-first toolkit and live session companion for Dungeon Masters. It combines campaign organization, encounter building, combat management, improvisation, printable cards, and shared table tools without requiring an account for local use.
+DM Forge is a print-first toolkit and live session companion for Dungeon Masters. It combines campaign organization, encounter building, combat management, player-facing initiative, improvisation, printable cards, and shared table tools without requiring an account for local use.
 
 ## Live tools
 
@@ -42,8 +42,21 @@ Routes: `encounter-forge.html`, `encounter-forge.css`, `encounter-forge.js`, `en
 - Printable session packets and JSON backup
 - Receives safe Magic Item rewards
 - Receives complete enemy rosters from Encounter Forge
+- Hosts a privacy-safe Player Display room
 
-Routes: `session-console.html`, `session-console.css`, `session-console.js`, `shared/session-console-adapter.js`
+Routes: `session-console.html`, `session-console.css`, `session-console.js`, `shared/session-console-adapter.js`, `shared/player-display-host.js`
+
+### Player Display
+
+- Read-only phone and tablet view
+- Six-character room code and copyable join link
+- Current round and active turn
+- Public initiative order and conditions
+- Full-screen and screen-wake controls
+- Automatic reconnect attempts
+- Never transmits enemy HP, AC, Dexterity, combat logs, session prep, or DM notes
+
+Routes: `player-display.html`, `player-display.css`, `player-display.js`
 
 ### Monster Card Forge
 
@@ -103,12 +116,12 @@ Detailed records remain inside their source tools. The shared layer deliberately
 
 ## Next priorities
 
-1. Shared phone/tablet initiative display
-2. NPC Forge and relationship tracker
-3. Loot Forge and Magic Item handoff
-4. Browser-level Playwright and axe accessibility tests
-5. Physical phone, tablet, cross-network, and printer validation
-6. Expanded open/SRD monster catalog with traceable source and license metadata
+1. NPC Forge and relationship tracker
+2. Loot Forge and Magic Item handoff
+3. Browser-level Playwright and axe accessibility tests
+4. Physical phone, tablet, cross-network, and printer validation
+5. Expanded open/SRD monster catalog with traceable source and license metadata
+6. Storage quota, backup-age, and recovery indicators
 
 ## Testing
 
@@ -128,12 +141,13 @@ The suite checks:
 - Safe Magic Item reward transfer
 - Official 2014 and 2024 encounter calculations
 - Encounter Forge campaign and Session Console handoffs
+- Player Display privacy boundaries
 
 GitHub Actions runs the suite on every push and pull request.
 
 ## Running locally
 
-Open `index.html` in a modern browser. DM Forge uses static HTML, CSS, and JavaScript and requires no build step. Tool-specific detailed data is stored in browser local storage; use each tool’s export function for backups.
+Open `index.html` in a modern browser. DM Forge uses static HTML, CSS, and JavaScript and requires no build step. Tool-specific detailed data is stored in browser local storage; use each tool’s export function for backups. Multiplayer displays require an internet connection for PeerJS signaling.
 
 ## Key project files
 
@@ -141,6 +155,7 @@ Open `index.html` in a modern browser. DM Forge uses static HTML, CSS, and JavaS
 - `campaigns.*` — Campaign Hub
 - `encounter-forge.*` and `encounter-rules.js` — encounter builder and rules engine
 - `session-console.*` — session prep and live combat console
+- `player-display.*` and `shared/player-display-host.js` — read-only player initiative view
 - `monster-cards.html` and `src/` — Monster Card Forge
 - `magic-items.*` — Magic Item Forge
 - `shared/` — campaign store and cross-tool adapters
