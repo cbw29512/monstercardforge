@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#25120d">
+  <title>NPC Forge | DM Forge</title>
+  <meta name="description" content="Create, save, print, and reuse player-safe and DM-only NPC cards.">
+  <link rel="stylesheet" href="npc-forge.css">
+</head>
+<body>
+<div class="shell">
+  <header class="site-header">
+    <a class="back" href="index.html">← DM Forge Toolkit</a>
+    <div class="brand-row">
+      <div>
+        <p class="eyebrow">People players remember</p>
+        <h1>NPC Forge</h1>
+        <p class="tagline">Create reusable campaign NPCs with public identities, private motives, secrets, relationships, roleplay cues, and printable player or DM cards.</p>
+      </div>
+      <div class="header-actions no-print"><a class="btn light" href="campaigns.html">Campaign Hub</a><button class="btn light" id="exportNpcs" type="button">Export JSON</button><label class="btn light">Import JSON<input id="importNpcs" type="file" accept="application/json" hidden></label></div>
+    </div>
+  </header>
+
+  <main>
+    <section id="sharedContext" class="shared-context no-print"></section>
+    <div class="workspace">
+      <section class="panel editor-panel">
+        <div class="section-head"><div><p class="eyebrow dark">NPC builder</p><h2>Forge the Person</h2></div><span id="saveState" class="save-state">Unsaved draft</span></div>
+        <form id="npcForm" class="form-grid">
+          <fieldset class="wide"><legend>Public identity</legend><div class="form-grid">
+            <label>Name<input name="name" maxlength="100" required value="Mara Vell"></label>
+            <label>Campaign<input name="campaign" list="campaignNames" maxlength="100" value="My Campaign"></label>
+            <label>Pronouns<input name="pronouns" maxlength="40" value="she/her"></label>
+            <label>Ancestry or species<input name="ancestry" maxlength="70" value="Human"></label>
+            <label>Role or occupation<input name="role" maxlength="100" value="Traveling apothecary"></label>
+            <label>Faction<input name="faction" maxlength="100" value="Independent"></label>
+            <label>Public status<select name="status"><option>Unknown</option><option selected>Neutral</option><option>Ally</option><option>Rival</option><option>Enemy</option><option>Missing</option><option>Dead</option></select></label>
+            <label>Portrait symbol<select name="icon"><option value="🧑">Person</option><option value="🧙">Mage</option><option value="🛡️">Guard</option><option value="🗡️">Rogue</option><option value="👑">Noble</option><option value="🧪" selected>Apothecary</option><option value="📚">Scholar</option><option value="⛪">Priest</option><option value="⚓">Sailor</option><option value="🎭">Performer</option></select></label>
+            <label class="wide">Appearance<textarea name="appearance" maxlength="700">A sharp-eyed woman in a weather-stained green coat, carrying a case of tiny blue bottles.</textarea></label>
+            <label class="wide">What the characters currently know<textarea name="publicNotes" maxlength="1200">Mara trades fairly, remembers every customer, and refuses to sell anything she has not tested herself.</textarea></label>
+          </div></fieldset>
+
+          <fieldset class="wide"><legend>Roleplay direction</legend><div class="form-grid">
+            <label>Voice or delivery<input name="voice" maxlength="160" value="Quiet, clipped sentences; lowers her voice when excited"></label>
+            <label>Mannerism<input name="mannerism" maxlength="200" value="Labels every object before setting it down"></label>
+            <label class="wide">Personality<textarea name="personality" maxlength="700">Patient with frightened people, impatient with boasting, and deeply curious about unusual curses.</textarea></label>
+            <label class="wide">Current motive<textarea name="motive" maxlength="700">Find the source of a counterfeit healing draught before it kills someone.</textarea></label>
+            <label>Fear<input name="fear" maxlength="250" value="Being blamed for a poison she did not make"></label>
+            <label>Leverage or need<input name="leverage" maxlength="250" value="Needs access to a sealed noble archive"></label>
+          </div></fieldset>
+
+          <fieldset class="wide"><legend>DM-only information</legend><div class="form-grid">
+            <label class="wide">Secret<textarea name="secret" maxlength="900">Mara once worked for the counterfeiters and recognizes their private maker’s mark.</textarea></label>
+            <label class="wide">Lie or misconception<textarea name="lie" maxlength="700">She claims she has never met the gang’s leader, but they were once partners.</textarea></label>
+            <label class="wide">Relationships<textarea name="relationships" maxlength="1200" placeholder="Captain Orra: distrusts her methods&#10;Brother Hale: owes him a life-debt">Captain Orra: distrusts her methods
+Brother Hale: owes him a life-debt</textarea><span class="help">One relationship per line using “Name: connection.”</span></label>
+            <label>Usual location<input name="location" maxlength="180" value="The Lantern Market"></label>
+            <label>Next likely scene<input name="nextScene" maxlength="220" value="Asks the party to inspect a poisoned courier"></label>
+            <label>Tags<input name="tags" maxlength="220" value="merchant, alchemist, informant"></label>
+            <label>Rules label<select name="ruleset"><option>2014</option><option>2024</option><option>Edition Neutral</option><option selected>Homebrew</option></select></label>
+          </div></fieldset>
+
+          <fieldset class="wide"><legend>Optional combat shorthand</legend><div class="form-grid">
+            <label>Armor Class<input name="ac" type="number" min="0" max="40" value="12"></label>
+            <label>Hit Points<input name="hp" type="number" min="1" max="9999" value="18"></label>
+            <label>Passive Perception<input name="passive" type="number" min="0" max="40" value="14"></label>
+            <label>Save DC or attack<input name="combatDc" maxlength="80" placeholder="DC 13 / +5 attack"></label>
+            <label class="wide">Combat notes<textarea name="combatNotes" maxlength="900" placeholder="Avoids combat; carries two antitoxin doses and one smoke bomb.">Avoids combat; carries two antitoxin doses and one smoke bomb.</textarea></label>
+          </div></fieldset>
+        </form>
+
+        <div class="actions no-print">
+          <button class="btn gold" id="saveNpc" type="button">Save NPC</button>
+          <button class="btn light" id="newNpc" type="button">New Blank NPC</button>
+          <button class="btn blue" id="generateNpc" type="button">Generate Full NPC</button>
+          <button class="btn light" id="randomizeName" type="button">New Name</button>
+          <button class="btn light" id="randomizeRoleplay" type="button">New Roleplay Cues</button>
+        </div>
+        <div class="notice">Private secrets remain in NPC Forge unless the DM deliberately prints a DM card. The Session Console handoff sends only a concise roleplay summary.</div>
+      </section>
+
+      <section class="preview-wrap">
+        <div class="preview-toolbar no-print"><div><b>Live Preview</b><div id="previewModeLabel">Player-Safe Card</div></div><div class="actions compact"><button class="btn light" id="playerCard" type="button">Player Card</button><button class="btn light" id="dmCard" type="button">DM Card</button></div></div>
+        <div id="fitStatus" class="fit-status" role="status" aria-live="polite">Checking card fit…</div>
+        <div class="preview-stage"><div id="preview"></div></div>
+        <div class="actions no-print"><button class="btn blue" id="printCurrent" type="button">Print Current Card</button></div>
+      </section>
+    </div>
+
+    <section class="panel library no-print">
+      <div class="section-head"><div><p class="eyebrow dark">Campaign people</p><h2>NPC Library</h2><p>Search, filter, duplicate, print, and send NPC roleplay summaries into Session Console.</p></div><div class="library-tools"><label>Campaign<select id="campaignFilter"><option value="all">All campaigns</option></select></label><label>Search<input id="npcSearch" placeholder="Name, role, faction, tag…"></label></div></div>
+      <div id="libraryGrid" class="library-grid"></div>
+      <div class="actions"><button class="btn light" id="printSelectedPlayer" type="button">Print Selected Player Cards</button><button class="btn light" id="printSelectedDm" type="button">Print Selected DM Cards</button></div>
+    </section>
+
+    <section id="printSheet" class="print-sheet" aria-hidden="true"></section>
+  </main>
+</div>
+<datalist id="campaignNames"></datalist>
+<script src="shared/dmforge-store.js"></script>
+<script src="npc-forge.js"></script>
+</body>
+</html>
