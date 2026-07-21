@@ -187,6 +187,31 @@
     });
   }
 
+  function syncEncounters(encounters) {
+    if (!Array.isArray(encounters)) return read();
+    return mutate((store) => {
+      store.encounters = store.encounters.filter((entry) => entry.source !== 'encounter-forge');
+      for (const encounter of encounters) {
+        const campaign = ensureCampaignIn(store, encounter.campaign || 'Unsorted', { source: 'encounter-forge', ruleset: encounter.ruleset });
+        store.encounters.push({
+          id: `encounter-${cleanText(encounter.id || uid(), '', 100)}`,
+          source: 'encounter-forge',
+          sourceId: cleanText(encounter.id || '', '', 100),
+          campaignId: campaign.id,
+          name: cleanText(encounter.name, 'Untitled Encounter', 160),
+          environment: cleanText(encounter.environment, 'Other', 60),
+          ruleset: cleanText(encounter.ruleset, '2024', 20),
+          difficulty: cleanText(encounter.result?.difficulty, 'Unrated', 30),
+          rawXp: Math.max(0, Number(encounter.result?.rawXp) || 0),
+          adjustedXp: Math.max(0, Number(encounter.result?.adjustedXp) || 0),
+          monsterCount: Math.max(0, Number(encounter.result?.monsterCount) || 0),
+          statBlockCount: Array.isArray(encounter.monsters) ? encounter.monsters.length : 0,
+          updatedAt: encounter.updatedAt || now()
+        });
+      }
+    });
+  }
+
   function syncHealingRoom(roomCode, roomState) {
     if (!roomState || !roomCode) return read();
     return mutate((store) => {
@@ -232,6 +257,7 @@
     getActiveCampaign,
     syncSessionConsole,
     syncMagicItems,
+    syncEncounters,
     syncHealingRoom,
     counts
   });
