@@ -7,6 +7,7 @@ const activeSummary = document.getElementById('activeCampaignSummary');
 const sessionLink = document.getElementById('openSessionConsole');
 const encounterLink = document.getElementById('openEncounterForge');
 const npcLink = document.getElementById('openNpcForge');
+const lootLink = document.getElementById('openLootForge');
 const itemLink = document.getElementById('openMagicItems');
 const monsterLink = document.getElementById('openMonsterCards');
 const healingLink = document.getElementById('openHealingBox');
@@ -25,10 +26,12 @@ function refreshFromTools() {
   const items = readJson('dmforge-magic-items-v2', []);
   const encounters = readJson('dmforge-encounter-forge-v1', null);
   const npcs = readJson('dmforge-npc-forge-v1', null);
+  const loot = readJson('dmforge-loot-forge-v1', null);
   if (sessions) store.syncSessionConsole(sessions);
   if (Array.isArray(items)) store.syncMagicItems(items);
   if (Array.isArray(encounters?.encounters)) store.syncEncounters(encounters.encounters);
   if (Array.isArray(npcs?.npcs)) store.syncNpcs(npcs.npcs);
+  if (Array.isArray(loot?.parcels)) store.syncLoot(loot.parcels);
 
   for (let index = 0; index < localStorage.length; index += 1) {
     const key = localStorage.key(index);
@@ -48,12 +51,13 @@ function campaignLink(route, campaignName) {
 
 function setToolLinks(campaign) {
   if (!campaign) {
-    sessionLink.href = 'session-console.html'; encounterLink.href = 'encounter-forge.html'; npcLink.href = 'npc-forge.html'; itemLink.href = 'magic-items.html'; monsterLink.href = 'monster-cards.html'; healingLink.href = 'https://cbw29512.github.io/healingbox/';
+    sessionLink.href = 'session-console.html'; encounterLink.href = 'encounter-forge.html'; npcLink.href = 'npc-forge.html'; lootLink.href = 'loot-forge.html'; itemLink.href = 'magic-items.html'; monsterLink.href = 'monster-cards.html'; healingLink.href = 'https://cbw29512.github.io/healingbox/';
     return;
   }
   sessionLink.href = campaignLink('session-console.html', campaign.name);
   encounterLink.href = campaignLink('encounter-forge.html', campaign.name);
   npcLink.href = campaignLink('npc-forge.html', campaign.name);
+  lootLink.href = campaignLink('loot-forge.html', campaign.name);
   itemLink.href = campaignLink('magic-items.html', campaign.name);
   monsterLink.href = 'monster-cards.html';
   const healing = new URL('https://cbw29512.github.io/healingbox/');
@@ -71,7 +75,7 @@ function renderActive() {
   }
   const counts = store.counts(active.id);
   activeName.textContent = active.name;
-  activeSummary.textContent = `${counts.sessions} sessions · ${counts.encounters} encounters · ${counts.npcs} NPCs · ${counts.magicItems} magic items · ${counts.healingRooms} artifact rooms`;
+  activeSummary.textContent = `${counts.sessions} sessions · ${counts.encounters} encounters · ${counts.npcs} NPCs · ${counts.loot} loot parcels · ${counts.magicItems} magic items · ${counts.healingRooms} artifact rooms`;
   setToolLinks(active);
 }
 
@@ -79,7 +83,7 @@ function renderCampaigns() {
   const campaigns = store.listCampaigns();
   const active = store.getActiveCampaign();
   if (!campaigns.length) {
-    grid.innerHTML = '<div class="empty-state"><h2>No shared campaigns yet</h2><p>Create one above or press Refresh from Tools to import campaign names from Session Console, Encounter Forge, NPC Forge, and Magic Item Forge.</p></div>';
+    grid.innerHTML = '<div class="empty-state"><h2>No shared campaigns yet</h2><p>Create one above or press Refresh from Tools to import campaign names from Session Console, Encounter Forge, NPC Forge, Loot Forge, and Magic Item Forge.</p></div>';
     return;
   }
   grid.innerHTML = campaigns.map((campaign) => {
@@ -87,7 +91,7 @@ function renderCampaigns() {
     const isActive = active?.id === campaign.id;
     const rulesets = campaign.rulesets?.length ? campaign.rulesets.join(', ') : 'Not specified';
     const sources = campaign.sources?.length ? campaign.sources.join(', ') : 'Campaign Hub';
-    return `<article class="campaign-card ${isActive ? 'active' : ''}"><span class="status ${isActive ? 'active' : ''}">${isActive ? 'ACTIVE' : 'CAMPAIGN'}</span><h3>${esc(campaign.name)}</h3><p><b>Rules:</b> ${esc(rulesets)}</p><p class="source-list"><b>Found in:</b> ${esc(sources)}</p><div class="count-grid"><div><b>${counts.sessions}</b>Sessions</div><div><b>${counts.encounters}</b>Encounters</div><div><b>${counts.npcs}</b>NPCs</div><div><b>${counts.magicItems}</b>Items</div><div><b>${counts.healingRooms}</b>Boxes</div><div><b>${counts.loot}</b>Loot</div></div><div class="card-actions"><button class="btn gold" type="button" data-active="${esc(campaign.id)}">Make Active</button><a class="btn light" href="${campaignLink('session-console.html', campaign.name)}">Sessions</a><a class="btn light" href="${campaignLink('encounter-forge.html', campaign.name)}">Encounters</a><a class="btn light" href="${campaignLink('npc-forge.html', campaign.name)}">NPCs</a><a class="btn light" href="${campaignLink('magic-items.html', campaign.name)}">Items</a></div></article>`;
+    return `<article class="campaign-card ${isActive ? 'active' : ''}"><span class="status ${isActive ? 'active' : ''}">${isActive ? 'ACTIVE' : 'CAMPAIGN'}</span><h3>${esc(campaign.name)}</h3><p><b>Rules:</b> ${esc(rulesets)}</p><p class="source-list"><b>Found in:</b> ${esc(sources)}</p><div class="count-grid"><div><b>${counts.sessions}</b>Sessions</div><div><b>${counts.encounters}</b>Encounters</div><div><b>${counts.npcs}</b>NPCs</div><div><b>${counts.loot}</b>Loot</div><div><b>${counts.magicItems}</b>Items</div><div><b>${counts.healingRooms}</b>Boxes</div></div><div class="card-actions"><button class="btn gold" type="button" data-active="${esc(campaign.id)}">Make Active</button><a class="btn light" href="${campaignLink('session-console.html', campaign.name)}">Sessions</a><a class="btn light" href="${campaignLink('encounter-forge.html', campaign.name)}">Encounters</a><a class="btn light" href="${campaignLink('npc-forge.html', campaign.name)}">NPCs</a><a class="btn light" href="${campaignLink('loot-forge.html', campaign.name)}">Loot</a><a class="btn light" href="${campaignLink('magic-items.html', campaign.name)}">Items</a></div></article>`;
   }).join('');
   document.querySelectorAll('[data-active]').forEach((button) => { button.onclick = () => { store.setActiveCampaign(button.dataset.active); render(); }; });
 }
@@ -114,7 +118,7 @@ document.getElementById('refreshSources').onclick = refreshFromTools;
 document.getElementById('exportSummary').onclick = exportSummary;
 window.addEventListener('dmforge:store-changed', render);
 window.addEventListener('storage', (event) => {
-  if ([store.STORAGE_KEY, 'dmforge-session-console-v1', 'dmforge-magic-items-v2', 'dmforge-encounter-forge-v1', 'dmforge-npc-forge-v1'].includes(event.key) || event.key?.startsWith('cleric-box-')) refreshFromTools();
+  if ([store.STORAGE_KEY, 'dmforge-session-console-v1', 'dmforge-magic-items-v2', 'dmforge-encounter-forge-v1', 'dmforge-npc-forge-v1', 'dmforge-loot-forge-v1'].includes(event.key) || event.key?.startsWith('cleric-box-')) refreshFromTools();
 });
 
 refreshFromTools();
