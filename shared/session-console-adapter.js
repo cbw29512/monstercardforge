@@ -125,19 +125,28 @@
     return true;
   }
 
-  function adoptExternalRewards(serializedState) {
+  function adoptExternalPrep(serializedState) {
     try {
       const external = JSON.parse(serializedState || 'null');
       const selectedId = document.getElementById('campaignSelect')?.value;
       const externalCampaign = external?.campaigns?.find((campaign) => campaign.id === selectedId);
-      const field = document.querySelector('[data-prep="rewards"]');
-      const rewards = externalCampaign?.session?.prep?.rewards;
-      if (field && typeof rewards === 'string' && field.value !== rewards) {
-        field.value = rewards;
-        field.dispatchEvent(new Event('input', { bubbles: true }));
-        toast('Session Rewards updated from another DM Forge tool.');
+      if (!externalCampaign?.session?.prep) return;
+      const updates = [
+        { key: 'rewards', label: 'Rewards & Discoveries' },
+        { key: 'npcs', label: 'NPCs & Motives' }
+      ];
+      const changed = [];
+      for (const update of updates) {
+        const field = document.querySelector(`[data-prep="${update.key}"]`);
+        const incoming = externalCampaign.session.prep[update.key];
+        if (field && typeof incoming === 'string' && field.value !== incoming) {
+          field.value = incoming;
+          field.dispatchEvent(new Event('input', { bubbles: true }));
+          changed.push(update.label);
+        }
       }
-    } catch (error) { console.error('[SessionConsoleAdapter] Could not apply external rewards', error); }
+      if (changed.length) toast(`${changed.join(' and ')} updated from another DM Forge tool.`);
+    } catch (error) { console.error('[SessionConsoleAdapter] Could not apply external prep', error); }
   }
 
   function renderContext(legacy) {
@@ -154,8 +163,8 @@
     const localName = currentCampaignName(legacy);
     const active = store.getActiveCampaign();
     const localCampaign = store.listCampaigns().find((campaign) => campaign.name.toLocaleLowerCase() === localName.toLocaleLowerCase());
-    const counts = localCampaign ? store.counts(localCampaign.id) : { magicItems: 0, sessions: 0, encounters: 0 };
-    bar.innerHTML = `<div><b>Shared Campaign:</b> ${escapeHtml(active?.name || 'None selected')}<span>${escapeHtml(localName)} · ${counts.sessions} session record${counts.sessions === 1 ? '' : 's'} · ${counts.magicItems} magic item${counts.magicItems === 1 ? '' : 's'} · ${counts.encounters} encounter${counts.encounters === 1 ? '' : 's'}</span></div><div class="shared-context-actions">${active && active.name.toLocaleLowerCase() !== localName.toLocaleLowerCase() ? '<button type="button" class="btn light" id="useSharedCampaignHere">Use Active Here</button>' : ''}<button type="button" class="btn light" id="makeSessionCampaignActive">Use ${escapeHtml(localName)} Everywhere</button><a class="btn light" href="campaigns.html">Campaign Hub</a></div>`;
+    const counts = localCampaign ? store.counts(localCampaign.id) : { magicItems: 0, sessions: 0, encounters: 0, npcs: 0 };
+    bar.innerHTML = `<div><b>Shared Campaign:</b> ${escapeHtml(active?.name || 'None selected')}<span>${escapeHtml(localName)} · ${counts.sessions} session record${counts.sessions === 1 ? '' : 's'} · ${counts.encounters} encounter${counts.encounters === 1 ? '' : 's'} · ${counts.npcs} NPC${counts.npcs === 1 ? '' : 's'} · ${counts.magicItems} magic item${counts.magicItems === 1 ? '' : 's'}</span></div><div class="shared-context-actions">${active && active.name.toLocaleLowerCase() !== localName.toLocaleLowerCase() ? '<button type="button" class="btn light" id="useSharedCampaignHere">Use Active Here</button>' : ''}<button type="button" class="btn light" id="makeSessionCampaignActive">Use ${escapeHtml(localName)} Everywhere</button><a class="btn light" href="campaigns.html">Campaign Hub</a></div>`;
     document.getElementById('useSharedCampaignHere')?.addEventListener('click', () => useCampaignLocally(store.getActiveCampaign()?.name));
     document.getElementById('makeSessionCampaignActive')?.addEventListener('click', () => { store.ensureCampaign(localName, { source: 'session-console' }); store.setActiveCampaign(localName); renderContext(readLegacy()); });
   }
@@ -188,7 +197,7 @@
   document.addEventListener('change', scheduleSync, true);
   document.addEventListener('click', scheduleSync, true);
   root.addEventListener('storage', (event) => {
-    if (event.key === LEGACY_KEY) adoptExternalRewards(event.newValue);
+    if (event.key === LEGACY_KEY) adoptExternalPrep(event.newValue);
     if (event.key === LEGACY_KEY || event.key === root.DMForgeStore?.STORAGE_KEY) scheduleSync();
   });
   root.addEventListener('dmforge:store-changed', () => renderContext(readLegacy()));
