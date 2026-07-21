@@ -23,16 +23,10 @@
 
   function blankSession() {
     return {
-      id: uid(),
-      title: '',
-      date: dateOnly(),
+      id: uid(), title: '', date: dateOnly(),
       prep: { opening: '', scenes: '', secrets: '', npcs: '', locations: '', rewards: '', notes: '' },
-      log: [],
-      initiative: { combatants: [], round: 1, turnIndex: 0, active: false, log: [] },
-      diceHistory: [],
-      generatorHistory: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      log: [], initiative: { combatants: [], round: 1, turnIndex: 0, active: false, log: [] },
+      diceHistory: [], generatorHistory: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
     };
   }
 
@@ -89,6 +83,23 @@
     if (requested) useCampaignLocally(requested);
   }
 
+  function adoptExternalRewards(serializedState) {
+    try {
+      const external = JSON.parse(serializedState || 'null');
+      const selectedId = document.getElementById('campaignSelect')?.value;
+      const externalCampaign = external?.campaigns?.find((campaign) => campaign.id === selectedId);
+      const field = document.querySelector('[data-prep="rewards"]');
+      const rewards = externalCampaign?.session?.prep?.rewards;
+      if (field && typeof rewards === 'string' && field.value !== rewards) {
+        field.value = rewards;
+        field.dispatchEvent(new Event('input', { bubbles: true }));
+        toast('Session Rewards updated from another DM Forge tool.');
+      }
+    } catch (error) {
+      console.error('[SessionConsoleAdapter] Could not apply external rewards', error);
+    }
+  }
+
   function renderContext(legacy) {
     const store = root.DMForgeStore;
     if (!store) return;
@@ -126,6 +137,15 @@
     })[character]);
   }
 
+  function toast(message) {
+    const element = document.createElement('div');
+    element.textContent = message;
+    element.setAttribute('role', 'status');
+    element.style = 'position:fixed;z-index:110;left:50%;bottom:20px;transform:translateX(-50%);background:#281713;color:#fff4ce;padding:12px 18px;border:1px solid #d4a64c;border-radius:8px;max-width:90vw;box-shadow:0 8px 30px #0008';
+    document.body.append(element);
+    setTimeout(() => element.remove(), 3000);
+  }
+
   function sync() {
     const store = root.DMForgeStore;
     if (!store) return;
@@ -147,6 +167,7 @@
   document.addEventListener('change', scheduleSync, true);
   document.addEventListener('click', scheduleSync, true);
   root.addEventListener('storage', (event) => {
+    if (event.key === LEGACY_KEY) adoptExternalRewards(event.newValue);
     if (event.key === LEGACY_KEY || event.key === root.DMForgeStore?.STORAGE_KEY) scheduleSync();
   });
   root.addEventListener('dmforge:store-changed', () => renderContext(readLegacy()));
