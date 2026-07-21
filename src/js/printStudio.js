@@ -1,5 +1,6 @@
 import { renderAccordion, renderCardFront, renderCombatBack, renderPanel, PANEL_TYPES } from './cardEngine.js';
 import { safeRender } from './logger.js';
+import { safeDomToken } from './security.js';
 
 export const PRINT_MODES = {
   FOLD_OVER: 'fold-over',
@@ -50,25 +51,28 @@ export function renderDuplexSheet(monster) {
 }
 
 export function renderStarterPrintSheet(monster) {
-  return safeRender('renderStarterPrintSheet failed', '<p>Print sheet failed.</p>', () => `<div class="print-choice-panel standard-print-choice">
-    <h3>Choose Your Print Method</h3>
-    <p>Cut-and-fold is recommended: one 5" × 3.5" connected piece folds into one standard 2.5" × 3.5" card.</p>
-    <input class="print-mode-radio" type="radio" name="standard-print-${monster.id}" id="fold-${monster.id}" checked>
-    <input class="print-mode-radio" type="radio" name="standard-print-${monster.id}" id="duplex-${monster.id}">
-    <div class="print-choice-tabs">
-      <label class="print-choice-tab" for="fold-${monster.id}">Cut-and-Fold</label>
-      <label class="print-choice-tab" for="duplex-${monster.id}">Duplex Front/Back</label>
-    </div>
-    ${renderFoldOverSheet(monster)}
-    ${renderDuplexSheet(monster)}
-    <div class="legend-card print-legend-card">
-      <h3>Legend</h3>
-      <p>AC · HP · Speed · Senses · PP Passive Perception</p>
-      <p>Melee · Ranged · BA Bonus Action · RX Reaction · TR Trait · LA Legendary Action</p>
-      <p>S Slashing · P Piercing · B Bludgeoning · A Acid · F Fire · C Cold · N Necrotic</p>
-      <p class="tiny"><b>Print:</b> 100% actual size. Do not use fit to page.</p>
-    </div>
-  </div>`);
+  return safeRender('renderStarterPrintSheet failed', '<p>Print sheet failed.</p>', () => {
+    const token = safeDomToken(monster.id, 'monster');
+    return `<div class="print-choice-panel standard-print-choice">
+      <h3>Choose Your Print Method</h3>
+      <p>Cut-and-fold is recommended: one 5" × 3.5" connected piece folds into one standard 2.5" × 3.5" card.</p>
+      <input class="print-mode-radio" type="radio" name="standard-print-${token}" id="fold-${token}" checked>
+      <input class="print-mode-radio" type="radio" name="standard-print-${token}" id="duplex-${token}">
+      <div class="print-choice-tabs">
+        <label class="print-choice-tab" for="fold-${token}">Cut-and-Fold</label>
+        <label class="print-choice-tab" for="duplex-${token}">Duplex Front/Back</label>
+      </div>
+      ${renderFoldOverSheet(monster)}
+      ${renderDuplexSheet(monster)}
+      <div class="legend-card print-legend-card">
+        <h3>Legend</h3>
+        <p>AC · HP · Speed · Senses · PP Passive Perception</p>
+        <p>Melee · Ranged · BA Bonus Action · RX Reaction · TR Trait · LA Legendary Action</p>
+        <p>S Slashing · P Piercing · B Bludgeoning · A Acid · F Fire · C Cold · N Necrotic</p>
+        <p class="tiny"><b>Print:</b> 100% actual size. Do not use fit to page.</p>
+      </div>
+    </div>`;
+  });
 }
 
 export function renderBossFolioSheet(monster) {
@@ -105,18 +109,21 @@ export function renderBossDeckletSheet(monster) {
 }
 
 export function renderBossPrintChoice(monster) {
-  return safeRender('renderBossPrintChoice failed', '<p>Boss print choice failed.</p>', () => `<div class="print-choice-panel boss-print-choice">
-    <h3>Choose Your Boss Print Method</h3>
-    <p>Boss Folio keeps everything attached as a fold-out reference. Boss Decklet makes multiple sleeve-ready cards.</p>
-    <input class="print-mode-radio" type="radio" name="boss-print-${monster.id}" id="folio-${monster.id}" checked>
-    <input class="print-mode-radio" type="radio" name="boss-print-${monster.id}" id="decklet-${monster.id}">
-    <div class="print-choice-tabs">
-      <label class="print-choice-tab" for="folio-${monster.id}">Boss Folio</label>
-      <label class="print-choice-tab" for="decklet-${monster.id}">Boss Decklet</label>
-    </div>
-    ${renderBossFolioSheet(monster)}
-    ${renderBossDeckletSheet(monster)}
-  </div>`);
+  return safeRender('renderBossPrintChoice failed', '<p>Boss print choice failed.</p>', () => {
+    const token = safeDomToken(monster.id, 'boss');
+    return `<div class="print-choice-panel boss-print-choice">
+      <h3>Choose Your Boss Print Method</h3>
+      <p>Boss Folio keeps everything attached as a fold-out reference. Boss Decklet makes multiple sleeve-ready cards.</p>
+      <input class="print-mode-radio" type="radio" name="boss-print-${token}" id="folio-${token}" checked>
+      <input class="print-mode-radio" type="radio" name="boss-print-${token}" id="decklet-${token}">
+      <div class="print-choice-tabs">
+        <label class="print-choice-tab" for="folio-${token}">Boss Folio</label>
+        <label class="print-choice-tab" for="decklet-${token}">Boss Decklet</label>
+      </div>
+      ${renderBossFolioSheet(monster)}
+      ${renderBossDeckletSheet(monster)}
+    </div>`;
+  });
 }
 
 export function renderPrintChecklist() {
