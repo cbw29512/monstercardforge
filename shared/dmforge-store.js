@@ -1,6 +1,14 @@
 (function initializeDMForgeStore(root) {
   'use strict';
 
+  if (root.document && !root.document.querySelector('link[data-dmforge-design-system]')) {
+    const link = root.document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = new URL('shared/design-system.css', root.document.baseURI).href;
+    link.dataset.dmforgeDesignSystem = '1.0.0';
+    root.document.head.append(link);
+  }
+
   const STORAGE_KEY = 'dmforge-shared-v1';
   const SCHEMA_VERSION = 1;
 
