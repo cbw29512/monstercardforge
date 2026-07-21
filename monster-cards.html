@@ -3,10 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#25120d">
   <title>Monster Card Forge | DM Forge</title>
+  <meta name="description" content="Create, browse, and print readable monster reference cards for D&D 5e and 5.5e campaigns.">
   <link rel="stylesheet" href="src/styles/main.css">
   <link rel="stylesheet" href="src/styles/ui-overhaul.css">
   <link rel="stylesheet" href="src/styles/print-layouts.css">
+  <link rel="stylesheet" href="shared/design-system.css" data-dmforge-design-system="1.0.0">
   <style>
     .dmforge-return{display:inline-flex;align-items:center;gap:.45rem;margin-bottom:.65rem;color:inherit;text-decoration:none;font-weight:800}
     .dmforge-return:hover{text-decoration:underline}
@@ -23,11 +26,11 @@
         <p class="tagline">Print-ready monster cards, boss accordion cards, and guided homebrew tools.</p>
       </div>
     </div>
-    <nav class="tabs">
-      <button class="tab active" data-tab="free">Free Goblin Sample</button>
-      <button class="tab" data-tab="library">Browse Cards</button>
-      <button class="tab" data-tab="homebrew">Create Homebrew</button>
-      <button class="tab" data-tab="legal">Legal / Attribution</button>
+    <nav class="tabs" aria-label="Monster Card Forge sections">
+      <button class="tab active" data-tab="free" type="button">Free Goblin Sample</button>
+      <button class="tab" data-tab="library" type="button">Browse Cards</button>
+      <button class="tab" data-tab="homebrew" type="button">Create Homebrew</button>
+      <button class="tab" data-tab="legal" type="button">Legal / Attribution</button>
     </nav>
   </header>
   <main class="layout">
