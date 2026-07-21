@@ -2,6 +2,7 @@
   'use strict';
 
   const ITEMS_KEY = 'dmforge-magic-items-v2';
+  const SESSIONS_KEY = 'dmforge-session-console-v1';
   let syncTimer = null;
 
   function ensureStyles() {
@@ -13,20 +14,39 @@
     document.head.append(link);
   }
 
+  function uid() {
+    return root.crypto?.randomUUID?.() || `id-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  }
+
+  function blankSession() {
+    const timestamp = new Date().toISOString();
+    return {
+      id: uid(), title: '', date: timestamp.slice(0, 10),
+      prep: { opening: '', scenes: '', secrets: '', npcs: '', locations: '', rewards: '', notes: '' },
+      log: [], initiative: { combatants: [], round: 1, turnIndex: 0, active: false, log: [] },
+      diceHistory: [], generatorHistory: [], createdAt: timestamp, updatedAt: timestamp
+    };
+  }
+
   function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>"']/g, (character) => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
     })[character]);
   }
 
-  function readItems() {
+  function readJson(key, fallback) {
     try {
-      const items = JSON.parse(root.localStorage?.getItem(ITEMS_KEY) || '[]');
-      return Array.isArray(items) ? items : [];
+      const parsed = JSON.parse(root.localStorage?.getItem(key) || 'null');
+      return parsed ?? fallback;
     } catch (error) {
-      console.error('[MagicItemsAdapter] Could not read Magic Item Forge data', error);
-      return [];
+      console.error(`[MagicItemsAdapter] Could not read ${key}`, error);
+      return fallback;
     }
+  }
+
+  function readItems() {
+    const items = readJson(ITEMS_KEY, []);
+    return Array.isArray(items) ? items : [];
   }
 
   function mergeCampaignNames() {
@@ -91,6 +111,59 @@
     }
   }
 
+  function ensureSessionCampaign(state, name) {
+    const key = String(name || 'Unsorted').trim().toLocaleLowerCase();
+    let campaign = state.campaigns.find((entry) => String(entry.name || '').trim().toLocaleLowerCase() === key);
+    if (!campaign) {
+      campaign = { id: uid(), name: name || 'Unsorted', roster: [], session: blankSession(), archives: [] };
+      state.campaigns.push(campaign);
+    }
+    return campaign;
+  }
+
+  function sendItemToSession(itemId) {
+    const item = readItems().find((entry) => entry.id === itemId);
+    if (!item) return;
+    let sessionState = readJson(SESSIONS_KEY, null);
+    if (!sessionState?.campaigns?.length) {
+      const firstCampaign = { id: uid(), name: item.campaign || 'Unsorted', roster: [], session: blankSession(), archives: [] };
+      sessionState = { version: 1, activeCampaignId: firstCampaign.id, campaigns: [firstCampaign], activeTab: 'prep' };
+    }
+    const campaign = ensureSessionCampaign(sessionState, item.campaign || 'Unsorted');
+    const owner = item.owner ? ` — intended for ${item.owner}` : '';
+    const reward = `Magic item reward: ${item.name || 'Unnamed Magic Item'} (${item.rarity || 'Homebrew'} ${item.category || 'item'})${owner}.`;
+    campaign.session.prep.rewards = [campaign.session.prep.rewards, reward].filter(Boolean).join('\n');
+    campaign.session.updatedAt = new Date().toISOString();
+    root.localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessionState));
+    root.DMForgeStore?.syncSessionConsole(sessionState);
+    toast(`${item.name || 'Magic item'} added to ${campaign.name} Session Rewards.`);
+  }
+
+  function enhanceLibrary() {
+    document.querySelectorAll('.library-item').forEach((card) => {
+      const editButton = card.querySelector('[data-edit]');
+      const actions = card.querySelector('.library-actions');
+      const itemId = editButton?.dataset.edit;
+      if (!itemId || !actions || actions.querySelector('[data-send-reward]')) return;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'btn light';
+      button.dataset.sendReward = itemId;
+      button.textContent = 'Send to Session Rewards';
+      button.onclick = () => sendItemToSession(itemId);
+      actions.prepend(button);
+    });
+  }
+
+  function toast(message) {
+    const element = document.createElement('div');
+    element.textContent = message;
+    element.setAttribute('role', 'status');
+    element.style = 'position:fixed;z-index:110;left:50%;bottom:20px;transform:translateX(-50%);background:#281713;color:#fff4ce;padding:12px 18px;border:1px solid #d4a64c;border-radius:8px;max-width:90vw;box-shadow:0 8px 30px #0008';
+    document.body.append(element);
+    setTimeout(() => element.remove(), 3000);
+  }
+
   function sync() {
     const store = root.DMForgeStore;
     if (!store) return;
@@ -101,6 +174,7 @@
     if (!store.getActiveCampaign()) store.setActiveCampaign(campaign);
     mergeCampaignNames();
     renderContext();
+    enhanceLibrary();
   }
 
   function scheduleSync() {
@@ -112,12 +186,15 @@
   document.addEventListener('change', scheduleSync, true);
   document.addEventListener('click', scheduleSync, true);
   root.addEventListener('storage', (event) => {
-    if (event.key === ITEMS_KEY || event.key === root.DMForgeStore?.STORAGE_KEY) scheduleSync();
+    if ([ITEMS_KEY, SESSIONS_KEY, root.DMForgeStore?.STORAGE_KEY].includes(event.key)) scheduleSync();
   });
   root.addEventListener('dmforge:store-changed', () => {
     mergeCampaignNames();
     renderContext();
+    enhanceLibrary();
   });
+  const library = document.getElementById('libraryGrid');
+  if (library) new MutationObserver(enhanceLibrary).observe(library, { childList: true, subtree: true });
   root.setInterval(sync, 5000);
   root.setTimeout(() => {
     applyQueryCampaign();
