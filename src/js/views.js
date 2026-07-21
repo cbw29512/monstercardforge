@@ -3,13 +3,14 @@ import { estimateComplexity, renderCardFront, renderCombatBack, renderItems } fr
 import { homebrewChecklist, homebrewSections } from './homebrewSchema.js';
 import { renderBossFolioSheet, renderPrintChecklist, renderPrintModePreview, renderStarterPrintSheet } from './printStudio.js';
 import { safeRender } from './logger.js';
+import { escapeAttribute, escapeHtml } from './security.js';
 
 export function renderMonsterDetails(monster) {
   return safeRender('renderMonsterDetails failed', '', () => {
     const complexity = estimateComplexity(monster);
     return `<div class="details-panel">
-      <h3>${monster.name}</h3>
-      <span class="pill">${monster.ruleset}</span><span class="pill">${monster.type}</span><span class="pill">${complexity.stars}</span><span class="pill">${complexity.layout}</span>
+      <h3>${escapeHtml(monster.name)}</h3>
+      <span class="pill">${escapeHtml(monster.ruleset)}</span><span class="pill">${escapeHtml(monster.type)}</span><span class="pill">${escapeHtml(complexity.stars)}</span><span class="pill">${escapeHtml(complexity.layout)}</span>
       <p><b>Best print mode:</b> Simple monsters use fold-over cards. Legendary, spellcasting, and boss monsters use Boss Folio layouts so text stays readable.</p>
       <button class="tab print-hide" onclick="window.print()">Print This Layout</button>
     </div>`;
@@ -20,7 +21,7 @@ export function renderLibraryView(state, onSelect) {
   return safeRender('renderLibraryView failed', '', () => {
     const filtered = monsters.filter((monster) => (state.ruleset === 'all' || monster.ruleset === state.ruleset) && (state.type === 'all' || monster.type === state.type));
     const selected = monsters.find((monster) => monster.id === state.selectedId) || filtered[0] || monsters[0];
-    const buttons = filtered.map((monster) => `<button class="monster-button ${monster.id === selected.id ? 'active' : ''}" data-id="${monster.id}"><b>${monster.name}</b><span class="monster-meta">CR ${monster.cr} · ${monster.type} · ${monster.ruleset}</span></button>`).join('');
+    const buttons = filtered.map((monster) => `<button class="monster-button ${monster.id === selected.id ? 'active' : ''}" data-id="${escapeAttribute(monster.id)}"><b>${escapeHtml(monster.name)}</b><span class="monster-meta">CR ${escapeHtml(monster.cr)} · ${escapeHtml(monster.type)} · ${escapeHtml(monster.ruleset)}</span></button>`).join('');
     const printPreview = renderPrintModePreview(selected);
     return {
       sideList: buttons,
@@ -51,9 +52,9 @@ export function renderHomebrewView(state, updateHomebrew, reloadExample) {
   return safeRender('renderHomebrewView failed', '', () => {
     const monster = state.homebrew;
     const warnings = homebrewChecklist(monster);
-    const fields = homebrewSections.map((section) => `<fieldset class="homebrew-section"><legend>${section.title}</legend><p class="help">${section.help}</p>${section.fields.map((field) => `<div class="filter"><label>${field.label}</label><input name="${field.key}" value="${monster[field.key] || ''}"><p class="help">Example: ${field.example}</p></div>`).join('')}</fieldset>`).join('');
+    const fields = homebrewSections.map((section) => `<fieldset class="homebrew-section"><legend>${escapeHtml(section.title)}</legend><p class="help">${escapeHtml(section.help)}</p>${section.fields.map((field) => `<div class="filter"><label>${escapeHtml(field.label)}</label><input name="${escapeAttribute(field.key)}" value="${escapeAttribute(monster[field.key] || '')}"><p class="help">Example: ${escapeHtml(field.example)}</p></div>`).join('')}</fieldset>`).join('');
     const actionExample = `<fieldset class="homebrew-section"><legend>3. Example Actions</legend><p class="help">Actions are structured so the card renderer can format attacks consistently. Full editing comes next; this shows the target format.</p><div class="example-code">${renderItems(monster.actions)}</div></fieldset>`;
-    const warningHtml = warnings.length ? `<div class="details-panel warning"><h3>Completeness Warnings</h3><ul>${warnings.map((warning) => `<li>${warning}</li>`).join('')}</ul></div>` : `<div class="details-panel ready"><h3>Ready to Print</h3><p>The sample has the minimum combat information needed for a first print test.</p></div>`;
+    const warningHtml = warnings.length ? `<div class="details-panel warning"><h3>Completeness Warnings</h3><ul>${warnings.map((warning) => `<li>${escapeHtml(warning)}</li>`).join('')}</ul></div>` : `<div class="details-panel ready"><h3>Ready to Print</h3><p>The sample has the minimum combat information needed for a first print test.</p></div>`;
     return {
       stage: `<section class="page-intro"><p class="eyebrow">Create your own monster</p><h2>Fill in guided fields. The card updates automatically.</h2><p>Each section explains what to enter and shows an example so homebrew creators do not have to guess the format.</p></section><div class="homebrew-grid"><form id="homebrewForm" class="details-panel"><h3>Build Your Monster</h3><p class="help">Follow each section. The live preview uses the same templates as official cards.</p>${fields}${actionExample}<div class="form-section"><button class="tab" type="button" id="loadExample">Reload Example Monster</button></div></form><div><h3>Live Printable Preview</h3>${warningHtml}<div class="card-workbench">${renderCardFront(monster)}${renderCombatBack(monster)}</div>${renderBossFolioSheet(monster)}</div></div>`,
       attach() {
