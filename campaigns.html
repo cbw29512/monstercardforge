@@ -4,8 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#25120d">
+  <meta name="robots" content="index,follow,max-image-preview:large">
   <title>Campaign Hub | DM Forge</title>
-  <meta name="description" content="Choose an active campaign and open every DM Forge tool in one shared campaign context.">
+  <meta name="description" content="Choose one active D&D campaign, review local tool counts, and open every DM Forge tool in the same campaign context.">
+  <link rel="canonical" href="https://cbw29512.github.io/monstercardforge/campaigns.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="DM Forge">
+  <meta property="og:title" content="Campaign Hub | DM Forge">
+  <meta property="og:description" content="One private, local campaign context for sessions, encounters, NPCs, loot, items, and table tools.">
+  <meta property="og:url" content="https://cbw29512.github.io/monstercardforge/campaigns.html">
   <link rel="stylesheet" href="campaigns.css">
 </head>
 <body>
@@ -37,7 +44,7 @@
       <div><p class="eyebrow dark">Add a campaign</p><h2>Create Shared Campaign</h2><p>This adds a campaign name to the shared index. Each tool still keeps its detailed private records in its own storage.</p></div>
       <form id="campaignForm" class="create-form">
         <label>Campaign name<input id="campaignName" maxlength="100" required placeholder="Curse of the Crooked Moon"></label>
-        <label>Ruleset<select id="campaignRuleset"><option value="">Not specified</option><option>2014</option><option>2024</option><option>Edition Neutral</option><option>Homebrew</option></select></label>
+        <label>Ruleset<select id="campaignRuleset"><option value="">Not specified</option><option value="2014">5e (2014)</option><option value="2024">5.5e (2024)</option><option>Edition Neutral</option><option>Homebrew</option></select></label>
         <button class="btn gold" type="submit">Create and Make Active</button>
       </form>
     </section>
