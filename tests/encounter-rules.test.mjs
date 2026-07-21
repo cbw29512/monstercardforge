@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { evaluateEncounter, multiplier2014, partyBudgets2024, partyThresholds2014, xpForCr } from '../encounter-rules.js';
+import { evaluateEncounter, multiplier2014, partyBudgets2024, partyThresholds2014, rawMonsterXp, xpForCr } from '../encounter-rules.js';
 
 const party = (count, level) => Array.from({ length: count }, (_, index) => ({ name: `P${index + 1}`, level }));
 const monster = (name, cr, quantity = 1, sourceId = name) => ({ name, cr, xp: xpForCr(cr), quantity, sourceId });
@@ -28,6 +28,13 @@ test('2024 spends raw XP without a multiple-monster multiplier', () => {
   assert.equal(result.difficulty, 'High');
 });
 
+test('2024 marks encounters that exceed the High budget', () => {
+  const result = evaluateEncounter({ ruleset: '2024', characters: party(4, 1), monsters: [monster('Ogre', '2', 1)] });
+  assert.equal(result.rawXp, 450);
+  assert.equal(result.difficulty, 'Above High');
+  assert.equal(result.warnings.some((warning) => warning.includes('exceeds the official High XP budget')), true);
+});
+
 test('2024 emits official operational cautions', () => {
   const result = evaluateEncounter({ ruleset: '2024', characters: party(2, 3), monsters: [
     monster('A', '1', 2, 'a'), monster('B', '1', 2, 'b'), monster('C', '1', 1, 'c'), monster('D', '4', 1, 'd')
@@ -35,6 +42,14 @@ test('2024 emits official operational cautions', () => {
   assert.equal(result.warnings.some((warning) => warning.includes('more than two creatures per character')), true);
   assert.equal(result.warnings.some((warning) => warning.includes('different stat blocks')), true);
   assert.equal(result.warnings.some((warning) => warning.includes('CR above')), true);
+});
+
+test('CR zero preserves an explicit 0 XP stat block', () => {
+  assert.equal(xpForCr('0'), 10);
+  assert.equal(rawMonsterXp([{ name: 'Harmless Critter', cr: '0', xp: 0, quantity: 6 }]), 0);
+  const result = evaluateEncounter({ ruleset: '2024', characters: party(4, 1), monsters: [{ name: 'Critter', cr: '0', xp: 0, quantity: 6 }] });
+  assert.equal(result.rawXp, 0);
+  assert.equal(result.warnings.some((warning) => warning.includes('either 0 or 10 XP')), true);
 });
 
 test('CR-to-XP values match the official table', () => {
