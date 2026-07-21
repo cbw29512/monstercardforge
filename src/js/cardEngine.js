@@ -47,6 +47,20 @@ export function listText(items) {
   });
 }
 
+export function rulesLabel(value) {
+  if (value === '5e-2014') return '5e (2014)';
+  if (value === '5e-2024') return '5.5e (2024)';
+  if (value === 'homebrew') return 'Homebrew';
+  return String(value || 'Rules not specified');
+}
+
+export function sourceLine(monster) {
+  return safeRender('sourceLine failed', '', () => {
+    const parts = [monster.source, monster.license, monster.verifiedAt ? `verified ${monster.verifiedAt}` : ''].filter(Boolean);
+    return parts.join(' · ');
+  });
+}
+
 export function estimateComplexity(monster) {
   return safeRender('estimateComplexity failed', { score: 1, stars: '⭐', layout: 'standard' }, () => {
     const counts = [monster.traits, monster.actions, monster.bonusActions, monster.reactions, monster.legendaryActions, monster.lairActions, monster.regionalEffects]
@@ -68,13 +82,18 @@ export function renderItems(items, options = {}) {
   return safeRender('renderItems failed', '<div class="item">—</div>', () => {
     if (!items || !items.length) return '<div class="item">—</div>';
     const limit = options.limit ?? items.length;
-    return items.slice(0, limit).map((item) => {
-      const attackLine = item.hit
-        ? ` <span class="attack-line">${escapeHtml(item.hit)} | ${escapeHtml(item.reach || '')} | ${escapeHtml(item.damage || '')}</span>`
+    const visible = items.slice(0, limit);
+    const rendered = visible.map((item) => {
+      const cost = Number(item.cost) > 1 ? ` <span class="action-cost">(${Number(item.cost)} actions)</span>` : '';
+      const attackBits = [item.hit, item.reach, item.target, item.damage].filter(Boolean);
+      const attackLine = attackBits.length
+        ? ` <span class="attack-line">${attackBits.map((value) => escapeHtml(value)).join(' | ')}</span>`
         : '';
       const body = item.text ? ` <span class="item-text">— ${escapeHtml(item.text)}</span>` : '';
-      return `<div class="item"><b>${escapeHtml(item.name || 'Unnamed')}</b>${attackLine}${body}</div>`;
+      return `<div class="item"><b>${escapeHtml(item.name || 'Unnamed')}</b>${cost}${attackLine}${body}</div>`;
     }).join('');
+    const omitted = items.length - visible.length;
+    return `${rendered}${omitted > 0 ? `<div class="item continuation-note"><b>${omitted} more ${omitted === 1 ? 'entry' : 'entries'}:</b> see the dedicated panel in the recommended print layout.</div>` : ''}`;
   });
 }
 
@@ -95,9 +114,9 @@ function renderArt(monster) {
 export function renderCardFront(monster) {
   return safeRender('renderCardFront failed', '<div class="card">Card failed</div>', () => `<div class="card ${typeClass(monster.type)}" data-card-face="front">
     ${renderArt(monster)}
-    <div class="badge">CR ${escapeHtml(monster.cr)}</div>
+    <div class="badge">CR ${escapeHtml(monster.cr)}${monster.xp != null ? ` · ${Number(monster.xp).toLocaleString()} XP` : ''}</div>
     <div class="type-chip">${escapeHtml(monster.type)}</div>
-    <div class="card-title"><strong>${escapeHtml(monster.name)}</strong><span>${escapeHtml(monster.size)} ${escapeHtml(monster.type)}</span></div>
+    <div class="card-title"><strong>${escapeHtml(monster.name)}</strong><span>${escapeHtml(monster.size)} ${escapeHtml(monster.type)}${monster.alignment ? `, ${escapeHtml(monster.alignment)}` : ''}</span></div>
   </div>`);
 }
 
@@ -109,11 +128,12 @@ export function renderCombatBack(monster) {
       <div class="ability-grid">
         ${['str','dex','con','int','wis','cha'].map((key) => `<div class="ability"><b>${key.toUpperCase()}</b>${escapeHtml(a[key] ?? 10)}<br>${abilityMod(a[key] ?? 10)}</div>`).join('')}
       </div>
-      <div class="section"><h4>Combat</h4><div><b>Saves:</b> ${listText(monster.saves)}</div><div><b>Skills:</b> ${listText(monster.skills)}</div><div><b>Senses:</b> ${escapeHtml(monster.senses || '—')}</div><div><b>Res:</b> ${listText(monster.resistances)} | <b>Imm:</b> ${listText(monster.immunities)}</div></div>
-      <div class="section actions"><h4>Actions</h4>${renderItems(monster.actions, { limit: 5 })}</div>
+      <div class="section"><h4>Combat</h4><div><b>Saves:</b> ${listText(monster.saves)}</div><div><b>Skills:</b> ${listText(monster.skills)}</div><div><b>Senses:</b> ${escapeHtml(monster.senses || '—')}</div><div><b>Res:</b> ${listText(monster.resistances)} | <b>Imm:</b> ${listText(monster.immunities)}</div><div><b>Condition Imm:</b> ${listText(monster.conditionImmunities)}</div><div><b>Languages:</b> ${escapeHtml(monster.languages || '—')}</div></div>
+      <div class="section actions"><h4>Actions</h4>${renderItems(monster.actions, { limit: monster.layoutHint === 'accordion' ? 4 : 5 })}</div>
       <div class="section"><h4>Bonus / Reaction</h4><b>BA:</b> ${renderItems(monster.bonusActions, { limit: 2 })} <b>RX:</b> ${renderItems(monster.reactions, { limit: 2 })}</div>
       <div class="section traits"><h4>Traits</h4>${renderItems(monster.traits, { limit: 3 })}</div>
       <div class="section legend"><h4>Legendary</h4>${renderItems(monster.legendaryActions, { limit: 3 })}</div>
+      <div class="source-footer">${escapeHtml(rulesLabel(monster.ruleset))} · ${escapeHtml(sourceLine(monster))}</div>
     </div>`;
   });
 }
@@ -124,8 +144,12 @@ export function renderSpellPanel(monster) {
     const rows = Object.entries(monster.spellcasting.levels || {})
       .map(([level, spells]) => `<div><b>${escapeHtml(level)}:</b> ${(spells || []).map((spell) => escapeHtml(spell)).join(', ')}</div>`)
       .join('');
-    return `<p class="tiny"><b>${escapeHtml(monster.spellcasting.header)}</b></p><div class="tiny spell-list">${rows}</div>`;
+    return `<p class="tiny"><b>${escapeHtml(monster.spellcasting.header)}</b></p><div class="tiny spell-list">${rows}</div><p class="tiny source-footer">${escapeHtml(sourceLine(monster))}</p>`;
   });
+}
+
+function renderSourcePanel(monster) {
+  return `<div class="face"><h3>Source / Scope</h3><p class="tiny"><b>Ruleset:</b> ${escapeHtml(rulesLabel(monster.ruleset))}</p><p class="tiny"><b>Source:</b> ${escapeHtml(monster.source || 'Not specified')}</p><p class="tiny"><b>License:</b> ${escapeHtml(monster.license || 'Not specified')}</p>${monster.sourceUrl ? `<p class="tiny"><b>Source URL:</b> ${escapeHtml(monster.sourceUrl)}</p>` : ''}${monster.verifiedAt ? `<p class="tiny"><b>Verified:</b> ${escapeHtml(monster.verifiedAt)}</p>` : ''}${monster.scopeNote ? `<p class="tiny"><b>Scope:</b> ${escapeHtml(monster.scopeNote)}</p>` : ''}</div>`;
 }
 
 export function renderPanel(panelType, monster) {
@@ -134,9 +158,9 @@ export function renderPanel(panelType, monster) {
     if (panelType === PANEL_TYPES.COMBAT) return `<div class="face no-pad">${renderCombatBack(monster)}</div>`;
     if (panelType === PANEL_TYPES.ACTIONS) return `<div class="face"><h3>Actions</h3><div class="tiny">${renderItems(monster.actions)}</div></div>`;
     if (panelType === PANEL_TYPES.TRAITS) return `<div class="face"><h3>Traits / Reactions</h3><div class="tiny">${renderItems(monster.traits)}${renderItems(monster.reactions)}</div></div>`;
-    if (panelType === PANEL_TYPES.LEGENDARY) return `<div class="face"><h3>Legendary / Lair</h3><div class="tiny">${renderItems(monster.legendaryActions)}${renderItems(monster.lairActions)}</div></div>`;
+    if (panelType === PANEL_TYPES.LEGENDARY) return `<div class="face"><h3>Legendary Actions</h3><div class="tiny">${renderItems(monster.legendaryActions)}</div></div>`;
     if (panelType === PANEL_TYPES.SPELLS) return `<div class="face"><h3>Spellcasting</h3>${renderSpellPanel(monster)}</div>`;
-    return `<div class="face"><h3>Source / Notes</h3><p class="tiny"><b>Source:</b> ${escapeHtml(monster.source)}</p><p class="tiny"><b>Ruleset:</b> ${escapeHtml(monster.ruleset)}</p><p class="tiny">Use this panel for DM notes, QR code, and attribution in exported packs.</p></div>`;
+    return renderSourcePanel(monster);
   });
 }
 
