@@ -1,0 +1,313 @@
+/*
+ * DM Forge Design System
+ * Canonical visual tokens and interaction defaults.
+ * Version: 1.0.0
+ * Last reviewed: 2026-07-21
+ *
+ * Product UI uses a highly legible system sans stack. Cinzel remains the
+ * display face for brand headings. Printed handouts retain an editorial
+ * serif stack. Tool-specific CSS may control layout, but must consume these
+ * tokens instead of introducing near-duplicate colors or type roles.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Typography roles */
+  --font-display: 'Cinzel', Georgia, 'Times New Roman', serif;
+  --font-ui: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-editorial: Georgia, 'Times New Roman', serif;
+  --font-mono: 'Cascadia Mono', 'Segoe UI Mono', Consolas, monospace;
+
+  /* Canonical brand colors. Tested as text/background pairs for WCAG AA. */
+  --dm-bg: #140b08;
+  --dm-surface: #fff9e8;
+  --dm-surface-raised: #fffdf4;
+  --dm-surface-muted: #f3e1b4;
+  --dm-text: #24170f;
+  --dm-text-muted: #665346;
+  --dm-brand: #7b2e25;
+  --dm-brand-strong: #4b1713;
+  --dm-gold: #b98935;
+  --dm-info: #315c72;
+  --dm-success: #446a45;
+  --dm-warning: #9c6b20;
+  --dm-danger: #8a2e26;
+  --dm-on-dark: #fff8e7;
+  --dm-focus: #087ea4;
+  --dm-border: #a57c3e;
+
+  /* Backward-compatible aliases used by existing tool styles. */
+  --ink: var(--dm-text);
+  --muted: var(--dm-text-muted);
+  --paper: var(--dm-surface);
+  --paper2: var(--dm-surface-muted);
+  --red: var(--dm-brand);
+  --red2: var(--dm-brand-strong);
+  --gold: var(--dm-gold);
+  --blue: var(--dm-info);
+  --green: var(--dm-success);
+
+  /* Shape, space, and elevation */
+  --radius-sm: 0.45rem;
+  --radius-md: 0.7rem;
+  --radius-lg: 0.9rem;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --shadow-sm: 0 2px 8px rgb(20 11 8 / 14%);
+  --shadow-md: 0 10px 30px rgb(20 11 8 / 22%);
+  --shadow: 0 16px 44px rgb(20 11 8 / 40%);
+}
+
+html {
+  scroll-behavior: smooth;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--dm-bg);
+  color: var(--dm-text);
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  line-height: 1.55;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--dm-gold);
+  color: var(--dm-text);
+}
+
+h1,
+h2,
+h3,
+h4,
+.eyebrow,
+legend,
+.brand,
+.item-name,
+.npc-name,
+.loot-title {
+  font-family: var(--font-display);
+  text-wrap: balance;
+}
+
+p,
+li,
+.help,
+.tagline {
+  text-wrap: pretty;
+}
+
+code,
+kbd,
+samp,
+pre,
+.room-code {
+  font-family: var(--font-mono);
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-ui);
+  font-size: max(1rem, 16px);
+}
+
+button,
+.btn,
+.tab,
+.chip,
+summary,
+input:not([type='checkbox']):not([type='radio']),
+select {
+  min-height: 44px;
+}
+
+button,
+.btn,
+.tab,
+.chip {
+  border-radius: var(--radius-md);
+  transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
+  touch-action: manipulation;
+}
+
+button:hover,
+.btn:hover,
+.tab:hover,
+.chip:hover {
+  filter: brightness(1.04);
+}
+
+button:active,
+.btn:active,
+.tab:active,
+.chip:active {
+  transform: translateY(1px);
+}
+
+a {
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 0.08em;
+}
+
+a:not(.btn):hover {
+  text-decoration-thickness: 0.14em;
+}
+
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid var(--dm-focus);
+  outline-offset: 3px;
+  scroll-margin-block: 5rem;
+}
+
+:where(button, input, select, textarea):disabled,
+[aria-disabled='true'] {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+input,
+select,
+textarea {
+  border-color: var(--dm-border);
+  background: var(--dm-surface-raised);
+  color: var(--dm-text);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #786558;
+  opacity: 1;
+}
+
+.shell {
+  background: linear-gradient(#fff6dcfa, #ead5a3fa);
+}
+
+.site-header {
+  background: linear-gradient(135deg, #28130d, #5c2b18);
+  color: var(--dm-on-dark);
+  border-bottom-color: var(--dm-gold);
+}
+
+.panel,
+.campaign-card,
+.saved-card,
+.library-item,
+.storage-card,
+.result-card {
+  background-color: var(--dm-surface);
+  border-color: var(--dm-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn {
+  font-weight: 750;
+}
+
+.btn:not(.light):not(.gold):not(.blue):not(.danger) {
+  background: linear-gradient(#963b32, #611e19);
+  color: var(--dm-on-dark);
+  border-color: var(--dm-brand-strong);
+}
+
+.btn.light {
+  background: var(--dm-surface-raised);
+  color: var(--dm-text);
+  border-color: var(--dm-border);
+}
+
+.btn.gold {
+  background: linear-gradient(#d2aa56, #936823);
+  color: var(--dm-text);
+  border-color: #684816;
+}
+
+.btn.blue {
+  background: linear-gradient(#4a778e, #294c60);
+  color: var(--dm-on-dark);
+  border-color: #193745;
+}
+
+.btn.danger {
+  background: linear-gradient(#a23d34, #6b201b);
+  color: var(--dm-on-dark);
+  border-color: #541713;
+}
+
+/* Printed/player handouts keep an editorial reading voice. */
+.item-card,
+.npc-card,
+.loot-sheet,
+.continuation-page,
+.print-packet,
+.print-sheet,
+.print-block {
+  font-family: var(--font-editorial);
+}
+
+.item-card button,
+.npc-card button,
+.loot-sheet button {
+  font-family: var(--font-ui);
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 600px) {
+  body {
+    line-height: 1.6;
+  }
+
+  .site-header,
+  main {
+    padding-left: max(0.85rem, env(safe-area-inset-left));
+    padding-right: max(0.85rem, env(safe-area-inset-right));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  body {
+    background: #fff;
+    color: #111;
+    font-family: var(--font-editorial);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  :focus {
+    outline: 0;
+  }
+}
