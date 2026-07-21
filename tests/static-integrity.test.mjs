@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const pages = ['index.html', 'campaigns.html', 'monster-cards.html', 'magic-items.html', 'session-console.html'];
+const pages = ['index.html', 'campaigns.html', 'monster-cards.html', 'magic-items.html', 'session-console.html', 'encounter-forge.html'];
 
 function localAssetReferences(html) {
   const references = [];
@@ -57,7 +57,6 @@ test('Magic Item Forge retains overflow detection and continuation printing', ()
   const script = readFileSync(join(root, 'magic-items.js'), 'utf8');
   const html = readFileSync(join(root, 'magic-items.html'), 'utf8');
   const css = readFileSync(join(root, 'magic-items.css'), 'utf8');
-
   for (const requirement of ['function cardOverflows', 'function measureFace', 'function continuationHtml', 'function overflowContinuations']) {
     assert.equal(script.includes(requirement), true, `Missing ${requirement}`);
   }
@@ -71,9 +70,11 @@ test('Campaign Hub and shared adapters are loaded by the connected tools', () =>
   const campaignPage = readFileSync(join(root, 'campaigns.html'), 'utf8');
   const sessionPage = readFileSync(join(root, 'session-console.html'), 'utf8');
   const itemPage = readFileSync(join(root, 'magic-items.html'), 'utf8');
+  const encounterPage = readFileSync(join(root, 'encounter-forge.html'), 'utf8');
   for (const asset of ['shared/dmforge-store.js', 'campaigns.js', 'campaigns.css']) assert.equal(campaignPage.includes(asset), true, `Campaign Hub is missing ${asset}`);
   for (const asset of ['shared/dmforge-store.js', 'shared/session-console-adapter.js']) assert.equal(sessionPage.includes(asset), true, `Session Console is missing ${asset}`);
   for (const asset of ['shared/dmforge-store.js', 'shared/magic-items-adapter.js']) assert.equal(itemPage.includes(asset), true, `Magic Item Forge is missing ${asset}`);
+  for (const asset of ['shared/dmforge-store.js', 'encounter-rules.js', 'encounter-forge.js']) assert.equal(encounterPage.includes(asset) || existsSync(join(root, asset)), true, `Encounter Forge is missing ${asset}`);
 });
 
 test('Magic Item reward handoff copies only a safe summary into Session Console', () => {
@@ -85,9 +86,23 @@ test('Magic Item reward handoff copies only a safe summary into Session Console'
   assert.equal(adapter.includes('item.properties'), false);
 });
 
+test('Encounter Forge retains official rules data and Session Console handoff', () => {
+  const engine = readFileSync(join(root, 'encounter-rules.js'), 'utf8');
+  const app = readFileSync(join(root, 'encounter-forge.js'), 'utf8');
+  const page = readFileSync(join(root, 'encounter-forge.html'), 'utf8');
+  const sharedStore = readFileSync(join(root, 'shared/dmforge-store.js'), 'utf8');
+  const sessionAdapter = readFileSync(join(root, 'shared/session-console-adapter.js'), 'utf8');
+  assert.equal(engine.includes('THRESHOLDS_2014'), true);
+  assert.equal(engine.includes('BUDGETS_2024'), true);
+  assert.equal(app.includes('dmforge-pending-encounter-v1'), true);
+  assert.equal(page.includes('Launch in Session Console'), true);
+  assert.equal(sharedStore.includes('function syncEncounters'), true);
+  assert.equal(sessionAdapter.includes('function consumePendingEncounter'), true);
+});
+
 test('DM Forge homepage links every live tool', () => {
   const html = readFileSync(join(root, 'index.html'), 'utf8');
-  for (const route of ['campaigns.html', 'session-console.html', 'monster-cards.html', 'magic-items.html', 'https://cbw29512.github.io/healingbox/']) {
+  for (const route of ['campaigns.html', 'session-console.html', 'encounter-forge.html', 'monster-cards.html', 'magic-items.html', 'https://cbw29512.github.io/healingbox/']) {
     assert.equal(html.includes(route), true, `Homepage is missing ${route}`);
   }
 });
