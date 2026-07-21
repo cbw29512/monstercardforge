@@ -40,6 +40,7 @@
 - Combat chronicle
 - Shared campaign context
 - Live receipt of safe Magic Item reward summaries
+- Live receipt of safe NPC roleplay summaries
 - Direct Encounter Forge enemy imports
 
 ### Encounter Forge — Complete
@@ -80,35 +81,46 @@
 - Version-2 room migration to version 3
 - Campaign Hub room summaries
 
-## Phase 4 — Campaign Foundation — Active
+## Phase 4 — Campaign Library — Active
 
-### Complete
+### Shared foundation — Complete
 
 - Versioned `DMForgeStore` shared summary schema
 - Campaign Hub page
 - One active campaign across connected tools
-- Session, encounter, magic-item, and artifact-room discovery
+- Session, encounter, NPC, magic-item, and artifact-room discovery
 - Safe campaign counts and source labels
-- Query-based handoff into Session Console, Encounter Forge, Magic Item Forge, and Cleric in a Box
+- Query-based handoff into Session Console, Encounter Forge, NPC Forge, Magic Item Forge, and Cleric in a Box
 - Safe Magic Item → Session Rewards handoff
+- Safe NPC Forge → Session NPCs & Motives handoff
 - Encounter Forge → Session Console initiative handoff
-- Privacy tests proving detailed notes, item secrets, artwork, tactics, and full rules stay compartmentalized
+- Privacy tests proving detailed notes, NPC secrets, item curses, artwork, tactics, and full rules stay compartmentalized
 - Shared summary export
 
-### Next — NPC Forge
+### NPC Forge — Complete
 
-- Fast NPC builder
-- Motives, mannerisms, secrets, and relationships
-- Player-safe and DM-only cards
-- Campaign folders and reusable NPC library
-- Direct addition to Session Console prep
+- Public identity and private DM roleplay fields
+- Motives, mannerisms, fears, leverage, lies, secrets, and relationships
+- Player-safe and DM-only 5×7 cards
+- Secure full-NPC, name, and roleplay-cue generators
+- Campaign folders and reusable searchable NPC library
+- Save, edit, duplicate, delete, export, and import
+- Optional combat shorthand
+- Live card-fit warnings and continuation pages
+- Direct safe addition to Session Console prep
+- Live cross-tab NPC updates
+- Shared campaign summaries that exclude private NPC fields
+- Privacy and integration regression tests
 
-### Later — Loot Forge
+### Next — Loot Forge
 
 - Treasure parcel builder
 - Mundane and magic loot
+- Party ownership, status, and distribution tracking
 - Send magic items directly into Magic Item Forge
+- Send reward summaries into Session Console
 - Player-safe handouts and party loot sheets
+- Shared campaign loot summaries
 
 ### Later campaign work
 
