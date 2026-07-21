@@ -17,6 +17,10 @@ function hostId(code) {
   return `dmforge-player-display-${String(code).toLocaleLowerCase()}`;
 }
 
+function normalizeCode(value) {
+  return String(value || '').toUpperCase().replace(/[^A-HJ-NP-Z2-9]/g, '').slice(0, 6);
+}
+
 function setStatus(text, online = false) {
   $('#connectionText').textContent = text;
   $('#dot').className = `dot ${online ? 'online' : ''}`;
@@ -54,14 +58,15 @@ function teardownConnection() {
 }
 
 function connect(code) {
-  roomCode = String(code || '').trim().toUpperCase();
+  roomCode = normalizeCode(code);
   if (roomCode.length !== 6) {
     setStatus('Enter the six-character room code.');
     renderSetup();
     return;
   }
-  manualDisconnect = false;
+  manualDisconnect = true;
   teardownConnection();
+  manualDisconnect = false;
   setStatus('Connecting…');
   if (!window.Peer) {
     setStatus('Network library unavailable. Reload while online.');
@@ -134,12 +139,13 @@ function enterFullscreen() {
 
 $('#joinForm').addEventListener('submit', (event) => {
   event.preventDefault();
-  const code = $('#roomCode').value;
+  const code = normalizeCode($('#roomCode').value);
   const url = new URL(location.href);
-  url.searchParams.set('join', code.trim().toUpperCase());
+  url.searchParams.set('join', code);
   history.replaceState({}, '', url);
   connect(code);
 });
+$('#roomCode').addEventListener('input', (event) => { event.target.value = normalizeCode(event.target.value); });
 $('#changeRoom').onclick = () => {
   manualDisconnect = true;
   teardownConnection();
