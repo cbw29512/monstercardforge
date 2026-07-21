@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const pages = ['index.html', 'monster-cards.html', 'magic-items.html', 'session-console.html'];
+const pages = ['index.html', 'campaigns.html', 'monster-cards.html', 'magic-items.html', 'session-console.html'];
 
 function localAssetReferences(html) {
   const references = [];
@@ -15,7 +15,7 @@ function localAssetReferences(html) {
   }
   return references.filter((reference) => {
     const value = reference.trim();
-    return value && !/^(?:https?:|data:|mailto:|tel:|#|\/\/)/i.test(value);
+    return value && !/^(?:https?:|data:|mailto:|tel:|#|\/\/|\/)/i.test(value);
   });
 }
 
@@ -67,9 +67,27 @@ test('Magic Item Forge retains overflow detection and continuation printing', ()
   assert.equal(css.includes('.fit-status.warning'), true);
 });
 
+test('Campaign Hub and shared adapters are loaded by the connected tools', () => {
+  const campaignPage = readFileSync(join(root, 'campaigns.html'), 'utf8');
+  const sessionPage = readFileSync(join(root, 'session-console.html'), 'utf8');
+  const itemPage = readFileSync(join(root, 'magic-items.html'), 'utf8');
+  for (const asset of ['shared/dmforge-store.js', 'campaigns.js', 'campaigns.css']) assert.equal(campaignPage.includes(asset), true, `Campaign Hub is missing ${asset}`);
+  for (const asset of ['shared/dmforge-store.js', 'shared/session-console-adapter.js']) assert.equal(sessionPage.includes(asset), true, `Session Console is missing ${asset}`);
+  for (const asset of ['shared/dmforge-store.js', 'shared/magic-items-adapter.js']) assert.equal(itemPage.includes(asset), true, `Magic Item Forge is missing ${asset}`);
+});
+
+test('Magic Item reward handoff copies only a safe summary into Session Console', () => {
+  const adapter = readFileSync(join(root, 'shared/magic-items-adapter.js'), 'utf8');
+  assert.equal(adapter.includes('Send to Session Rewards'), true);
+  assert.equal(adapter.includes('Magic item reward:'), true);
+  assert.equal(adapter.includes('item.secret'), false);
+  assert.equal(adapter.includes('item.artData'), false);
+  assert.equal(adapter.includes('item.properties'), false);
+});
+
 test('DM Forge homepage links every live tool', () => {
   const html = readFileSync(join(root, 'index.html'), 'utf8');
-  for (const route of ['session-console.html', 'monster-cards.html', 'magic-items.html', 'https://cbw29512.github.io/healingbox/']) {
+  for (const route of ['campaigns.html', 'session-console.html', 'monster-cards.html', 'magic-items.html', 'https://cbw29512.github.io/healingbox/']) {
     assert.equal(html.includes(route), true, `Homepage is missing ${route}`);
   }
 });
