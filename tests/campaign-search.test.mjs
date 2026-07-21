@@ -33,11 +33,14 @@ test('Campaign Search avoids image blobs and renders record text safely', () => 
   assert.equal(script.includes('title.textContent = record.title'), true);
 });
 
-test('Campaign Search is clearly marked private and linked from Campaign Hub', () => {
+test('Campaign Search is clearly marked private and linked from navigation', () => {
   const page = readFileSync(join(root, 'campaign-search.html'), 'utf8');
   const hub = readFileSync(join(root, 'campaigns.html'), 'utf8');
+  const homepage = readFileSync(join(root, 'index.html'), 'utf8');
   assert.equal(page.includes('Private DM view:'), true);
   assert.equal(page.includes('should not be shown on the Player Display'), true);
   assert.equal(hub.includes('campaign-search.html'), true);
   assert.equal(hub.includes('Search Everything'), true);
+  assert.equal(homepage.includes('campaign-search.html'), true);
+  assert.equal(homepage.includes('Campaign Search'), true);
 });
