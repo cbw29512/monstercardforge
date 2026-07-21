@@ -26,7 +26,7 @@
 - Live fit warnings and automatic continuation sheets
 - Finished Cleric in a Box Unique Artifact showcase
 
-## Phase 3 — Run the Session — Complete
+## Phase 3 — Run and Share the Session — Complete
 
 ### Session Console — Complete
 
@@ -59,6 +59,18 @@
 - Printable encounter packets
 - Rules and integration regression tests
 
+### Shared Player Display — Complete
+
+- DM-hosted read-only display room inside Session Console
+- Six-character room code and copyable player link
+- Phone- and tablet-first initiative page
+- Current round and active turn
+- Public initiative order and conditions
+- Full-screen and keep-awake controls
+- Automatic reconnect attempts
+- No enemy HP, AC, Dexterity, combat logs, session prep, or DM notes transmitted
+- Privacy regression tests
+
 ### Cleric in a Box Rules and Security — Complete for supported content
 
 - Host-origin authorization for reset, undo, and settings
@@ -82,14 +94,6 @@
 - Encounter Forge → Session Console initiative handoff
 - Privacy tests proving detailed notes, item secrets, artwork, tactics, and full rules stay compartmentalized
 - Shared summary export
-
-### Next — Shared Player Display
-
-- Phone and tablet initiative view
-- Current turn and round
-- Public conditions and visible combatants
-- No private enemy HP, tactics, or DM notes
-- Join-by-link or room code
 
 ### Next — NPC Forge
 
@@ -120,9 +124,9 @@
 - axe accessibility testing
 - Chrome and Edge print screenshots
 - Physical phone and tablet testing
-- Separate Wi-Fi and cellular Cleric in a Box testing
+- Separate Wi-Fi and cellular multiplayer testing
 - Physical cardstock and duplex printer calibration
 
 ## Product Rule
 
-Every DM Forge tool must be fast enough to use during a session, readable on an ordinary printer, attractive enough to hand directly to a player, and portable without a required account. Shared summaries may connect tools, but private DM records remain compartmentalized unless the DM explicitly transfers them.
+Every DM Forge tool must be fast enough to use during a session, readable on an ordinary printer, attractive enough to hand directly to a player, and portable without a required account. Shared summaries and public displays may connect the table, but private DM records remain compartmentalized unless the DM explicitly transfers them.
