@@ -1,5 +1,6 @@
 import { safeRender } from './logger.js';
 import { artThemeFor } from './artThemes.js';
+import { escapeHtml } from './security.js';
 
 export const DAMAGE_TYPES = {
   S: 'Slashing',
@@ -42,7 +43,7 @@ export function typeClass(type) {
 export function listText(items) {
   return safeRender('listText failed', '—', () => {
     if (!items || !items.length) return '—';
-    return items.join(', ');
+    return items.map((item) => escapeHtml(item)).join(', ');
   });
 }
 
@@ -68,9 +69,11 @@ export function renderItems(items, options = {}) {
     if (!items || !items.length) return '<div class="item">—</div>';
     const limit = options.limit ?? items.length;
     return items.slice(0, limit).map((item) => {
-      const attackLine = item.hit ? ` <span class="attack-line">${item.hit} | ${item.reach || ''} | ${item.damage || ''}</span>` : '';
-      const body = item.text ? ` <span class="item-text">— ${item.text}</span>` : '';
-      return `<div class="item"><b>${item.name || 'Unnamed'}</b>${attackLine}${body}</div>`;
+      const attackLine = item.hit
+        ? ` <span class="attack-line">${escapeHtml(item.hit)} | ${escapeHtml(item.reach || '')} | ${escapeHtml(item.damage || '')}</span>`
+        : '';
+      const body = item.text ? ` <span class="item-text">— ${escapeHtml(item.text)}</span>` : '';
+      return `<div class="item"><b>${escapeHtml(item.name || 'Unnamed')}</b>${attackLine}${body}</div>`;
     }).join('');
   });
 }
@@ -82,9 +85,9 @@ function renderArt(monster) {
     return `<div class="art art-${monsterClass}">
       <div class="art-glow"></div>
       <div class="art-moon"></div>
-      <div class="art-sigil">${theme.icon}</div>
+      <div class="art-sigil">${escapeHtml(theme.icon)}</div>
       <div class="art-ground"></div>
-      <div class="art-label">${theme.title}</div>
+      <div class="art-label">${escapeHtml(theme.title)}</div>
     </div>`;
   });
 }
@@ -92,9 +95,9 @@ function renderArt(monster) {
 export function renderCardFront(monster) {
   return safeRender('renderCardFront failed', '<div class="card">Card failed</div>', () => `<div class="card ${typeClass(monster.type)}" data-card-face="front">
     ${renderArt(monster)}
-    <div class="badge">CR ${monster.cr}</div>
-    <div class="type-chip">${monster.type}</div>
-    <div class="card-title"><strong>${monster.name}</strong><span>${monster.size} ${monster.type}</span></div>
+    <div class="badge">CR ${escapeHtml(monster.cr)}</div>
+    <div class="type-chip">${escapeHtml(monster.type)}</div>
+    <div class="card-title"><strong>${escapeHtml(monster.name)}</strong><span>${escapeHtml(monster.size)} ${escapeHtml(monster.type)}</span></div>
   </div>`);
 }
 
@@ -102,11 +105,11 @@ export function renderCombatBack(monster) {
   return safeRender('renderCombatBack failed', '<div class="card back-card">Combat failed</div>', () => {
     const a = monster.abilities || {};
     return `<div class="card back-card ${typeClass(monster.type)}" data-card-face="combat">
-      <div class="stat-row"><span>🛡 ${monster.ac}</span><span>❤️ ${monster.hp}</span><span>👣 ${monster.speed}</span></div>
+      <div class="stat-row"><span>🛡 ${escapeHtml(monster.ac)}</span><span>❤️ ${escapeHtml(monster.hp)}</span><span>👣 ${escapeHtml(monster.speed)}</span></div>
       <div class="ability-grid">
-        ${['str','dex','con','int','wis','cha'].map((key) => `<div class="ability"><b>${key.toUpperCase()}</b>${a[key] ?? 10}<br>${abilityMod(a[key] ?? 10)}</div>`).join('')}
+        ${['str','dex','con','int','wis','cha'].map((key) => `<div class="ability"><b>${key.toUpperCase()}</b>${escapeHtml(a[key] ?? 10)}<br>${abilityMod(a[key] ?? 10)}</div>`).join('')}
       </div>
-      <div class="section"><h4>Combat</h4><div><b>Saves:</b> ${listText(monster.saves)}</div><div><b>Skills:</b> ${listText(monster.skills)}</div><div><b>Senses:</b> ${monster.senses || '—'}</div><div><b>Res:</b> ${listText(monster.resistances)} | <b>Imm:</b> ${listText(monster.immunities)}</div></div>
+      <div class="section"><h4>Combat</h4><div><b>Saves:</b> ${listText(monster.saves)}</div><div><b>Skills:</b> ${listText(monster.skills)}</div><div><b>Senses:</b> ${escapeHtml(monster.senses || '—')}</div><div><b>Res:</b> ${listText(monster.resistances)} | <b>Imm:</b> ${listText(monster.immunities)}</div></div>
       <div class="section actions"><h4>Actions</h4>${renderItems(monster.actions, { limit: 5 })}</div>
       <div class="section"><h4>Bonus / Reaction</h4><b>BA:</b> ${renderItems(monster.bonusActions, { limit: 2 })} <b>RX:</b> ${renderItems(monster.reactions, { limit: 2 })}</div>
       <div class="section traits"><h4>Traits</h4>${renderItems(monster.traits, { limit: 3 })}</div>
@@ -119,9 +122,9 @@ export function renderSpellPanel(monster) {
   return safeRender('renderSpellPanel failed', '<p class="tiny">Spell panel failed.</p>', () => {
     if (!monster.spellcasting) return '<p class="tiny">No spellcasting.</p>';
     const rows = Object.entries(monster.spellcasting.levels || {})
-      .map(([level, spells]) => `<div><b>${level}:</b> ${spells.join(', ')}</div>`)
+      .map(([level, spells]) => `<div><b>${escapeHtml(level)}:</b> ${(spells || []).map((spell) => escapeHtml(spell)).join(', ')}</div>`)
       .join('');
-    return `<p class="tiny"><b>${monster.spellcasting.header}</b></p><div class="tiny spell-list">${rows}</div>`;
+    return `<p class="tiny"><b>${escapeHtml(monster.spellcasting.header)}</b></p><div class="tiny spell-list">${rows}</div>`;
   });
 }
 
@@ -133,7 +136,7 @@ export function renderPanel(panelType, monster) {
     if (panelType === PANEL_TYPES.TRAITS) return `<div class="face"><h3>Traits / Reactions</h3><div class="tiny">${renderItems(monster.traits)}${renderItems(monster.reactions)}</div></div>`;
     if (panelType === PANEL_TYPES.LEGENDARY) return `<div class="face"><h3>Legendary / Lair</h3><div class="tiny">${renderItems(monster.legendaryActions)}${renderItems(monster.lairActions)}</div></div>`;
     if (panelType === PANEL_TYPES.SPELLS) return `<div class="face"><h3>Spellcasting</h3>${renderSpellPanel(monster)}</div>`;
-    return `<div class="face"><h3>Source / Notes</h3><p class="tiny"><b>Source:</b> ${monster.source}</p><p class="tiny"><b>Ruleset:</b> ${monster.ruleset}</p><p class="tiny">Use this panel for DM notes, QR code, and attribution in exported packs.</p></div>`;
+    return `<div class="face"><h3>Source / Notes</h3><p class="tiny"><b>Source:</b> ${escapeHtml(monster.source)}</p><p class="tiny"><b>Ruleset:</b> ${escapeHtml(monster.ruleset)}</p><p class="tiny">Use this panel for DM notes, QR code, and attribution in exported packs.</p></div>`;
   });
 }
 
