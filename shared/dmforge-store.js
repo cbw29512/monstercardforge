@@ -14,6 +14,7 @@
     const text = String(value ?? '').replace(/[\u0000-\u001f\u007f]/g, '').trim();
     return (text || fallback).slice(0, maximum);
   }
+  function lineCount(value) { return String(value || '').split(/\n+/).map((line) => line.trim()).filter(Boolean).length; }
   function campaignKey(name) { return cleanText(name, 'Untitled Campaign').toLocaleLowerCase().replace(/\s+/g, ' '); }
   function emptyStore() {
     return { schemaVersion: SCHEMA_VERSION, updatedAt: now(), activeCampaignId: null, campaigns: [], magicItems: [], sessions: [], encounters: [], npcs: [], loot: [], healingRooms: [], settings: {} };
@@ -118,7 +119,36 @@
       store.npcs = store.npcs.filter((entry) => entry.source !== 'npc-forge');
       for (const npc of npcs) {
         const campaign = ensureCampaignIn(store, npc.campaign || 'Unsorted', { source: 'npc-forge', ruleset: npc.ruleset });
-        store.npcs.push({ id: `npc-${cleanText(npc.id || uid(), '', 100)}`, source: 'npc-forge', sourceId: cleanText(npc.id || '', '', 100), campaignId: campaign.id, name: cleanText(npc.name, 'Unnamed NPC', 160), role: cleanText(npc.role, 'NPC', 100), faction: cleanText(npc.faction, '', 100), status: cleanText(npc.status, 'Unknown', 40), location: cleanText(npc.location, '', 160), tagCount: String(npc.tags || '').split(',').map((tag) => tag.trim()).filter(Boolean).length, relationshipCount: String(npc.relationships || '').split(/\n+/).map((line) => line.trim()).filter(Boolean).length, updatedAt: npc.updatedAt || now() });
+        store.npcs.push({ id: `npc-${cleanText(npc.id || uid(), '', 100)}`, source: 'npc-forge', sourceId: cleanText(npc.id || '', '', 100), campaignId: campaign.id, name: cleanText(npc.name, 'Unnamed NPC', 160), role: cleanText(npc.role, 'NPC', 100), faction: cleanText(npc.faction, '', 100), status: cleanText(npc.status, 'Unknown', 40), location: cleanText(npc.location, '', 160), tagCount: String(npc.tags || '').split(',').map((tag) => tag.trim()).filter(Boolean).length, relationshipCount: lineCount(npc.relationships), updatedAt: npc.updatedAt || now() });
+      }
+    });
+  }
+
+  function syncLoot(parcels) {
+    if (!Array.isArray(parcels)) return read();
+    return mutate((store) => {
+      store.loot = store.loot.filter((entry) => entry.source !== 'loot-forge');
+      for (const parcel of parcels) {
+        const campaign = ensureCampaignIn(store, parcel.campaign || 'Unsorted', { source: 'loot-forge', ruleset: parcel.ruleset });
+        const coins = ['cp', 'sp', 'ep', 'gp', 'pp'].map((coin) => Math.max(0, Number(parcel[coin]) || 0));
+        store.loot.push({
+          id: `loot-${cleanText(parcel.id || uid(), '', 100)}`,
+          source: 'loot-forge',
+          sourceId: cleanText(parcel.id || '', '', 100),
+          campaignId: campaign.id,
+          title: cleanText(parcel.title, 'Untitled Treasure Parcel', 160),
+          sourceLabel: cleanText(parcel.source, '', 160),
+          status: cleanText(parcel.status, 'Planned', 40),
+          tier: cleanText(parcel.tier, 'Minor', 40),
+          assignedTo: cleanText(parcel.assignedTo, '', 120),
+          coinKinds: coins.filter((amount) => amount > 0).length,
+          coinTotalCount: coins.reduce((sum, amount) => sum + amount, 0),
+          valuableCount: lineCount(parcel.valuables),
+          mundaneCount: lineCount(parcel.mundaneItems),
+          magicItemCount: lineCount(parcel.magicItems),
+          clueCount: lineCount(parcel.clues),
+          updatedAt: parcel.updatedAt || now()
+        });
       }
     });
   }
@@ -139,5 +169,5 @@
   }
   function snapshot() { return clone(read()); }
 
-  root.DMForgeStore = Object.freeze({ STORAGE_KEY, SCHEMA_VERSION, snapshot, listCampaigns, ensureCampaign, setActiveCampaign, getActiveCampaign, syncSessionConsole, syncMagicItems, syncEncounters, syncNpcs, syncHealingRoom, counts });
+  root.DMForgeStore = Object.freeze({ STORAGE_KEY, SCHEMA_VERSION, snapshot, listCampaigns, ensureCampaign, setActiveCampaign, getActiveCampaign, syncSessionConsole, syncMagicItems, syncEncounters, syncNpcs, syncLoot, syncHealingRoom, counts });
 })(globalThis);
