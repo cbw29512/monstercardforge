@@ -8,6 +8,9 @@ export const CR_XP = Object.freeze({
   '26': 90000, '27': 105000, '28': 120000, '29': 135000, '30': 155000
 });
 
+// Official rules allow a CR 0 creature to be worth either 0 or 10 XP.
+// The catalog default is 10 XP; an explicit monster.xp value of 0 is preserved.
+export const CR_ZERO_XP_OPTIONS = Object.freeze([0, 10]);
 export const CR_OPTIONS = Object.freeze(Object.keys(CR_XP));
 
 export const THRESHOLDS_2014 = Object.freeze({
@@ -48,8 +51,14 @@ export function totalMonsterCount(monsters = []) {
   return monsters.reduce((total, monster) => total + Math.max(0, Number(monster.quantity) || 0), 0);
 }
 
+function monsterXp(monster) {
+  const explicit = Number(monster?.xp);
+  if (Number.isFinite(explicit) && explicit >= 0) return explicit;
+  return xpForCr(monster?.cr);
+}
+
 export function rawMonsterXp(monsters = []) {
-  return monsters.reduce((total, monster) => total + (Math.max(0, Number(monster.quantity) || 0) * Math.max(0, Number(monster.xp) || xpForCr(monster.cr))), 0);
+  return monsters.reduce((total, monster) => total + (Math.max(0, Number(monster.quantity) || 0) * monsterXp(monster)), 0);
 }
 
 export function multiplier2014(monsterCount, partySize) {
@@ -101,7 +110,8 @@ export function difficulty2024(rawXp, budgets) {
   if (rawXp < low) return 'Below Low';
   if (rawXp < moderate) return 'Low';
   if (rawXp < high) return 'Moderate';
-  return 'High';
+  if (rawXp === high) return 'High';
+  return 'Above High';
 }
 
 function crWarnings(characters, monsters) {
@@ -109,7 +119,13 @@ function crWarnings(characters, monsters) {
   const average = averagePartyLevel(characters);
   const dangerous = monsters.filter((monster) => Number(monster.quantity) > 0 && numericCr(monster.cr) > average);
   if (!dangerous.length) return [];
-  return [`${dangerous.map((monster) => monster.name).join(', ')} ${dangerous.length === 1 ? 'has' : 'have'} a CR above the party's average level (${average.toFixed(1)}). A single action may overwhelm a weaker character.`];
+  return [`${dangerous.map((monster) => monster.name).join(', ')} ${dangerous.length === 1 ? 'has' : 'have'} a CR above the party's average level (${average.toFixed(1)}). Official guidance warns that a higher-CR creature can overwhelm lower-level characters; using the average for a mixed-level party is a DM Forge heuristic.`];
+}
+
+function crZeroWarnings(monsters) {
+  const crZero = monsters.filter((monster) => Number(monster.quantity) > 0 && String(monster.cr) === '0');
+  if (!crZero.length) return [];
+  return ['Official 5e and 5.5e tables assign CR 0 creatures either 0 or 10 XP depending on the stat block. Verify each CR 0 creature’s listed XP; Encounter Forge preserves an explicit 0 and otherwise uses the catalog value.'];
 }
 
 export function evaluateEncounter({ ruleset = '2024', characters = [], monsters = [] } = {}) {
@@ -120,7 +136,7 @@ export function evaluateEncounter({ ruleset = '2024', characters = [], monsters 
   const warnings = [];
   if (!party.length) warnings.push('Add at least one character before trusting the difficulty result.');
   if (!roster.length) warnings.push('Add at least one monster to build an encounter.');
-  warnings.push(...crWarnings(party, roster));
+  warnings.push(...crWarnings(party, roster), ...crZeroWarnings(roster));
 
   if (String(ruleset) === '2014') {
     const thresholds = partyThresholds2014(party);
@@ -128,10 +144,10 @@ export function evaluateEncounter({ ruleset = '2024', characters = [], monsters 
     const adjustedXp = Math.round(rawXp * multiplier);
     const crValues = roster.map((monster) => numericCr(monster.cr));
     if (crValues.length > 1 && Math.max(...crValues) - Math.min(...crValues) >= 5) {
-      warnings.push('The 2014 rules allow the DM to ignore creatures far below the group’s average CR when those creatures do not materially affect the fight. Encounter Forge currently counts every creature.');
+      warnings.push('The 5e rules allow the DM to omit creatures that are significantly weaker than the rest when they do not materially affect the fight. DM Forge uses a CR spread of 5 as a review prompt but still counts every creature.');
     }
     return {
-      ruleset: '2014', labels: ['Easy', 'Medium', 'Hard', 'Deadly'], thresholds,
+      ruleset: '2014', rulesLabel: '5e (2014)', labels: ['Easy', 'Medium', 'Hard', 'Deadly'], thresholds,
       rawXp, adjustedXp, multiplier, monsterCount,
       difficulty: difficulty2014(adjustedXp, thresholds), warnings,
       remaining: {
@@ -145,10 +161,11 @@ export function evaluateEncounter({ ruleset = '2024', characters = [], monsters 
 
   const thresholds = partyBudgets2024(party);
   const uniqueStatBlocks = new Set(roster.map((monster) => monster.sourceId || `${monster.name}|${monster.cr}`)).size;
-  if (party.length && monsterCount > party.length * 2) warnings.push('This encounter has more than two creatures per character. The 2024 guidance recommends using fragile creatures that can be defeated quickly.');
-  if (uniqueStatBlocks > 3) warnings.push(`This encounter uses ${uniqueStatBlocks} different stat blocks. The 2024 guidance warns that more than two or three complex stat blocks can be difficult to run.`);
+  if (party.length && monsterCount > party.length * 2) warnings.push('This encounter has more than two creatures per character. Official 5.5e guidance recommends using fragile creatures that can be defeated quickly when fielding large groups.');
+  if (uniqueStatBlocks > 3) warnings.push(`This encounter uses ${uniqueStatBlocks} different stat blocks. Official 5.5e guidance warns that more than two or three complex stat blocks can be difficult to run.`);
+  if (thresholds[2] && rawXp > thresholds[2]) warnings.push(`This encounter exceeds the official High XP budget by ${(rawXp - thresholds[2]).toLocaleString()} XP. The 5.5e procedure says to spend the budget without going over.`);
   return {
-    ruleset: '2024', labels: ['Low', 'Moderate', 'High'], thresholds,
+    ruleset: '2024', rulesLabel: '5.5e (2024)', labels: ['Low', 'Moderate', 'High'], thresholds,
     rawXp, adjustedXp: rawXp, multiplier: 1, monsterCount,
     difficulty: difficulty2024(rawXp, thresholds), warnings,
     remaining: { low: thresholds[0] - rawXp, moderate: thresholds[1] - rawXp, high: thresholds[2] - rawXp }
@@ -156,10 +173,28 @@ export function evaluateEncounter({ ruleset = '2024', characters = [], monsters 
 }
 
 export const RULES_VERIFICATION = Object.freeze({
-  verifiedAt: '2026-07-22',
+  verifiedAt: '2026-07-21',
+  terminology: 'D&D Beyond labels 2014 rules as 5e and revised 2024 rules as 5.5e as of 2026-03-02. Internal storage values remain 2014 and 2024 for compatibility.',
   sources: {
-    '2014': 'D&D Beyond Basic Rules (2014), Building Combat Encounters',
-    '2024': 'D&D Beyond Basic Rules (2024), DM’s Toolbox',
-    xp: 'D&D Beyond Basic Rules, Experience Points by Challenge Rating'
+    '2014-encounters': {
+      title: 'Basic Rules (2014): Building Combat Encounters',
+      url: 'https://www.dndbeyond.com/sources/dnd/basic-rules-2014/building-combat-encounters'
+    },
+    '2024-encounters': {
+      title: 'Free Rules (2024): DM’s Toolbox',
+      url: 'https://www.dndbeyond.com/sources/dnd/br-2024/dms-toolbox'
+    },
+    'cr-xp-2014': {
+      title: 'Basic Rules (2014): Monsters — Experience Points by Challenge Rating',
+      url: 'https://www.dndbeyond.com/sources/dnd/basic-rules-2014/monsters'
+    },
+    'cr-xp-2024': {
+      title: 'Free Rules (2024): How to Use a Monster',
+      url: 'https://www.dndbeyond.com/sources/dnd/br-2024/how-to-use-a-monster'
+    },
+    terminology: {
+      title: 'D&D Beyond Changelog: Updating 2024 to 5.5e',
+      url: 'https://www.dndbeyond.com/changelog/'
+    }
   }
 });
