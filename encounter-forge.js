@@ -1,8 +1,10 @@
 import { monsters, homebrewExample } from './src/data/monsters.js';
 import { CR_OPTIONS, RULES_VERIFICATION, evaluateEncounter, xpForCr } from './encounter-rules.js';
+import { loadDungeonCardsMonsters } from './encounter-monster-catalog.js';
 
 const STORAGE_KEY = 'dmforge-encounter-forge-v1';
 const PENDING_KEY = 'dmforge-pending-encounter-v1';
+const CATALOG_RENDER_LIMIT = 120;
 const store = globalThis.DMForgeStore;
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -54,6 +56,10 @@ function normalizeState(raw) {
 let state = normalizeState(readJson(STORAGE_KEY, null));
 let roster = [];
 let editingEncounterId = null;
+let verifiedMonsters = [];
+let verifiedSources = [];
+let catalogLoadState = 'loading';
+let catalogLoadError = '';
 
 function persist() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -72,6 +78,12 @@ function crOptions(selected = '1') {
   return CR_OPTIONS.map((cr) => `<option value="${cr}" ${String(cr) === String(selected) ? 'selected' : ''}>${cr}</option>`).join('');
 }
 
+function rulesLabel(value) {
+  if (value === '5e-2014') return '5e (2014)';
+  if (value === '5e-2024') return '5.5e (2024)';
+  return value === 'homebrew' ? 'Homebrew' : value;
+}
+
 function importedCatalog() {
   return [...monsters, homebrewExample].map((monster) => ({
     sourceId: monster.id,
@@ -83,12 +95,68 @@ function importedCatalog() {
     ac: Number.parseInt(monster.ac, 10) || null,
     hp: Number.parseInt(monster.hp, 10) || null,
     dex: Number(monster.abilities?.dex) || 10,
-    source: monster.source || 'Monster Card Forge'
+    source: monster.source || 'Monster Card Forge',
+    sourceReference: monster.source || 'Monster Card Forge',
+    sourceLicense: monster.license || (monster.ruleset === 'homebrew' ? 'DM Forge Original Homebrew' : 'CC BY 4.0'),
+    catalogSource: monster.ruleset === 'homebrew' ? 'homebrew-sample' : 'monster-card-forge'
   }));
 }
 
+function catalogKey(monster) {
+  return `${String(monster.ruleset).toLocaleLowerCase()}|${String(monster.name).trim().toLocaleLowerCase()}`;
+}
+
 function catalog() {
-  return [...importedCatalog(), ...state.customMonsters];
+  const merged = [];
+  const seen = new Set();
+  for (const monster of [...verifiedMonsters, ...importedCatalog()]) {
+    const key = catalogKey(monster);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    merged.push(monster);
+  }
+  return [...merged, ...state.customMonsters];
+}
+
+function renderCatalogSourceStatus() {
+  const container = $('#catalogSourceStatus');
+  if (!container) return;
+  if (catalogLoadState === 'loading') {
+    container.className = 'catalog-source-status loading';
+    container.innerHTML = '<div><b>Loading verified DungeonCards SRD catalog…</b><span>Built-in samples and custom monsters remain available while it loads.</span></div>';
+    return;
+  }
+  if (catalogLoadState === 'ready') {
+    const count2014 = verifiedMonsters.filter((monster) => monster.ruleset === '5e-2014').length;
+    const count2024 = verifiedMonsters.filter((monster) => monster.ruleset === '5e-2024').length;
+    container.className = 'catalog-source-status ready';
+    container.innerHTML = `<div><b>${verifiedMonsters.length.toLocaleString()} verified SRD monsters loaded</b><span>${count2014} from SRD 5.1 · ${count2024} from SRD 5.2.1 · Source pages and CC BY 4.0 attribution preserved.</span></div><a class="btn light" href="rules-compendium.html">Open Rules Compendium</a>`;
+    return;
+  }
+  container.className = 'catalog-source-status warning';
+  container.innerHTML = `<div><b>Verified catalog unavailable</b><span>${esc(catalogLoadError || 'DungeonCards could not be reached.')} Built-in samples and saved custom monsters still work.</span></div><button class="btn light" id="retryMonsterCatalog" type="button">Retry Catalog</button>`;
+  $('#retryMonsterCatalog').onclick = loadVerifiedCatalog;
+}
+
+async function loadVerifiedCatalog() {
+  catalogLoadState = 'loading';
+  catalogLoadError = '';
+  renderCatalogSourceStatus();
+  try {
+    const result = await loadDungeonCardsMonsters();
+    verifiedMonsters = result.monsters;
+    verifiedSources = result.sources;
+    catalogLoadState = 'ready';
+  } catch (error) {
+    console.error('[EncounterForge] Could not load DungeonCards monster catalog', error);
+    verifiedMonsters = [];
+    verifiedSources = [];
+    catalogLoadState = 'error';
+    catalogLoadError = error?.message || 'The verified catalog could not be loaded.';
+  }
+  renderCatalogSourceStatus();
+  renderFilters();
+  renderCatalog();
 }
 
 function renderContext() {
@@ -140,17 +208,23 @@ function newProfile() {
 }
 
 function renderFilters() {
+  const typeSelect = $('#typeFilter');
+  const selectedType = typeSelect.value || 'all';
   const types = [...new Set(catalog().map((monster) => monster.type))].sort((a, b) => a.localeCompare(b));
-  $('#typeFilter').innerHTML = '<option value="all">All types</option>' + types.map((type) => `<option value="${esc(type)}">${esc(type)}</option>`).join('');
-  $('#customCr').innerHTML = crOptions('1');
+  typeSelect.innerHTML = '<option value="all">All types</option>' + types.map((type) => `<option value="${esc(type)}">${esc(type)}</option>`).join('');
+  typeSelect.value = types.includes(selectedType) ? selectedType : 'all';
+  if (!$('#customCr').options.length) $('#customCr').innerHTML = crOptions('1');
 }
 
 function renderCatalog() {
   const search = $('#monsterSearch').value.trim().toLocaleLowerCase();
   const type = $('#typeFilter').value;
   const rules = $('#monsterRulesFilter').value;
-  const visible = catalog().filter((monster) => (!search || `${monster.name} ${monster.type} ${monster.cr}`.toLocaleLowerCase().includes(search)) && (type === 'all' || monster.type === type) && (rules === 'all' || monster.ruleset === rules));
-  $('#monsterCatalog').innerHTML = visible.length ? visible.map((monster) => `<article class="monster-option"><h3>${esc(monster.name)}</h3><div class="monster-meta">CR ${esc(monster.cr)} · ${Number(monster.xp).toLocaleString()} XP</div><div class="monster-meta">${esc(monster.type)} · ${esc(monster.ruleset)}</div><p>AC ${monster.ac ?? '—'} · HP ${monster.hp ?? '—'}</p><button class="btn light" type="button" data-add-monster="${esc(monster.sourceId)}">Add to Encounter</button></article>`).join('') : '<p class="empty-state">No monsters match these filters.</p>';
+  const matches = catalog().filter((monster) => (!search || `${monster.name} ${monster.type} ${monster.cr} ${monster.sourceReference || monster.source || ''}`.toLocaleLowerCase().includes(search)) && (type === 'all' || monster.type === type) && (rules === 'all' || monster.ruleset === rules));
+  const visible = matches.slice(0, CATALOG_RENDER_LIMIT);
+  const summary = $('#catalogResultSummary');
+  if (summary) summary.textContent = matches.length > CATALOG_RENDER_LIMIT ? `Showing the first ${CATALOG_RENDER_LIMIT} of ${matches.length.toLocaleString()} matches. Search or filter to narrow the list.` : `${matches.length.toLocaleString()} monster${matches.length === 1 ? '' : 's'} match the current filters.`;
+  $('#monsterCatalog').innerHTML = visible.length ? visible.map((monster) => `<article class="monster-option"><h3>${esc(monster.name)}</h3><div class="monster-meta">CR ${esc(monster.cr)} · ${Number(monster.xp).toLocaleString()} XP</div><div class="monster-meta">${esc(monster.type)} · ${esc(rulesLabel(monster.ruleset))}</div><p>AC ${monster.ac ?? '—'} · HP ${monster.hp ?? '—'} · Dex ${monster.dex ?? '—'}</p><small class="monster-source">${esc(monster.sourceReference || monster.source || 'Custom monster')} · ${esc(monster.sourceLicense || 'User-created')}</small><button class="btn light" type="button" data-add-monster="${esc(monster.sourceId)}">Add to Encounter</button></article>`).join('') : '<p class="empty-state">No monsters match these filters.</p>';
   $$('[data-add-monster]').forEach((button) => button.onclick = () => addMonster(button.dataset.addMonster));
 }
 
@@ -170,7 +244,8 @@ function addCustomMonster(event) {
     sourceId: uid('custom-monster'), name: cleanName(data.name, 'Custom Monster'), cr: data.cr,
     xp: xpForCr(data.cr), type: cleanName(data.type, 'creature').toLocaleLowerCase(), ruleset: data.ruleset,
     ac: Number(data.ac) || null, hp: Number(data.hp) || null, dex: Number(data.dex) || 10,
-    source: 'Encounter Forge custom'
+    source: 'Encounter Forge custom', sourceReference: 'User-created custom monster',
+    sourceLicense: 'User-created homebrew', catalogSource: 'encounter-forge-custom'
   };
   state.customMonsters.unshift(monster);
   persist(); renderFilters(); renderCatalog(); addMonster(monster.sourceId, Math.max(1, Number(data.quantity) || 1));
@@ -183,7 +258,7 @@ function renderRoster() {
     container.innerHTML = '<div class="empty-state">Add monsters from the catalog or create a custom monster.</div>';
     return;
   }
-  container.innerHTML = roster.map((monster) => `<article class="roster-row"><div><h3>${esc(monster.name)}</h3><small>CR ${esc(monster.cr)} · ${Number(monster.xp).toLocaleString()} XP each · AC ${monster.ac ?? '—'} · HP ${monster.hp ?? '—'}</small></div><div class="qty-controls"><button type="button" data-qty="${esc(monster.sourceId)}" data-delta="-1">−</button><b>${monster.quantity}</b><button type="button" data-qty="${esc(monster.sourceId)}" data-delta="1">+</button></div><b>${(monster.xp * monster.quantity).toLocaleString()} XP</b><button class="btn light" type="button" data-remove-monster="${esc(monster.sourceId)}">Remove</button></article>`).join('');
+  container.innerHTML = roster.map((monster) => `<article class="roster-row"><div><h3>${esc(monster.name)}</h3><small>CR ${esc(monster.cr)} · ${Number(monster.xp).toLocaleString()} XP each · AC ${monster.ac ?? '—'} · HP ${monster.hp ?? '—'}</small><small>${esc(monster.sourceReference || monster.source || 'Custom monster')}</small></div><div class="qty-controls"><button type="button" data-qty="${esc(monster.sourceId)}" data-delta="-1">−</button><b>${monster.quantity}</b><button type="button" data-qty="${esc(monster.sourceId)}" data-delta="1">+</button></div><b>${(monster.xp * monster.quantity).toLocaleString()} XP</b><button class="btn light" type="button" data-remove-monster="${esc(monster.sourceId)}">Remove</button></article>`).join('');
   $$('[data-qty]').forEach((button) => button.onclick = () => {
     const monster = roster.find((entry) => entry.sourceId === button.dataset.qty);
     if (!monster) return;
@@ -326,8 +401,9 @@ function printPacket() {
   const encounter = encounterSnapshot();
   const result = evaluation();
   const partyRows = encounter.party.map((character) => `<tr><td>${esc(character.name)}</td><td>${character.level}</td></tr>`).join('');
-  const monsterRows = encounter.monsters.map((monster) => `<tr><td>${esc(monster.name)}</td><td>${monster.quantity}</td><td>${esc(monster.cr)}</td><td>${Number(monster.xp).toLocaleString()}</td><td>${monster.ac ?? '—'}</td><td>${monster.hp ?? '—'}</td></tr>`).join('');
-  $('#printPacket').innerHTML = `<h1>${esc(encounter.name)}</h1><p>${esc(encounter.campaign)} · ${esc(encounter.ruleset)} rules · ${esc(encounter.environment)}</p><div class="print-summary"><div><b>${esc(result.difficulty)}</b><br>Difficulty</div><div><b>${result.rawXp.toLocaleString()}</b><br>Base XP</div><div><b>${result.adjustedXp.toLocaleString()}</b><br>${result.ruleset === '2014' ? 'Adjusted XP' : 'Budget XP'}</div><div><b>${result.monsterCount}</b><br>Creatures</div></div><div class="print-grid"><section class="print-block"><h2>Party</h2><table class="print-table"><thead><tr><th>Character</th><th>Level</th></tr></thead><tbody>${partyRows}</tbody></table></section><section class="print-block"><h2>Scene</h2><p><b>Objective:</b> ${esc(encounter.objective || '—')}</p><p><b>Terrain / tactics:</b> ${esc(encounter.notes || '—')}</p></section><section class="print-block wide"><h2>Opposition</h2><table class="print-table"><thead><tr><th>Monster</th><th>Qty</th><th>CR</th><th>XP Each</th><th>AC</th><th>HP</th></tr></thead><tbody>${monsterRows}</tbody></table></section><section class="print-block wide"><h2>Warnings and Reminders</h2>${result.warnings.length ? result.warnings.map((warning) => `<p class="print-warning">${esc(warning)}</p>`).join('') : '<p>No automatic warnings.</p>'}<p>Difficulty is a planning guideline. Terrain, surprise, resources, monster abilities, and player tactics can change the result.</p><p><b>Rules data verified:</b> ${RULES_VERIFICATION.verifiedAt}</p></section></div>`;
+  const monsterRows = encounter.monsters.map((monster) => `<tr><td>${esc(monster.name)}</td><td>${monster.quantity}</td><td>${esc(monster.cr)}</td><td>${Number(monster.xp).toLocaleString()}</td><td>${monster.ac ?? '—'}</td><td>${monster.hp ?? '—'}</td><td>${esc(monster.sourceReference || monster.source || 'Custom')}</td></tr>`).join('');
+  const sourceNote = verifiedSources.length ? '<p><b>Catalog sources:</b> SRD 5.1 and SRD 5.2.1, CC BY 4.0, generated and validated by DungeonCards.</p>' : '<p><b>Catalog source:</b> Built-in samples and user-created custom monsters.</p>';
+  $('#printPacket').innerHTML = `<h1>${esc(encounter.name)}</h1><p>${esc(encounter.campaign)} · ${esc(encounter.ruleset)} rules · ${esc(encounter.environment)}</p><div class="print-summary"><div><b>${esc(result.difficulty)}</b><br>Difficulty</div><div><b>${result.rawXp.toLocaleString()}</b><br>Base XP</div><div><b>${result.adjustedXp.toLocaleString()}</b><br>${result.ruleset === '2014' ? 'Adjusted XP' : 'Budget XP'}</div><div><b>${result.monsterCount}</b><br>Creatures</div></div><div class="print-grid"><section class="print-block"><h2>Party</h2><table class="print-table"><thead><tr><th>Character</th><th>Level</th></tr></thead><tbody>${partyRows}</tbody></table></section><section class="print-block"><h2>Scene</h2><p><b>Objective:</b> ${esc(encounter.objective || '—')}</p><p><b>Terrain / tactics:</b> ${esc(encounter.notes || '—')}</p></section><section class="print-block wide"><h2>Opposition</h2><table class="print-table"><thead><tr><th>Monster</th><th>Qty</th><th>CR</th><th>XP Each</th><th>AC</th><th>HP</th><th>Source</th></tr></thead><tbody>${monsterRows}</tbody></table>${sourceNote}</section><section class="print-block wide"><h2>Warnings and Reminders</h2>${result.warnings.length ? result.warnings.map((warning) => `<p class="print-warning">${esc(warning)}</p>`).join('') : '<p>No automatic warnings.</p>'}<p>Difficulty is a planning guideline. Terrain, surprise, resources, monster abilities, and player tactics can change the result.</p><p><b>Encounter math verified:</b> ${RULES_VERIFICATION.verifiedAt}</p></section></div>`;
   window.print();
 }
 
@@ -369,6 +445,7 @@ for (const selector of ['#encounterName','#environment','#objective','#encounter
 window.addEventListener('storage', (event) => { if (event.key === store?.STORAGE_KEY) { renderContext(); renderSaved(); } });
 window.addEventListener('dmforge:store-changed', renderContext);
 
+renderCatalogSourceStatus();
 renderFilters();
 renderProfiles();
 renderCatalog();
@@ -376,3 +453,4 @@ renderRoster();
 renderSaved();
 syncShared();
 calculate();
+loadVerifiedCatalog();
