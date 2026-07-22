@@ -7,6 +7,7 @@ const pages = [
   ['community.html', 'DM Forge Community'],
   ['campaigns.html', 'Campaign Hub'],
   ['campaign-search.html', 'Campaign Search'],
+  ['rules-compendium.html', 'Rules Compendium & Roll Cards'],
   ['session-console.html', 'Session Console'],
   ['encounter-forge.html', 'Encounter Forge'],
   ['player-display.html', 'Player Display'],
