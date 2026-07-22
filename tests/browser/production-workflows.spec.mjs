@@ -98,7 +98,33 @@ test('Magic Item handoff adds a safe reward summary without copying the DM secre
   await expectNoRuntimeErrors(errors);
 });
 
-test('full backup download, validation, and restore recover recognized campaign data', async ({ page }, testInfo) => {
+test('local recovery points restore an earlier campaign version and preserve the current version first', async ({ page }) => {
+  const errors = watchRuntimeErrors(page);
+  await createCampaign(page, CAMPAIGN, '2024');
+  await page.goto(siteRoute('backup-center.html'));
+  await expect(page.locator('#recoveryStatus')).toHaveText('Healthy');
+  await page.getByRole('button', { name: 'Save Recovery Point' }).click();
+  await expect(page.locator('.recovery-card')).toHaveCount(1);
+
+  await page.evaluate(() => {
+    const store = JSON.parse(localStorage.getItem('dmforge-shared-v1'));
+    store.campaigns[0].name = 'Changed After Recovery Point';
+    localStorage.setItem('dmforge-shared-v1', JSON.stringify(store));
+  });
+
+  page.on('dialog', (dialog) => dialog.accept());
+  await Promise.all([
+    page.waitForNavigation(),
+    page.locator('.recovery-card').first().getByRole('button', { name: 'Restore' }).click()
+  ]);
+
+  const restoredName = await page.evaluate(() => JSON.parse(localStorage.getItem('dmforge-shared-v1')).campaigns[0].name);
+  expect(restoredName).toBe(CAMPAIGN);
+  await expect(page.locator('.recovery-card')).toHaveCount(2);
+  await expectNoRuntimeErrors(errors);
+});
+
+test('Safety Copy download, validation, and restore recover recognized campaign data', async ({ page }, testInfo) => {
   const errors = watchRuntimeErrors(page);
   await createCampaign(page, CAMPAIGN, '2024');
   await page.goto(siteRoute('backup-center.html'));
@@ -106,9 +132,9 @@ test('full backup download, validation, and restore recover recognized campaign 
 
   const [download] = await Promise.all([
     page.waitForEvent('download'),
-    page.getByRole('button', { name: 'Download Full Backup' }).click()
+    page.getByRole('button', { name: 'Download Safety Copy' }).click()
   ]);
-  const backupPath = testInfo.outputPath('dm-forge-full-backup.json');
+  const backupPath = testInfo.outputPath('dm-forge-safety-copy.json');
   await download.saveAs(backupPath);
 
   await page.evaluate(() => {
@@ -123,7 +149,7 @@ test('full backup download, validation, and restore recover recognized campaign 
   await expect(page.locator('#importPanel')).toBeVisible();
   await page.locator('#confirmRestore').check();
   await expect(page.locator('#applyImport')).toBeEnabled();
-  page.once('dialog', (dialog) => dialog.accept());
+  page.on('dialog', (dialog) => dialog.accept());
   await Promise.all([
     page.waitForNavigation(),
     page.locator('#applyImport').click()
