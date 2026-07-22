@@ -17,6 +17,7 @@ concurrency:
 
 env:
   LIVE_SITE_URL: https://cbw29512.github.io/monstercardforge
+  DUNGEON_CARDS_URL: https://cbw29512.github.io/DungeonCards/
   EXPECTED_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}
 
 jobs:
@@ -74,6 +75,7 @@ jobs:
             "/community.html"
             "/campaigns.html"
             "/campaign-search.html"
+            "/rules-compendium.html"
             "/session-console.html"
             "/encounter-forge.html"
             "/player-display.html"
@@ -91,6 +93,11 @@ jobs:
               --connect-timeout 15 --max-time 45 \
               --output /dev/null "$url"
           done
+          echo "Checking DungeonCards companion"
+          curl --fail --silent --show-error --location \
+            --retry 5 --retry-all-errors --retry-delay 3 \
+            --connect-timeout 15 --max-time 45 \
+            --output /dev/null "${DUNGEON_CARDS_URL}?system=dnd&page=compendium&live-gate=${EXPECTED_SHA}"
 
       - name: Install Chromium and WebKit
         run: npx playwright install --with-deps chromium webkit
@@ -99,6 +106,8 @@ jobs:
         env:
           PLAYWRIGHT_BASE_URL: ${{ env.LIVE_SITE_URL }}
           PLAYWRIGHT_SKIP_WEB_SERVER: "1"
+          DM_FORGE_LIVE_COMPANIONS: "1"
+          DUNGEON_CARDS_URL: ${{ env.DUNGEON_CARDS_URL }}
         run: npm run test:browser
 
       - name: Preserve live-site evidence
