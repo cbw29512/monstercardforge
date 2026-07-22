@@ -67,7 +67,7 @@ The repository is empty, superseded, duplicated, or no longer aligned with the p
 | Repository | Classification | Current value | DM Forge destination | Status |
 |---|---|---|---|---|
 | `monstercardforge` | Primary product | Current live DM toolkit and validation gates | DM Forge public site | Active |
-| `DungeonCards` | Integrate | React/TypeScript rules guide, 658 licensed spell references, 642 licensed monster references, weapon/roll cards, SRD synchronization pipeline | **Rules Compendium & Roll Cards** plus source data for Encounter Forge and Monster Card Forge | Highest-priority integration |
+| `DungeonCards` | Live companion; progressive integration | React/TypeScript rules guide, 658 licensed spell references, 642 licensed monster references, weapon/roll cards, encounter folios, homebrew builders, and SRD synchronization pipeline | **Rules Compendium & Roll Cards** plus future source-data adapters for Encounter Forge and Monster Card Forge | Companion integration complete; shared data adapters next |
 | `healingbox` | Companion, later integrate shared shell | Working multiplayer Cleric in a Box artifact tracker with versioned rules and host authorization | **Cleric in a Box** table tool | Live companion |
 | `CharacterForge` | Rebuild as DM Forge module | Flask roles, campaigns, character routes, templates, uploads, and PDF workflow | **Character Forge** using the DM Forge design system and local-first campaign model | Architecture review active |
 | `DungeonMaps` | Future system | Tested Express/SQLite/WebSocket campaign foundation and join codes; no map canvas, tokens, or fog yet | **Maps & Tabletop Display** | Do not advertise as complete |
@@ -86,7 +86,7 @@ The repository is empty, superseded, duplicated, or no longer aligned with the p
 
 ## DungeonCards integration rules
 
-DungeonCards is the highest-value consolidation target because it already distinguishes reference-complete content from automation-complete content and records source pages, source versions, PDF digests, rulesets, and CC BY 4.0 attribution.
+DungeonCards remains the highest-value consolidation source because it distinguishes reference-complete content from automation-complete content and records source pages, source versions, PDF digests, rulesets, and CC BY 4.0 attribution.
 
 Integration must preserve:
 
@@ -98,7 +98,24 @@ Integration must preserve:
 - Original/homebrew labels
 - Existing Monster Card Forge print identity
 
-The first integration milestone is not a rewrite. It is a DM Forge navigation and build strategy that exposes DungeonCards as **Rules Compendium & Roll Cards** while sharing the DM Forge brand, live-site validation, and campaign handoff contracts.
+### Milestone 1 — Live companion integration — Complete
+
+- DungeonCards identifies its D&D experience as **DM Forge — Rules Compendium & Roll Cards**.
+- Direct links open Rules Guide, Compendium, Player, DM, Encounter, Card Builder, or Monster Builder without showing the experimental system gateway first.
+- A persistent product link returns to the main DM Forge toolkit.
+- Public metadata uses the DM Forge identity.
+- The main site has a dedicated `rules-compendium.html` gateway.
+- The gateway explains reference-complete versus automation-complete scope.
+- The main live-site gate checks the companion route and deep-link behavior.
+- The experimental Call of Cthulhu preview is not promoted through the DM Forge D&D gateway.
+
+### Milestone 2 — Shared source-data adapters — Next
+
+- Define one generated monster-summary export owned by the DungeonCards SRD pipeline.
+- Import those summaries into Encounter Forge without copying source authority into handwritten files.
+- Map selected monsters into Monster Card Forge print templates without losing source, license, ruleset, or verification metadata.
+- Add exact spell and monster links from Campaign Search and future encounter records.
+- Keep user workspaces namespaced and private until a separate storage adapter is reviewed and tested.
 
 ## Production rule for repository imports
 
@@ -118,14 +135,14 @@ Nothing enters the live homepage merely because it exists in GitHub. Before prom
 ## Immediate free work order
 
 1. Keep the exact-commit live-site gate green on every DM Forge update.
-2. Correct stale README and roadmap claims.
-3. Inventory the remaining D&D repositories at file level.
-4. Design the DungeonCards integration boundary.
-5. Add an easy **Protect My Campaign** experience using automatic local recovery points and plain-language safety copies.
-6. Add exact-record deep links between Campaign Search and source tools.
-7. Add QR joining using a local/open-source QR implementation.
-8. Add PWA/offline support using static service-worker caching.
-9. Expand licensed monster/card content through the DungeonCards SRD pipeline.
+2. Validate the Rules Compendium gateway and deployed DungeonCards companion.
+3. Build the DungeonCards monster-summary export and adapter contract.
+4. Inventory the remaining D&D repositories at file level.
+5. Add exact-record deep links between Campaign Search and source tools.
+6. Add QR joining using a local/open-source QR implementation.
+7. Add PWA/offline support using static service-worker caching.
+8. Expand Monster Card Forge through the DungeonCards SRD pipeline instead of manual duplication.
+9. Review CharacterForge as the next full workflow module.
 10. Perform physical phone, tablet, screen-reader, multiplayer, and printer validation.
 
 ## Drift prevention
