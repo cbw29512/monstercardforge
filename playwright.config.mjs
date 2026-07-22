@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:4173';
+const configuredBaseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:4173';
+const baseURL = `${configuredBaseURL.replace(/\/+$/, '')}/`;
 const useLocalServer = !process.env.PLAYWRIGHT_SKIP_WEB_SERVER;
 
 export default defineConfig({
