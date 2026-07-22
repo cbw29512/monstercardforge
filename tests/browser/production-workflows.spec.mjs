@@ -21,30 +21,36 @@ test('campaign creation persists and campaign-aware links stay scoped', async ({
   await expectNoRuntimeErrors(errors);
 });
 
-test('Encounter Forge launches a complete enemy into Session Console and survives reload', async ({ page }) => {
+test('Encounter Forge launches a sourced SRD monster into Session Console and survives reload', async ({ page }) => {
   const errors = watchRuntimeErrors(page);
   await createCampaign(page, CAMPAIGN, '2024');
   await page.goto(siteRoute(`encounter-forge.html?campaign=${encodeURIComponent(CAMPAIGN)}`));
 
   await expect(page.locator('#sharedContext')).toContainText(CAMPAIGN);
-  await page.locator('#monsterCatalog').getByRole('button', { name: 'Add to Encounter' }).first().click();
-  await page.locator('#encounterName').fill('Gate Goblin Ambush');
-  await page.locator('#objective').fill('Verify the full encounter handoff.');
+  await expect(page.locator('#catalogSourceStatus')).toContainText('verified SRD monsters loaded');
+  await page.locator('#monsterRulesFilter').selectOption('5e-2014');
+  await page.locator('#monsterSearch').fill('Aboleth');
+  const aboleth = page.locator('.monster-option').filter({ hasText: 'Aboleth' }).filter({ hasText: 'SRD 5.1 p. 261' });
+  await expect(aboleth).toHaveCount(1);
+  await aboleth.getByRole('button', { name: 'Add to Encounter' }).click();
+  await page.locator('#encounterName').fill('Gate Aboleth Encounter');
+  await page.locator('#objective').fill('Verify the sourced monster handoff.');
   await page.locator('#initiativeMode').selectOption('zero');
-  await expect(page.locator('#encounterRoster')).toContainText('Goblin');
+  await expect(page.locator('#encounterRoster')).toContainText('Aboleth');
+  await expect(page.locator('#encounterRoster')).toContainText('SRD 5.1 p. 261');
 
   await page.getByRole('button', { name: 'Launch in Session Console' }).click();
   await page.waitForURL(/session-console\.html/);
   await expect(page.locator('#campaignSelect')).toContainText(CAMPAIGN);
 
   await page.getByRole('button', { name: 'Initiative' }).click();
-  await expect(page.locator('#initiativeList')).toContainText('Goblin');
-  await expect(page.locator('#initiativeList')).toContainText('15');
-  await expect(page.locator('#initiativeList')).toContainText('7');
+  await expect(page.locator('#initiativeList')).toContainText('Aboleth');
+  await expect(page.locator('#initiativeList')).toContainText('17');
+  await expect(page.locator('#initiativeList')).toContainText('135');
 
   await page.reload();
   await page.getByRole('button', { name: 'Initiative' }).click();
-  await expect(page.locator('#initiativeList')).toContainText('Goblin');
+  await expect(page.locator('#initiativeList')).toContainText('Aboleth');
   await expectNoRuntimeErrors(errors);
 });
 

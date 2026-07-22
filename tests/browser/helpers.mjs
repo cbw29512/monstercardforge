@@ -1,5 +1,37 @@
 import { expect } from '@playwright/test';
 
+const monsterCatalogFixture = {
+  schemaVersion: 1,
+  generatedBy: 'playwright-fixture',
+  recordCount: 2,
+  sources: [
+    {
+      edition: 'srd-5.1-2014', version: '5.1', pdfUrl: 'https://example.test/srd-5.1.pdf',
+      sha256: 'a'.repeat(64), attribution: 'SRD 5.1 Creative Commons Attribution 4.0.', monsterCount: 1, license: 'CC BY 4.0'
+    },
+    {
+      edition: 'srd-5.2.1-2024', version: '5.2.1', pdfUrl: 'https://example.test/srd-5.2.1.pdf',
+      sha256: 'b'.repeat(64), attribution: 'SRD 5.2.1 Creative Commons Attribution 4.0.', monsterCount: 1, license: 'CC BY 4.0'
+    }
+  ],
+  monsters: [
+    {
+      id: 'srd-5.1-2014-monster-aboleth', ruleset: '2014', edition: 'srd-5.1-2014', sourceVersion: '5.1',
+      name: 'Aboleth', size: 'Large', type: 'aberration', alignment: 'lawful evil', armorClass: 17,
+      armorClassText: '17 (natural armor)', hitPoints: 135, hitPointsText: '135 (18d10 + 36)', speed: '10 ft., swim 40 ft.',
+      challengeRating: '10', xp: 5900, dexterity: 9, dexterityModifier: -1, legendary: true,
+      sourcePage: 261, sourceReference: 'SRD 5.1 p. 261'
+    },
+    {
+      id: 'srd-5.2.1-2024-monster-adult-black-dragon', ruleset: '2024', edition: 'srd-5.2.1-2024', sourceVersion: '5.2.1',
+      name: 'Adult Black Dragon', size: 'Huge', type: 'dragon', alignment: 'chaotic evil', armorClass: 19,
+      armorClassText: '19', hitPoints: 195, hitPointsText: '195 (17d12 + 85)', speed: '40 ft., Fly 80 ft., Swim 40 ft.',
+      challengeRating: '14', xp: 11500, dexterity: 14, dexterityModifier: 2, legendary: true,
+      sourcePage: 274, sourceReference: 'SRD 5.2.1 p. 274'
+    }
+  ]
+};
+
 export function siteRoute(path = 'index.html') {
   const normalized = String(path || 'index.html').replace(/^\/+/, '');
   return normalized || 'index.html';
@@ -55,6 +87,14 @@ export async function preparePage(page) {
     contentType: 'text/javascript; charset=utf-8',
     body: '/* PeerJS is replaced by the deterministic Playwright test double. */'
   }));
+
+  if (process.env.DM_FORGE_LIVE_COMPANIONS !== '1') {
+    await page.route('https://cbw29512.github.io/DungeonCards/dm-forge/srd-monster-summaries.json*', (route) => route.fulfill({
+      status: 200,
+      contentType: 'application/json; charset=utf-8',
+      body: JSON.stringify(monsterCatalogFixture)
+    }));
+  }
 }
 
 export function watchRuntimeErrors(page) {
