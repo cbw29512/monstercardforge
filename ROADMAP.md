@@ -10,7 +10,7 @@ Until the owner explicitly approves paid infrastructure, DM Forge remains:
 - Hosted on GitHub Pages
 - Local-first and account-free
 - Backed by GitHub Actions, Discussions, and Issues
-- Portable through plain-language safety copies and local recovery
+- Portable through plain-language Safety Copies and local recovery
 - Independent of paid databases, AI APIs, analytics services, and hosted backends
 
 Cross-repository decisions are governed by `docs/DND_REPOSITORY_CONSOLIDATION.md`.
@@ -65,15 +65,18 @@ Cross-repository decisions are governed by `docs/DND_REPOSITORY_CONSOLIDATION.md
 - Official 5.5e (2024) Low, Moderate, and High direct XP budgets
 - Mixed-level saved party profiles
 - CR-to-XP table through CR 30
-- Monster Card Forge sample imports
-- Reusable custom monster catalog
-- Search and type/rules filters
+- Authoritative DungeonCards catalog with 314 SRD 5.1 and 328 SRD 5.2.1 monsters
+- Verified schema, source counts, PDF digests, CC BY 4.0 labels, and unique source IDs
+- Search and rules/type filters across all 642 records
+- Initial 120-card rendering cap for responsiveness without limiting search
+- Built-in sample and custom-monster fallback when the companion catalog is unavailable
+- Source pages and attribution preserved in rosters, saved encounters, handoffs, and print packets
 - Automatic CR, creature-count, and stat-block warnings
 - Saved encounters in shared campaign summaries
 - Secure random, 10 + Dexterity, or zeroed initiative modes
 - Direct enemy handoff into Session Console
 - Printable encounter packets
-- Rules and integration regression tests
+- Exact deployed Aboleth handoff validation on desktop, Android emulation, and iPhone WebKit
 
 ### Shared Player Display
 
@@ -147,14 +150,16 @@ Cross-repository decisions are governed by `docs/DND_REPOSITORY_CONSOLIDATION.md
 - Private fields searchable only in the DM-facing tool
 - Uploaded artwork excluded from the search index
 
-### Backup & Storage Center
+### Protect My Campaign
 
-- Full recognized DM Forge safety copy
-- Restore preview and explicit confirmation
-- Storage and record summaries by tool
-- Browser quota and backup-age indicators
-- Import validation and integrity hashes
-- Recovery regression tests
+- Automatic saving inside each tool
+- Up to eight recent IndexedDB recovery points
+- Manual **Save Recovery Point** control
+- Current version preserved before restoring an older version
+- Plain-language **Download Safety Copy** and **Restore Safety Copy** controls
+- Advanced storage details hidden unless needed
+- Recognized-key validation, integrity hashes, and restore preview
+- Recovery and Safety Copy browser regression tests
 
 ### Community
 
@@ -169,13 +174,15 @@ Cross-repository decisions are governed by `docs/DND_REPOSITORY_CONSOLIDATION.md
 
 ### Automated production gate — Complete
 
-- Static safety, rules, privacy, metadata, and anti-drift tests
+- Static safety, rules, privacy, metadata, licensing, and anti-drift tests
 - Desktop Chromium Playwright workflows
 - Android Chromium emulation
 - iPhone WebKit emulation
 - Serious and critical axe accessibility checks
 - Cross-tool privacy and persistence workflows
-- Backup download and restore workflow
+- Recovery Point and Safety Copy workflows
+- Rules Compendium gateway and companion checks
+- Authoritative SRD monster adapter and sourced handoff checks
 - Runtime-error checks on every public route
 - Failure traces, screenshots, videos, and reports
 
@@ -183,8 +190,10 @@ Cross-repository decisions are governed by `docs/DND_REPOSITORY_CONSOLIDATION.md
 
 - Waits for GitHub Pages to report the exact expected commit
 - Verifies every public route over HTTPS
+- Checks the deployed DungeonCards D&D Compendium
+- Validates the deployed 642-record monster JSON contract before browser tests
 - Runs the full browser suite against the deployed GitHub Pages origin
-- Blocks a live-ready claim when the deployed site differs from source or a public workflow fails
+- Blocks a live-ready claim when source, deployment, companion data, or a public workflow differs
 
 ### Physical validation — Active
 
@@ -193,19 +202,29 @@ Cross-repository decisions are governed by `docs/DND_REPOSITORY_CONSOLIDATION.md
 - iPhone and iPad
 - Separate Wi-Fi and cellular multiplayer
 - Keyboard-only, NVDA, and VoiceOver
-- Physical cardstock, duplex, 5×7, packet, and continuation-page printing
+- Physical cardstock, duplex, 5×7, packet, folio, and continuation-page printing
 - Live Core Web Vitals measurements
 
 ## Phase 6 — D&D Repository Consolidation — Active
 
-### Highest priority: DungeonCards integration
+### DungeonCards companion and Encounter Forge adapter — Complete
 
-- Preserve the complete licensed 5e and 5.5e spell and monster catalogs
-- Preserve source pages, PDF hashes, version metadata, and CC BY 4.0 attribution
-- Present it inside DM Forge as **Rules Compendium & Roll Cards**
-- Keep reference-complete and automation-complete claims separate
-- Share compatible monster data with Encounter Forge and Monster Card Forge
-- Add campaign-aware handoffs only after storage and privacy review
+- DM Forge-branded Rules Compendium & Roll Cards companion
+- Stable deep links for Rules Guide, Compendium, Player, DM, Encounter, Card Builder, and Monster Builder
+- Separate reference-complete and automation-complete claims
+- Deterministic 642-record monster-summary export owned by the DungeonCards SRD pipeline
+- Encounter Forge integration without a copied handwritten catalog
+- Source, license, version, and verification metadata preserved end to end
+- Exact deployed cross-repository validation
+
+### Next: Monster Card Forge full-stat adapter
+
+- Define a richer generated export for full traits, actions, bonus actions, reactions, legendary actions, spells, gear, and raw source text
+- Preserve the existing fold-over, accordion, and boss-folio print identity
+- Add continuation handling instead of clipping or silently omitting long stat blocks
+- Keep verified SRD records separate from original and user-created homebrew
+- Preserve source pages, versions, PDF digests, and CC BY 4.0 attribution on every printed output
+- Validate a representative 5e creature, 5.5e creature, spellcaster, legendary creature, and unusually long stat block before scaling to all records
 
 ### Repository review and adaptation
 
@@ -222,14 +241,11 @@ Cross-repository decisions are governed by `docs/DND_REPOSITORY_CONSOLIDATION.md
 
 ## Phase 7 — Free User-Experience Improvements — Next
 
-- Replace technical backup language with **Protect My Campaign**
-- Automatic local restore points before risky operations and after sessions
-- Plain-language recovery history
 - Exact-record deep links from Campaign Search
 - Local/open-source QR codes for Player Display and Cleric in a Box
 - PWA installation and offline static caching
-- Larger licensed catalogs through the DungeonCards synchronization pipeline
 - Printable original guides, examples, and demonstrations for search discovery
+- Physical-device, assistive-technology, multiplayer, and printer acceptance
 
 ## Deferred until the owner approves spending
 
