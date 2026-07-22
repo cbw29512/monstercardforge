@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { clearDmForgeStorage, createCampaign, expectNoRuntimeErrors, preparePage, watchRuntimeErrors } from './helpers.mjs';
+import { clearDmForgeStorage, createCampaign, expectNoRuntimeErrors, preparePage, siteRoute, watchRuntimeErrors } from './helpers.mjs';
 
 const CAMPAIGN = 'Privacy Gate';
 
@@ -11,7 +11,7 @@ test.beforeEach(async ({ page }) => {
 
 test('NPC Forge sends useful roleplay context without copying secrets into Session Console or shared summaries', async ({ page }) => {
   const errors = watchRuntimeErrors(page);
-  await page.goto(`/npc-forge.html?campaign=${encodeURIComponent(CAMPAIGN)}`);
+  await page.goto(siteRoute(`npc-forge.html?campaign=${encodeURIComponent(CAMPAIGN)}`));
   await page.locator('[name="name"]').fill('Keeper Sable');
   await page.locator('[name="campaign"]').fill(CAMPAIGN);
   await page.locator('[name="role"]').fill('Gate archivist');
@@ -46,7 +46,7 @@ test('NPC Forge sends useful roleplay context without copying secrets into Sessi
 
 test('Loot Forge transfers rewards and unidentified placeholders without leaking DM notes or overwriting edited items', async ({ page }) => {
   const errors = watchRuntimeErrors(page);
-  await page.goto(`/loot-forge.html?campaign=${encodeURIComponent(CAMPAIGN)}`);
+  await page.goto(siteRoute(`loot-forge.html?campaign=${encodeURIComponent(CAMPAIGN)}`));
   await page.locator('[name="title"]').fill('Privacy Gate Cache');
   await page.locator('[name="campaign"]').fill(CAMPAIGN);
   await page.locator('[name="valuables"]').fill('One moonstone brooch');

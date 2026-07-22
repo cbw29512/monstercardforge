@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { clearDmForgeStorage, createCampaign, expectNoRuntimeErrors, preparePage, watchRuntimeErrors } from './helpers.mjs';
+import { clearDmForgeStorage, createCampaign, expectNoRuntimeErrors, preparePage, siteRoute, watchRuntimeErrors } from './helpers.mjs';
 
 const CAMPAIGN = 'Production Gate';
 
@@ -24,7 +24,7 @@ test('campaign creation persists and campaign-aware links stay scoped', async ({
 test('Encounter Forge launches a complete enemy into Session Console and survives reload', async ({ page }) => {
   const errors = watchRuntimeErrors(page);
   await createCampaign(page, CAMPAIGN, '2024');
-  await page.goto(`/encounter-forge.html?campaign=${encodeURIComponent(CAMPAIGN)}`);
+  await page.goto(siteRoute(`encounter-forge.html?campaign=${encodeURIComponent(CAMPAIGN)}`));
 
   await expect(page.locator('#sharedContext')).toContainText(CAMPAIGN);
   await page.locator('#monsterCatalog').getByRole('button', { name: 'Add to Encounter' }).first().click();
@@ -50,7 +50,7 @@ test('Encounter Forge launches a complete enemy into Session Console and survive
 
 test('Session Console autosaves prep and restores it after a refresh', async ({ page }) => {
   const errors = watchRuntimeErrors(page);
-  await page.goto(`/session-console.html?campaign=${encodeURIComponent(CAMPAIGN)}`);
+  await page.goto(siteRoute(`session-console.html?campaign=${encodeURIComponent(CAMPAIGN)}`));
   await expect(page.locator('#campaignSelect')).toContainText(CAMPAIGN);
 
   await page.getByRole('button', { name: 'Session Prep' }).click();
@@ -71,7 +71,7 @@ test('Session Console autosaves prep and restores it after a refresh', async ({ 
 test('Magic Item handoff adds a safe reward summary without copying the DM secret', async ({ page }) => {
   const errors = watchRuntimeErrors(page);
   await createCampaign(page, CAMPAIGN, '2024');
-  await page.goto(`/magic-items.html?campaign=${encodeURIComponent(CAMPAIGN)}`);
+  await page.goto(siteRoute(`magic-items.html?campaign=${encodeURIComponent(CAMPAIGN)}`));
 
   await page.locator('[name="name"]').fill('Gate Lantern');
   await page.locator('[name="campaign"]').fill(CAMPAIGN);
@@ -91,7 +91,7 @@ test('Magic Item handoff adds a safe reward summary without copying the DM secre
   expect(rewards).toContain('Wendy');
   expect(rewards).not.toContain('PRIVATE-GATE-CURSE-DO-NOT-SHARE');
 
-  await page.goto(`/session-console.html?campaign=${encodeURIComponent(CAMPAIGN)}`);
+  await page.goto(siteRoute(`session-console.html?campaign=${encodeURIComponent(CAMPAIGN)}`));
   await page.getByRole('button', { name: 'Session Prep' }).click();
   await expect(page.locator('[data-prep="rewards"]')).toHaveValue(/Gate Lantern/);
   await expect(page.locator('[data-prep="rewards"]')).not.toHaveValue(/PRIVATE-GATE-CURSE-DO-NOT-SHARE/);
@@ -101,7 +101,7 @@ test('Magic Item handoff adds a safe reward summary without copying the DM secre
 test('full backup download, validation, and restore recover recognized campaign data', async ({ page }, testInfo) => {
   const errors = watchRuntimeErrors(page);
   await createCampaign(page, CAMPAIGN, '2024');
-  await page.goto('/backup-center.html');
+  await page.goto(siteRoute('backup-center.html'));
   await expect(page.locator('#recoveryStatus')).toHaveText('Healthy');
 
   const [download] = await Promise.all([
@@ -130,7 +130,7 @@ test('full backup download, validation, and restore recover recognized campaign 
   ]);
 
   await expect.poll(() => page.evaluate(() => Boolean(localStorage.getItem('dmforge-shared-v1')))).toBe(true);
-  await page.goto('/campaigns.html');
+  await page.goto(siteRoute('campaigns.html'));
   await expect(page.locator('#activeCampaignName')).toHaveText(CAMPAIGN);
   await expectNoRuntimeErrors(errors);
 });

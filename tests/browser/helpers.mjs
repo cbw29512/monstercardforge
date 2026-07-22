@@ -1,5 +1,10 @@
 import { expect } from '@playwright/test';
 
+export function siteRoute(path = 'index.html') {
+  const normalized = String(path || 'index.html').replace(/^\/+/, '');
+  return normalized || 'index.html';
+}
+
 export async function preparePage(page) {
   await page.addInitScript(() => {
     class FakeConnection {
@@ -65,12 +70,12 @@ export function watchRuntimeErrors(page) {
 }
 
 export async function clearDmForgeStorage(page) {
-  await page.goto('/index.html');
+  await page.goto(siteRoute('index.html'));
   await page.evaluate(() => localStorage.clear());
 }
 
 export async function createCampaign(page, name = 'Production Gate', ruleset = '2024') {
-  await page.goto('/campaigns.html');
+  await page.goto(siteRoute('campaigns.html'));
   await page.locator('#campaignName').fill(name);
   await page.locator('#campaignRuleset').selectOption(ruleset);
   await page.locator('#campaignForm').getByRole('button', { name: 'Create and Make Active' }).click();

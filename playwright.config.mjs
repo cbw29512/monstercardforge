@@ -1,6 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:4173';
+const configuredBaseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:4173';
+const baseURL = `${configuredBaseURL.replace(/\/+$/, '')}/`;
+const useLocalServer = !process.env.PLAYWRIGHT_SKIP_WEB_SERVER;
 
 export default defineConfig({
   testDir: './tests/browser',
@@ -23,12 +25,14 @@ export default defineConfig({
     video: 'retain-on-failure',
     serviceWorkers: 'block'
   },
-  webServer: {
-    command: 'node tests/browser/server.mjs',
-    url: baseURL,
-    reuseExistingServer: !process.env.CI,
-    timeout: 15_000
-  },
+  ...(useLocalServer ? {
+    webServer: {
+      command: 'node tests/browser/server.mjs',
+      url: baseURL,
+      reuseExistingServer: !process.env.CI,
+      timeout: 15_000
+    }
+  } : {}),
   projects: [
     { name: 'desktop-chromium', use: { ...devices['Desktop Chrome'] } },
     { name: 'mobile-chromium', use: { ...devices['Pixel 7'] } },

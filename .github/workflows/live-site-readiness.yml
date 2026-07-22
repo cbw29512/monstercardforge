@@ -1,0 +1,113 @@
+name: Live site readiness
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: read
+
+concurrency:
+  group: live-site-readiness-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  LIVE_SITE_URL: https://cbw29512.github.io/monstercardforge
+  EXPECTED_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}
+
+jobs:
+  live-site-gate:
+    name: Exact deployed commit, HTTPS routes, workflows, mobile, and accessibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install browser test dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Wait for the exact GitHub Pages commit
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          api="https://api.github.com/repos/${GITHUB_REPOSITORY}/pages/builds/latest"
+          matched="false"
+          for attempt in $(seq 1 36); do
+            response=$(curl --fail --silent --show-error --location \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "X-GitHub-Api-Version: 2026-03-10" \
+              "$api")
+            status=$(node -e "const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.status||''))" "$response")
+            commit=$(node -e "const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.commit||''))" "$response")
+            echo "Pages attempt ${attempt}: status=${status} commit=${commit} expected=${EXPECTED_SHA}"
+            if [[ "$status" == "built" && "$commit" == "$EXPECTED_SHA" ]]; then
+              matched="true"
+              break
+            fi
+            sleep 10
+          done
+          if [[ "$matched" != "true" ]]; then
+            echo "GitHub Pages did not report the expected deployed commit ${EXPECTED_SHA}."
+            exit 1
+          fi
+
+      - name: Verify every public HTTPS route responds
+        shell: bash
+        run: |
+          set -euo pipefail
+          routes=(
+            "/"
+            "/about.html"
+            "/community.html"
+            "/campaigns.html"
+            "/campaign-search.html"
+            "/session-console.html"
+            "/encounter-forge.html"
+            "/player-display.html"
+            "/monster-cards.html"
+            "/magic-items.html"
+            "/npc-forge.html"
+            "/loot-forge.html"
+            "/backup-center.html"
+          )
+          for route in "${routes[@]}"; do
+            url="${LIVE_SITE_URL}${route}?live-gate=${EXPECTED_SHA}"
+            echo "Checking ${url}"
+            curl --fail --silent --show-error --location \
+              --retry 5 --retry-all-errors --retry-delay 3 \
+              --connect-timeout 15 --max-time 45 \
+              --output /dev/null "$url"
+          done
+
+      - name: Install Chromium and WebKit
+        run: npx playwright install --with-deps chromium webkit
+
+      - name: Run the complete browser gate against GitHub Pages
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ env.LIVE_SITE_URL }}
+          PLAYWRIGHT_SKIP_WEB_SERVER: "1"
+        run: npm run test:browser
+
+      - name: Preserve live-site evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dm-forge-live-site-readiness-${{ github.run_id }}
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14
