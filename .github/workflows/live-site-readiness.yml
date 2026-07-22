@@ -26,8 +26,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
-      - name: Check out repository
+      - name: Check out the exact source expected on GitHub Pages
         uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
 
       - name: Use Node.js 22
         uses: actions/setup-node@v4
@@ -65,7 +67,7 @@ jobs:
             exit 1
           fi
 
-      - name: Verify every public HTTPS route responds
+      - name: Verify every public HTTPS route and companion data contract
         shell: bash
         run: |
           set -euo pipefail
@@ -93,11 +95,33 @@ jobs:
               --connect-timeout 15 --max-time 45 \
               --output /dev/null "$url"
           done
+
           echo "Checking DungeonCards companion"
           curl --fail --silent --show-error --location \
             --retry 5 --retry-all-errors --retry-delay 3 \
             --connect-timeout 15 --max-time 45 \
             --output /dev/null "${DUNGEON_CARDS_URL}?system=dnd&page=compendium&live-gate=${EXPECTED_SHA}"
+
+          echo "Validating DungeonCards monster export"
+          catalog_file="$(mktemp)"
+          curl --fail --silent --show-error --location \
+            --retry 5 --retry-all-errors --retry-delay 3 \
+            --connect-timeout 15 --max-time 60 \
+            --output "$catalog_file" "${DUNGEON_CARDS_URL}dm-forge/srd-monster-summaries.json?live-gate=${EXPECTED_SHA}"
+          node - "$catalog_file" <<'NODE'
+          const fs = require('node:fs');
+          const path = process.argv[2];
+          const payload = JSON.parse(fs.readFileSync(path, 'utf8'));
+          if (payload.schemaVersion !== 1) throw new Error(`Unexpected monster schema ${payload.schemaVersion}`);
+          if (payload.recordCount !== 642 || payload.monsters?.length !== 642) throw new Error('Monster export must contain exactly 642 records.');
+          const counts = payload.sources?.map((source) => source.monsterCount);
+          if (JSON.stringify(counts) !== JSON.stringify([314, 328])) throw new Error(`Unexpected source counts ${JSON.stringify(counts)}`);
+          for (const source of payload.sources || []) {
+            if (source.license !== 'CC BY 4.0') throw new Error('Unexpected monster source license.');
+            if (!/^[a-f0-9]{64}$/i.test(source.sha256 || '')) throw new Error('Missing monster source digest.');
+          }
+          console.log(`Validated ${payload.recordCount} DungeonCards monster summaries.`);
+          NODE
 
       - name: Install Chromium and WebKit
         run: npx playwright install --with-deps chromium webkit
