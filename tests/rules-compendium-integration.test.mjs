@@ -14,7 +14,7 @@ test('Rules Compendium gateway and assets remain present', () => {
   }
 });
 
-test('gateway preserves verified catalog scope and honest automation language', () => {
+test('gateway preserves verified catalog scope, honest automation language, and transfer boundaries', () => {
   const page = read('rules-compendium.html');
   for (const phrase of [
     '658',
@@ -25,7 +25,9 @@ test('gateway preserves verified catalog scope and honest automation language', 
     'Automated spell families',
     'Reference-complete does not automatically mean roll-automated.',
     'Never silently guessed',
-    'not yet synchronized into Campaign Hub'
+    'send the selected verified monsters into Encounter Forge',
+    'source IDs, names, edition, quantity, and campaign context',
+    'Homebrew transfer remains disabled'
   ]) assert.equal(page.includes(phrase), true, `Rules Compendium lost ${phrase}`);
 });
 
