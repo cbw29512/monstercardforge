@@ -1,0 +1,97 @@
+name: Feature Request
+description: Suggest a focused improvement to an existing DM Forge tool or workflow.
+title: "[Feature]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Strong requests begin with a real table problem, not only a proposed button. Early brainstorming belongs in GitHub Discussions; use this form when the need and desired outcome are reasonably clear.
+  - type: dropdown
+    id: tool
+    attributes:
+      label: Existing tool or workflow
+      options:
+        - DM Forge homepage
+        - Campaign Hub
+        - Campaign Search
+        - Session Console
+        - Encounter Forge
+        - Player Display
+        - Monster Card Forge
+        - Magic Item Forge
+        - NPC Forge
+        - Loot Forge
+        - Backup & Storage Center
+        - Cleric in a Box
+        - Cross-tool integration
+        - Accessibility
+        - Printing
+        - Offline/PWA
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What DM or table problem does this solve?
+      description: Describe the current friction, delay, confusion, or repeated work.
+    validations:
+      required: true
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Desired workflow
+      description: Describe what the user should be able to do from start to finish.
+      placeholder: The DM opens..., selects..., sees..., and can then...
+    validations:
+      required: true
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: How often would this be useful?
+      options:
+        - Every session
+        - Most sessions
+        - During campaign preparation
+        - Occasionally
+        - Specialized campaign or table need
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Current workaround or alternative
+      description: Explain how you handle this now and why that approach is not enough.
+    validations:
+      required: false
+  - type: checkboxes
+    id: impact
+    attributes:
+      label: Areas this request may affect
+      options:
+        - label: Saved campaign data or migration
+        - label: Player-facing privacy
+        - label: D&D rules accuracy
+        - label: Mobile or tablet use
+        - label: Printing
+        - label: Multiplayer or networking
+        - label: Accessibility
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples, sketches, or references
+      description: Link examples for inspiration, but do not request copied branding, proprietary text, or unlicensed content.
+    validations:
+      required: false
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I searched existing issues and discussions for a similar request.
+          required: true
+        - label: I described the problem and desired outcome, not only a visual preference.
+          required: true
+        - label: I agree to follow the DM Forge Code of Conduct.
+          required: true
