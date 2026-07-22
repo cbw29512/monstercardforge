@@ -103,8 +103,12 @@ test('local recovery points restore an earlier campaign version and preserve the
   await createCampaign(page, CAMPAIGN, '2024');
   await page.goto(siteRoute('backup-center.html'));
   await expect(page.locator('#recoveryStatus')).toHaveText('Healthy');
+  await expect.poll(() => page.locator('.recovery-card').count()).toBeGreaterThanOrEqual(1);
+  const automaticCount = await page.locator('.recovery-card').count();
+
   await page.getByRole('button', { name: 'Save Recovery Point' }).click();
-  await expect(page.locator('.recovery-card')).toHaveCount(1);
+  await expect.poll(() => page.locator('.recovery-card').count()).toBeGreaterThanOrEqual(automaticCount + 1);
+  await expect(page.locator('.recovery-card').first()).toContainText('Manual recovery point');
 
   await page.evaluate(() => {
     const store = JSON.parse(localStorage.getItem('dmforge-shared-v1'));
@@ -120,7 +124,7 @@ test('local recovery points restore an earlier campaign version and preserve the
 
   const restoredName = await page.evaluate(() => JSON.parse(localStorage.getItem('dmforge-shared-v1')).campaigns[0].name);
   expect(restoredName).toBe(CAMPAIGN);
-  await expect(page.locator('.recovery-card')).toHaveCount(2);
+  await expect(page.locator('.recovery-card').filter({ hasText: 'Before restoring an earlier version' })).toHaveCount(1);
   await expectNoRuntimeErrors(errors);
 });
 
