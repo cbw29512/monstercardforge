@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#25120d">
   <meta name="robots" content="index,follow,max-image-preview:large">
-  <title>Back Up Local D&D Campaign Data | DM Forge</title>
-  <meta name="description" content="Inspect, export, validate, and restore locally saved DM Forge campaign data from one private browser backup center.">
+  <title>Protect Your D&D Campaign | DM Forge</title>
+  <meta name="description" content="Automatically protect locally saved DM Forge campaigns, restore recent versions, and create a portable Safety Copy without an account.">
   <link rel="canonical" href="https://cbw29512.github.io/monstercardforge/backup-center.html">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="DM Forge">
-  <meta property="og:title" content="Back Up Local D&D Campaign Data | DM Forge">
-  <meta property="og:description" content="Protect sessions, encounters, NPCs, loot, magic items, player-room settings, and artifact rooms with one validated local backup.">
+  <meta property="og:title" content="Protect Your D&D Campaign | DM Forge">
+  <meta property="og:description" content="Automatic local recovery points and simple portable Safety Copies for DM Forge campaigns.">
   <meta property="og:url" content="https://cbw29512.github.io/monstercardforge/backup-center.html">
   <link rel="stylesheet" href="backup-center.css">
   <link rel="stylesheet" href="shared/design-system.css" data-dmforge-design-system="1.0.0">
@@ -22,13 +22,12 @@
     <a class="back" href="index.html">← DM Forge Toolkit</a>
     <div class="brand-row">
       <div>
-        <p class="eyebrow">Protect the campaign</p>
-        <h1>Backup & Storage Center</h1>
-        <p class="tagline">See what this browser has saved, download one complete local backup, and restore it after changing computers or clearing browser data.</p>
+        <p class="eyebrow">Campaign protection</p>
+        <h1>Protect My Campaign</h1>
+        <p class="tagline">DM Forge saves your work automatically on this device and keeps recent recovery points. A Safety Copy is only needed when moving computers or protecting against a full browser reset.</p>
       </div>
       <div class="header-actions">
         <a class="btn light" href="campaigns.html">Campaign Hub</a>
-        <button class="btn light" id="refreshScan" type="button">Refresh Scan</button>
       </div>
     </div>
   </header>
@@ -36,56 +35,74 @@
   <main>
     <section class="hero-panel">
       <div>
-        <p class="eyebrow dark">Current browser</p>
-        <h2 id="backupHeadline">Scanning local campaign data…</h2>
-        <p id="backupSummary">DM Forge stores detailed campaign information in this browser unless you export it.</p>
+        <p class="eyebrow dark">Protection status</p>
+        <h2 id="backupHeadline">Checking your saved campaigns…</h2>
+        <p id="backupSummary">Your work is saved automatically while you use DM Forge.</p>
       </div>
       <div class="hero-actions">
-        <button class="btn gold" id="downloadBackup" type="button">Download Full Backup</button>
-        <label class="btn blue file-button">Restore Full Backup<input id="importBackup" type="file" accept="application/json"></label>
+        <button class="btn gold" id="manualRecovery" type="button">Save Recovery Point</button>
+        <button class="btn light" id="downloadBackup" type="button">Download Safety Copy</button>
+        <label class="btn blue file-button">Restore Safety Copy<input id="importBackup" type="file" accept="application/json"></label>
       </div>
     </section>
 
-    <section class="summary-grid" aria-label="Storage summary">
-      <article><span>DM Forge data</span><strong id="totalBytes">—</strong><small id="recordCount">Scanning…</small></article>
-      <article><span>Browser estimate</span><strong id="quotaUsed">—</strong><small id="quotaTotal">Storage estimate unavailable</small></article>
-      <article><span>Last full backup</span><strong id="lastBackup">Never</strong><small id="backupAge">Create one before important sessions.</small></article>
-      <article><span>Recovery status</span><strong id="recoveryStatus">Checking</strong><small id="recoveryMessage">Validating saved JSON records.</small></article>
+    <section class="simple-status" aria-label="Campaign protection summary">
+      <article><span>Automatic saving</span><strong>On</strong><small>Changes stay on this device.</small></article>
+      <article><span>Recent recovery points</span><strong id="recoveryCount">—</strong><small id="recoveryNewest">Checking recovery history…</small></article>
+      <article><span>Last Safety Copy</span><strong id="lastBackup">Never</strong><small id="backupAge">Optional for moving devices.</small></article>
+      <article><span>Saved-data health</span><strong id="recoveryStatus">Checking</strong><small id="recoveryMessage">Validating saved records.</small></article>
     </section>
 
     <section class="section-head">
-      <div><p class="eyebrow dark">Local data inventory</p><h2>What is saved on this device</h2></div>
-      <p>Detailed records remain private to this browser. The cards below show storage size, record counts, and whether each data set can be parsed safely.</p>
+      <div><p class="eyebrow dark">Recent versions</p><h2>Restore an earlier version</h2></div>
+      <p>DM Forge quietly keeps up to eight recent versions in this browser. Restoring one first saves your current version, so you can still change your mind.</p>
     </section>
-    <section id="storageGrid" class="storage-grid"></section>
+    <section id="recoveryList" class="recovery-list" aria-live="polite">
+      <article class="recovery-empty">Checking recovery history…</article>
+    </section>
 
     <section id="importPanel" class="panel import-panel" hidden>
       <div class="section-head compact">
-        <div><p class="eyebrow dark">Restore preview</p><h2>Review before replacing local data</h2></div>
+        <div><p class="eyebrow dark">Safety Copy preview</p><h2>Review before restoring</h2></div>
         <button class="btn light" id="cancelImport" type="button">Cancel</button>
       </div>
       <div id="importSummary" class="import-summary"></div>
-      <div class="warning"><b>This restore replaces matching DM Forge keys on this browser.</b> It does not delete unrelated website data. Download a current backup first when there is anything here you may need.</div>
-      <label class="confirm-line"><input id="confirmRestore" type="checkbox"> I understand that matching local DM Forge records will be replaced.</label>
-      <button class="btn danger" id="applyImport" type="button" disabled>Restore This Backup</button>
+      <div class="warning"><b>Your current version will be saved first.</b> Restoring replaces DM Forge campaign records on this browser but does not touch unrelated websites.</div>
+      <label class="confirm-line"><input id="confirmRestore" type="checkbox"> I am ready to restore this Safety Copy.</label>
+      <button class="btn danger" id="applyImport" type="button" disabled>Restore This Safety Copy</button>
     </section>
 
     <section class="panel guidance">
-      <h2>Recommended backup routine</h2>
+      <h2>What each protection option does</h2>
       <div class="guidance-grid">
-        <div><b>Before a session</b><span>Download one full backup after prep is complete.</span></div>
-        <div><b>After a session</b><span>Archive the session, update loot and NPCs, then export again.</span></div>
-        <div><b>Before changing devices</b><span>Download here, move the JSON file, then restore it on the new browser.</span></div>
-        <div><b>Keep two copies</b><span>Store one locally and another in a private drive or external disk.</span></div>
+        <div><b>Automatic saving</b><span>Normal DM Forge changes are saved as you work.</span></div>
+        <div><b>Recovery points</b><span>Recent versions stay in this browser for easy one-click recovery.</span></div>
+        <div><b>Safety Copy</b><span>Downloads one private file for another computer or a full browser reset.</span></div>
+        <div><b>No account required</b><span>Your campaign remains local and private unless you deliberately move it.</span></div>
       </div>
     </section>
 
+    <details class="panel advanced-panel">
+      <summary>Advanced storage details</summary>
+      <p>These details are mainly useful for troubleshooting. Most users only need the protection status and recovery points above.</p>
+      <div class="advanced-actions"><button class="btn light" id="refreshScan" type="button">Refresh Details</button></div>
+      <section class="summary-grid" aria-label="Advanced storage summary">
+        <article><span>DM Forge data</span><strong id="totalBytes">—</strong><small id="recordCount">Scanning…</small></article>
+        <article><span>Browser estimate</span><strong id="quotaUsed">—</strong><small id="quotaTotal">Storage estimate unavailable</small></article>
+      </section>
+      <section class="section-head compact">
+        <div><p class="eyebrow dark">Local data inventory</p><h2>What is saved on this device</h2></div>
+      </section>
+      <section id="storageGrid" class="storage-grid"></section>
+    </details>
+
     <section class="panel privacy-panel">
       <h2>Privacy and limits</h2>
-      <p>The full backup contains private DM information—including notes, NPC secrets, item curses, encounter tactics, and uploaded artwork—because its purpose is disaster recovery. Keep the downloaded file private. The backup covers recognized <code>dmforge-*</code> and <code>cleric-box-*</code> browser records on this GitHub Pages origin. Multiplayer connections themselves are not stored.</p>
+      <p>Recovery points and campaign records stay inside this browser. A downloaded Safety Copy contains private DM information—including notes, NPC secrets, item curses, encounter tactics, and uploaded artwork—so keep that file private. Clearing all site data can remove local recovery points, which is why a Safety Copy remains useful before replacing a computer or resetting a browser.</p>
     </section>
   </main>
 </div>
+<script src="shared/recovery-manager.js"></script>
 <script src="backup-center.js"></script>
 </body>
 </html>
