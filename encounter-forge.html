@@ -6,12 +6,12 @@
   <meta name="theme-color" content="#25120d">
   <meta name="robots" content="index,follow,max-image-preview:large">
   <title>D&D Encounter Builder for 5e and 5.5e | DM Forge</title>
-  <meta name="description" content="Build, evaluate, save, print, and launch D&D combat encounters with separate 5e encounter thresholds and 5.5e XP budgets.">
+  <meta name="description" content="Build, evaluate, save, print, and launch D&D combat encounters with separate 5e and 5.5e math and 642 verified SRD monsters.">
   <link rel="canonical" href="https://cbw29512.github.io/monstercardforge/encounter-forge.html">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="DM Forge">
   <meta property="og:title" content="D&D Encounter Builder for 5e and 5.5e | DM Forge">
-  <meta property="og:description" content="Mixed-level parties, official encounter math, practical warnings, saved encounters, printing, and Session Console handoff.">
+  <meta property="og:description" content="Mixed-level parties, official encounter math, 642 verified SRD monsters, practical warnings, printing, and Session Console handoff.">
   <meta property="og:url" content="https://cbw29512.github.io/monstercardforge/encounter-forge.html">
   <link rel="stylesheet" href="encounter-forge.css">
 </head>
@@ -21,11 +21,12 @@
     <a class="back" href="index.html">← DM Forge Toolkit</a>
     <div class="brand-row">
       <div>
-        <p class="eyebrow">Official math. Practical warnings.</p>
+        <p class="eyebrow">Official math. Verified monsters. Practical warnings.</p>
         <h1>Encounter Forge</h1>
-        <p class="tagline">Build encounters for mixed-level parties, compare 5e and 5.5e budgets correctly, save them by campaign, and launch the enemies into Session Console.</p>
+        <p class="tagline">Build encounters for mixed-level parties, search the verified 5e and 5.5e SRD catalog, save by campaign, and launch enemies into Session Console.</p>
       </div>
       <div class="header-actions no-print">
+        <a class="btn light" href="rules-compendium.html">Rules Compendium</a>
         <a class="btn light" href="campaigns.html">Campaign Hub</a>
         <button class="btn light" id="printEncounter" type="button">Print Encounter Packet</button>
       </div>
@@ -64,12 +65,14 @@
         </section>
 
         <section class="panel">
-          <div class="section-head"><div><p class="eyebrow dark">3 · Add opposition</p><h2>Monster Catalog</h2></div><span class="source-note">Open-license samples under active verification + your custom entries</span></div>
+          <div class="section-head"><div><p class="eyebrow dark">3 · Add opposition</p><h2>Monster Catalog</h2></div><span class="source-note">DungeonCards verified SRD summaries + local custom entries</span></div>
+          <div id="catalogSourceStatus" class="catalog-source-status loading no-print" role="status" aria-live="polite"></div>
           <div class="filter-grid no-print">
-            <label>Search<input id="monsterSearch" placeholder="Goblin, dragon, undead…"></label>
+            <label>Search<input id="monsterSearch" placeholder="Goblin, dragon, undead, source page…"></label>
             <label>Type<select id="typeFilter"><option value="all">All types</option></select></label>
             <label>Rules<select id="monsterRulesFilter"><option value="all">All rules</option><option value="5e-2014">5e (2014)</option><option value="5e-2024">5.5e (2024)</option><option value="homebrew">Homebrew</option></select></label>
           </div>
+          <p id="catalogResultSummary" class="catalog-result-summary" aria-live="polite"></p>
           <div id="monsterCatalog" class="monster-catalog"></div>
 
           <details class="custom-builder no-print">
