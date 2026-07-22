@@ -72,11 +72,16 @@ Routes: `campaign-search.html`, `campaign-search.css`, `campaign-search.js`
 - 5e Easy–Deadly thresholds, monster-count multipliers, and party-size adjustments
 - 5.5e Low–High direct XP budgets
 - Mixed-level saved party profiles
-- CR-to-XP values through CR 30
-- Custom monsters and operational warnings
+- Authoritative live catalog with 314 SRD 5.1 and 328 SRD 5.2.1 monsters
+- Schema, source-count, SHA-256 digest, CC BY 4.0, and unique-ID validation
+- Search and filtering across all 642 monsters with a 120-card rendering cap for responsiveness
+- Source pages and attribution preserved in cards, rosters, saved encounters, Session Console handoffs, and print packets
+- Built-in samples and custom monsters remain available when the companion catalog is offline
+- CR, XP, AC, average HP, Dexterity, size, type, alignment, speed, and legendary status imported from DungeonCards
+- Practical operational warnings
 - Printable packets and Session Console handoff
 
-Routes: `encounter-forge.html`, `encounter-forge.css`, `encounter-forge.js`, `encounter-rules.js`
+Routes: `encounter-forge.html`, `encounter-forge.css`, `encounter-forge.js`, `encounter-rules.js`, `encounter-monster-catalog.js`
 
 ### Session Console
 
@@ -112,6 +117,8 @@ Routes: `player-display.html`, `player-display.css`, `player-display.js`
 - Hostile-input escaping and regression tests
 
 Route: `monster-cards.html`
+
+The next controlled integration is a richer DungeonCards full-stat adapter that preserves Monster Card Forge's print identity and adds continuation handling instead of clipping or silently omitting long stat blocks.
 
 ### Magic Item Forge
 
@@ -203,13 +210,21 @@ DMForgeStore
 
 Detailed records remain in source tools. The shared layer excludes session-prep bodies, complete logs, NPC motives and secrets, magic-item rules and curses, uploaded artwork, encounter tactics, complete combat records, and Cleric in a Box history or deity information.
 
-DungeonCards workspaces remain separately namespaced during the companion phase and are not yet claimed as synchronized into Campaign Hub.
+DungeonCards workspaces remain separately namespaced and are not claimed as synchronized into Campaign Hub. Encounter Forge consumes only the generated, public SRD monster-summary export.
 
 ## D&D repository consolidation
 
 `docs/DND_REPOSITORY_CONSOLIDATION.md` is the authority for integrate, rebuild, import-content, companion, future-system, and archive decisions.
 
-DungeonCards companion integration is complete. The next integration milestone is a generated monster-summary export owned by the DungeonCards SRD pipeline, followed by privacy-reviewed adapters into Encounter Forge and Monster Card Forge. Handwritten duplicate catalogs are prohibited.
+Completed DungeonCards milestones:
+
+1. DM Forge-branded Rules Compendium & Roll Cards companion.
+2. Stable direct D&D workspace links.
+3. Deterministic 642-record monster-summary export owned by DungeonCards.
+4. Source-authoritative Encounter Forge integration with no copied handwritten catalog.
+5. Exact deployed validation across desktop Chromium, Android Chromium emulation, and iPhone WebKit.
+
+The next milestone is the richer full-stat adapter for Monster Card Forge. Handwritten duplicate catalogs are prohibited.
 
 ## Production validation
 
@@ -219,7 +234,7 @@ DM Forge uses three complementary checks:
 
 - Rules, privacy, security, metadata, licensing, design, and anti-drift contracts
 - JavaScript parsing and local-asset checks
-- Cross-tool handoff and recovery guarantees
+- Cross-tool handoff, authoritative-catalog, and recovery guarantees
 
 ### Production readiness
 
@@ -227,7 +242,7 @@ DM Forge uses three complementary checks:
 - Desktop Chromium
 - Android Chromium emulation
 - iPhone WebKit emulation
-- Real campaign, encounter, session, NPC, loot, item, recovery, and companion-gateway workflows
+- Real campaign, encounter, sourced-monster, session, NPC, loot, item, recovery, and companion-gateway workflows
 - Serious and critical axe accessibility checks
 - Failure traces, screenshots, videos, and HTML reports
 
@@ -236,8 +251,9 @@ DM Forge uses three complementary checks:
 - Waits for GitHub Pages to report the exact expected commit
 - Checks every public DM Forge route over HTTPS
 - Checks the deployed DungeonCards companion
+- Validates the live 642-record monster export before browser tests
 - Runs the complete browser and accessibility suite against the live site
-- Verifies the direct D&D Compendium route and return link to DM Forge
+- Verifies the D&D Compendium route, source catalog, full search, and sourced Session Console handoff
 
 Commands:
 
