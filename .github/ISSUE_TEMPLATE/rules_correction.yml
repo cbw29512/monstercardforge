@@ -1,0 +1,100 @@
+name: Rules Correction
+description: Report a possible spell, monster, ability, condition, encounter, item, or edition discrepancy.
+title: "[Rules]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        DM Forge rules data changes require a primary official source or licensed SRD source. Wikis, search snippets, videos, forums, and memory may identify a concern but cannot be the final production authority.
+  - type: dropdown
+    id: ruleset
+    attributes:
+      label: Ruleset
+      options:
+        - 5e (2014)
+        - 5.5e (2024)
+        - Both rulesets
+        - Edition-neutral
+        - Homebrew incorrectly presented as official
+        - Unsure
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Rules category
+      options:
+        - Spell
+        - Monster stat block
+        - Class or subclass ability
+        - Condition or combat rule
+        - Encounter calculation
+        - Magic item
+        - Healing potion or resource progression
+        - Ruleset label or source metadata
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: record
+    attributes:
+      label: Affected record or feature
+      placeholder: Inflict Wounds, Adult Black Dragon, 2024 High XP budget...
+    validations:
+      required: true
+  - type: input
+    id: location
+    attributes:
+      label: Where does the problem appear?
+      placeholder: Tool/page/card/field or repository file path
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: Current DM Forge behavior or value
+      description: Quote only the small amount needed to identify the discrepancy.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected rule or value
+      description: Explain the correction and any important attack, save, concentration, duration, trigger, target, damage type, successful-save, or upcasting details.
+    validations:
+      required: true
+  - type: input
+    id: official_source
+    attributes:
+      label: Official source URL
+      description: Link to Wizards of the Coast, D&D Beyond, an official errata/changelog page, or the applicable SRD.
+      placeholder: https://www.dndbeyond.com/... or official SRD URL
+    validations:
+      required: true
+  - type: textarea
+    id: source_location
+    attributes:
+      label: Source section or locator
+      description: Give the section heading, spell/monster name, page number, or other locator. Do not paste long copyrighted passages.
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Gameplay impact
+      description: Explain how the current value could mislead or slow a DM or player.
+    validations:
+      required: false
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I checked the exact edition and did not combine 5e and 5.5e text.
+          required: true
+        - label: I linked a primary official or licensed SRD source.
+          required: true
+        - label: I did not paste substantial proprietary rules text.
+          required: true
+        - label: I agree to follow the DM Forge Code of Conduct.
+          required: true
