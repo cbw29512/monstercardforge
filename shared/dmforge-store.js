@@ -9,6 +9,14 @@
     root.document.head.append(link);
   }
 
+  if (root.document && !root.document.querySelector('script[data-dmforge-recovery]')) {
+    const script = root.document.createElement('script');
+    script.src = new URL('shared/recovery-manager.js', root.document.baseURI).href;
+    script.defer = true;
+    script.dataset.dmforgeRecovery = '1.0.0';
+    root.document.head.append(script);
+  }
+
   const STORAGE_KEY = 'dmforge-shared-v1';
   const SCHEMA_VERSION = 1;
 
