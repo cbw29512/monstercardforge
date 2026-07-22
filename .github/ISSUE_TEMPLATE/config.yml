@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: DM Forge Community Forum
+    url: https://github.com/cbw29512/monstercardforge/discussions
+    about: Ask questions, share opinions, vote in polls, show table workflows, and brainstorm early ideas.
+  - name: Rules, Privacy and Methodology
+    url: https://cbw29512.github.io/monstercardforge/about.html
+    about: Review the project rules ledger, privacy boundaries, design standards, and verification process.
+  - name: Community Request Portal
+    url: https://cbw29512.github.io/monstercardforge/community.html
+    about: Choose the correct forum or structured request form.
