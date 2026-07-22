@@ -14,7 +14,7 @@ const pages = [
   ['magic-items.html', 'Magic Item Forge'],
   ['npc-forge.html', 'NPC Forge'],
   ['loot-forge.html', 'Loot Forge'],
-  ['backup-center.html', 'Backup & Storage Center']
+  ['backup-center.html', 'Protect My Campaign']
 ];
 
 test.beforeEach(async ({ page }) => preparePage(page));
