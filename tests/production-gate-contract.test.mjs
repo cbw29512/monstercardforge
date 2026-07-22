@@ -15,7 +15,9 @@ const requiredFiles = [
   'tests/browser/cross-tool-privacy.spec.mjs',
   'tests/browser/public-smoke.spec.mjs',
   'tests/browser/accessibility.spec.mjs',
+  'shared/recovery-manager.js',
   '.github/workflows/production-readiness.yml',
+  '.github/workflows/live-site-readiness.yml',
   'docs/PRODUCTION_READINESS_GATE.md'
 ];
 
@@ -50,7 +52,7 @@ test('production workflow is blocking and preserves diagnostic artifacts', () =>
 test('real user workflows and privacy boundaries remain covered', () => {
   const workflows = read('tests/browser/production-workflows.spec.mjs');
   const privacy = read('tests/browser/cross-tool-privacy.spec.mjs');
-  for (const phrase of ['campaign creation persists', 'Encounter Forge launches', 'autosaves prep', 'Magic Item handoff', 'full backup download']) {
+  for (const phrase of ['campaign creation persists', 'Encounter Forge launches', 'autosaves prep', 'Magic Item handoff', 'local recovery points restore', 'Safety Copy download']) {
     assert.equal(workflows.includes(phrase), true, `Workflow suite lost ${phrase}`);
   }
   for (const phrase of ['NPC Forge sends useful roleplay context', 'Loot Forge transfers rewards', 'NPC-PRIVATE-SECRET-MARKER', 'LOOT-PRIVATE-DM-MARKER', 'DM EDIT PRESERVED']) {
