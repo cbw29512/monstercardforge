@@ -128,3 +128,14 @@ This is an append-only record of decisions that affect product identity, rules a
 - **Status:** Accepted
 - **Decision:** Original DM Forge software and associated project documentation are licensed under MIT through `LICENSE`. Third-party material, including SRD-derived data, is not relicensed and retains the attribution and license recorded in `THIRD_PARTY_NOTICES.md`, source ledgers, records, and rendered output.
 - **Reason:** Contributors need a clear open-source license, while licensed D&D rules content requires separate CC-BY-4.0 attribution and trademark boundaries.
+
+## ADR-018 — Production claims require a blocking browser gate and manual evidence
+
+- **Date:** 2026-07-21
+- **Status:** Accepted
+- **Decision:** A DM Forge commit may be called a release candidate only after the static and Playwright production-readiness gates pass on that exact commit. A broad production-ready claim additionally requires recorded live-device, assistive-technology, backup-recovery, multiplayer, and physical-print validation for the affected workflows.
+- **Automated scope:** Desktop Chromium, Android Chromium emulation, iPhone WebKit emulation, public-route runtime smoke tests, cross-tool workflow tests, privacy assertions, backup restore, and serious/critical axe findings.
+- **Evidence:** Failed browser runs preserve traces, screenshots, videos, and an HTML report. Manual results are recorded in dated validation documents.
+- **Reason:** Static correctness does not prove that a user can complete the workflow in a browser or that the rendered interface remains accessible, private, persistent, and recoverable.
+- **Enforcement:** `.github/workflows/production-readiness.yml`, `playwright.config.mjs`, `tests/browser/`, and `tests/production-gate-contract.test.mjs` form one protected release gate.
+- **Rollback:** Reverting the gate requires a newer accepted ADR stating the replacement test strategy, risks, and migration plan. Temporary bypasses require a public issue, expiration condition, and maintainer approval.
