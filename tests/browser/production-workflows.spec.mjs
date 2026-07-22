@@ -93,8 +93,8 @@ test('Magic Item handoff adds a safe reward summary without copying the DM secre
 
   await page.goto(`/session-console.html?campaign=${encodeURIComponent(CAMPAIGN)}`);
   await page.getByRole('button', { name: 'Session Prep' }).click();
-  await expect(page.locator('[data-prep="rewards"]')).toContainText('Gate Lantern');
-  await expect(page.locator('[data-prep="rewards"]')).not.toContainText('PRIVATE-GATE-CURSE-DO-NOT-SHARE');
+  await expect(page.locator('[data-prep="rewards"]')).toHaveValue(/Gate Lantern/);
+  await expect(page.locator('[data-prep="rewards"]')).not.toHaveValue(/PRIVATE-GATE-CURSE-DO-NOT-SHARE/);
   await expectNoRuntimeErrors(errors);
 });
 
