@@ -66,8 +66,15 @@
   function useCampaignLocally(name) {
     const safeName = String(name || '').trim().slice(0, 100);
     if (!safeName) return;
-    const legacy = readLegacy();
-    if (!legacy?.campaigns?.length) return;
+    let legacy = readLegacy();
+    if (!legacy?.campaigns?.length) {
+      const campaign = { id: uid(), name: safeName, roster: [], session: blankSession(), archives: [] };
+      legacy = { version: 1, activeCampaignId: campaign.id, campaigns: [campaign], activeTab: 'prep' };
+      writeLegacy(legacy);
+      root.DMForgeStore?.syncSessionConsole(legacy);
+      location.reload();
+      return;
+    }
     const campaign = ensureCampaign(legacy, safeName);
     if (legacy.activeCampaignId !== campaign.id) {
       legacy.activeCampaignId = campaign.id;

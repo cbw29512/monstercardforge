@@ -3,7 +3,7 @@ import { expectNoRuntimeErrors, preparePage, watchRuntimeErrors } from './helper
 
 const pages = [
   ['/', 'DM Forge'],
-  ['/about.html', 'Rules, Privacy'],
+  ['/about.html', 'About DM Forge'],
   ['/community.html', 'DM Forge Community'],
   ['/campaigns.html', 'Campaign Hub'],
   ['/campaign-search.html', 'Campaign Search'],

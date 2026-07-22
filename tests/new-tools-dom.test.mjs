@@ -6,8 +6,8 @@ import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
-function idsFromHtml(html) {
-  return new Set([...html.matchAll(/\bid=["']([^"']+)["']/g)].map((match) => match[1]));
+function declaredIds(markupOrScript) {
+  return new Set([...markupOrScript.matchAll(/\bid=["']([^"']+)["']/g)].map((match) => match[1]));
 }
 
 function referencedIds(script) {
@@ -18,12 +18,17 @@ for (const tool of [
   { name: 'NPC Forge', html: 'npc-forge.html', scripts: ['npc-forge.js', 'shared/npc-forge-hardening.js'] },
   { name: 'Loot Forge', html: 'loot-forge.html', scripts: ['loot-forge.js'] }
 ]) {
-  test(`${tool.name} JavaScript IDs exist in its HTML`, () => {
+  test(`${tool.name} JavaScript IDs are declared statically or by its runtime renderer`, () => {
     const html = readFileSync(join(root, tool.html), 'utf8');
-    const ids = idsFromHtml(html);
+    const ids = declaredIds(html);
+    const scripts = tool.scripts.map((scriptPath) => ({ scriptPath, script: readFileSync(join(root, scriptPath), 'utf8') }));
+
+    for (const { script } of scripts) {
+      for (const id of declaredIds(script)) ids.add(id);
+    }
+
     const missing = [];
-    for (const scriptPath of tool.scripts) {
-      const script = readFileSync(join(root, scriptPath), 'utf8');
+    for (const { scriptPath, script } of scripts) {
       for (const id of referencedIds(script)) if (!ids.has(id)) missing.push(`${scriptPath}: #${id}`);
     }
     assert.deepEqual(missing, []);
