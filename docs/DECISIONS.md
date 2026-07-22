@@ -90,3 +90,41 @@ This is an append-only record of decisions that affect product identity, rules a
 - **Status:** Accepted
 - **Decision:** Canonicals, titles, descriptions, structured data, sitemap, and crawlable links are required. Popularity work then focuses on genuinely useful guides, demonstrations, samples, performance, and trust.
 - **Reason:** Metadata helps discovery but cannot substitute for value.
+
+## ADR-013 — DM Forge is the permanent public brand
+
+- **Date:** 2026-07-21
+- **Status:** Accepted
+- **Decision:** The umbrella product is publicly named **DM Forge**. Individual modules retain descriptive Forge or Console names beneath that brand.
+- **Reason:** A stable product identity is required before domain selection, community growth, external contributions, screenshots, guides, and public promotion.
+- **Migration:** The current GitHub Pages repository path remains unchanged until a custom-domain decision is made.
+
+## ADR-014 — Public maintainer identity is `cbw29512`
+
+- **Date:** 2026-07-21
+- **Status:** Accepted
+- **Decision:** Public pages and project documents identify GitHub user `cbw29512` as the maintainer until the owner explicitly chooses a first name, full name, organization, or legal entity.
+- **Reason:** The project needs a consistent accountable maintainer identity without exposing more personal information than the owner selected.
+
+## ADR-015 — Community conversations use GitHub Discussions; accepted work uses Issues
+
+- **Date:** 2026-07-21
+- **Status:** Accepted
+- **Decision:** Questions, opinions, polls, examples, and early ideas belong in GitHub Discussions. Reproducible bugs, scoped features, new-tool proposals, and sourced rules corrections use structured GitHub Issue forms. Accepted discussion ideas graduate into tracked issues.
+- **Reason:** A forum should encourage open conversation without turning the engineering backlog into an unstructured request list.
+- **Governance:** `docs/COMMUNITY_GOVERNANCE.md`, `CODE_OF_CONDUCT.md`, and `CONTRIBUTING.md` define categories, moderation, privacy, and request progression.
+
+## ADR-016 — No analytics until a measurement plan is approved
+
+- **Date:** 2026-07-21
+- **Status:** Accepted
+- **Decision:** DM Forge does not currently load Google Analytics, advertising analytics, or another visitor-tracking provider.
+- **Reason:** The project does not yet need behavioral tracking, and adding it prematurely would introduce privacy, consent, documentation, performance, and maintenance obligations without a defined decision it would support.
+- **Revisit when:** A public launch plan defines exact questions, minimum data, retention, disclosure, and a privacy-respecting provider comparison.
+
+## ADR-017 — Original project material uses MIT; third-party content retains its own license
+
+- **Date:** 2026-07-21
+- **Status:** Accepted
+- **Decision:** Original DM Forge software and associated project documentation are licensed under MIT through `LICENSE`. Third-party material, including SRD-derived data, is not relicensed and retains the attribution and license recorded in `THIRD_PARTY_NOTICES.md`, source ledgers, records, and rendered output.
+- **Reason:** Contributors need a clear open-source license, while licensed D&D rules content requires separate CC-BY-4.0 attribution and trademark boundaries.
