@@ -1,0 +1,90 @@
+name: New Tool Proposal
+description: Propose an entirely new DM Forge module with a clear table job and integration plan.
+title: "[New Tool]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        New tools should strengthen the connected campaign workflow rather than become isolated generators. Use GitHub Discussions first when the idea is still exploratory.
+  - type: input
+    id: name
+    attributes:
+      label: Proposed tool name
+      placeholder: Faction Forge, Travel Console, Quest Board...
+    validations:
+      required: true
+  - type: textarea
+    id: job
+    attributes:
+      label: What job does this tool perform?
+      description: State the one primary job in plain language.
+      placeholder: This tool helps a DM...
+    validations:
+      required: true
+  - type: dropdown
+    id: user
+    attributes:
+      label: Primary user
+      options:
+        - Dungeon Master during preparation
+        - Dungeon Master during a session
+        - Players during a session
+        - DM and players together
+        - Campaign organizer between sessions
+    validations:
+      required: true
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Minimum useful workflow
+      description: Describe the smallest version that would already be worth using.
+    validations:
+      required: true
+  - type: checkboxes
+    id: integrations
+    attributes:
+      label: Expected DM Forge connections
+      options:
+        - label: Campaign Hub
+        - label: Campaign Search
+        - label: Session Console
+        - label: Encounter Forge
+        - label: Player Display
+        - label: Monster Card Forge
+        - label: Magic Item Forge
+        - label: NPC Forge
+        - label: Loot Forge
+        - label: Backup & Storage Center
+        - label: Cleric in a Box
+  - type: textarea
+    id: data
+    attributes:
+      label: What data would it save or share?
+      description: Identify private DM data, player-safe data, shared summaries, exports, and backups.
+    validations:
+      required: true
+  - type: textarea
+    id: rules
+    attributes:
+      label: Rules or licensed-content considerations
+      description: Identify whether the tool uses official 5e/5.5e rules, SRD content, edition-neutral logic, or original homebrew.
+    validations:
+      required: true
+  - type: textarea
+    id: comparison
+    attributes:
+      label: Existing tools or workarounds
+      description: Explain what currently exists and what DM Forge should do differently or more simply.
+    validations:
+      required: false
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I searched existing issues, discussions, and the DM Forge roadmap.
+          required: true
+        - label: This proposal has a clear primary job and minimum useful workflow.
+          required: true
+        - label: I agree to follow the DM Forge Code of Conduct.
+          required: true
