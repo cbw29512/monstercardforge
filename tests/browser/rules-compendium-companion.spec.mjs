@@ -28,7 +28,7 @@ test('live DungeonCards deep link opens the D&D Compendium and returns to DM For
   await page.goto(url.toString());
 
   await expect(page.getByRole('link', { name: 'DM Forge' })).toHaveAttribute('href', 'https://cbw29512.github.io/monstercardforge/');
-  await expect(page.getByText('Rules Compendium & Roll Cards')).toBeVisible();
+  await expect(page.locator('.product-lockup span')).toHaveText('Rules Compendium & Roll Cards');
   await expect(page.getByRole('button', { name: 'Compendium' })).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByRole('heading', { name: /SRD Compendium/i })).toBeVisible();
 });
