@@ -11,6 +11,7 @@ const publicPages = [
   'about.html',
   'campaigns.html',
   'campaign-search.html',
+  'rules-compendium.html',
   'session-console.html',
   'encounter-forge.html',
   'player-display.html',
