@@ -19,6 +19,7 @@ test('DM Forge landing page uses one consistent app-card layout', () => {
 test('DM Forge provides task-first navigation and clear tool categories', () => {
   for (const requirement of [
     'aria-label="DM Forge primary navigation"',
+    'aria-label="DM Forge home"',
     'aria-label="Common DM Forge tasks"',
     'id="prepare"',
     'id="run"',
