@@ -19,18 +19,4 @@ jobs:
         with:
           node-version: 22
       - name: Run safety tests
-        id: safety
-        shell: bash
-        run: |
-          set +e
-          npm test > static-safety.log 2>&1
-          status=$?
-          tail -n 140 static-safety.log
-          exit "$status"
-      - name: Upload failure log
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: static-safety-log
-          path: static-safety.log
-          retention-days: 1
+        run: npm test
