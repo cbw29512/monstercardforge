@@ -5,27 +5,28 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#1e100c">
   <meta name="robots" content="index,follow,max-image-preview:large">
-  <title>DM Forge — Free Production-Ready Dungeon Master Tools</title>
-  <meta name="description" content="Free browser-based DM tools for campaigns, verified rules, roll cards, encounters, initiative, NPCs, loot, printable cards, player displays, search, and recovery.">
+  <title>DM Forge — One-Stop GM Tools for D&amp;D and Cthulhu</title>
+  <meta name="description" content="Choose Dungeons & Dragons or Cthulhu investigation tools, then prepare campaigns, run sessions, search rules, build encounters, and create printable table references.">
   <link rel="canonical" href="https://cbw29512.github.io/monstercardforge/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="DM Forge">
-  <meta property="og:title" content="DM Forge — Free Production-Ready Dungeon Master Tools">
-  <meta property="og:description" content="Prepare campaigns, search verified rules, use roll cards, build encounters, run initiative, print handouts, share safe player views, and protect local data.">
+  <meta property="og:title" content="DM Forge — One-Stop GM Tools for D&amp;D and Cthulhu">
+  <meta property="og:description" content="One public home for D&D campaign tools, rules, encounters, cards, Cleric in a Box, and an expanding Cthulhu Keeper toolkit.">
   <meta property="og:url" content="https://cbw29512.github.io/monstercardforge/">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="DM Forge — Free Dungeon Master Toolkit">
-  <meta name="twitter:description" content="Connected campaign, rules, encounter, initiative, NPC, loot, card, player-view, search, and recovery tools for DMs.">
+  <meta name="twitter:title" content="DM Forge — D&D and Cthulhu GM Toolkit">
+  <meta name="twitter:description" content="Choose your game system, then prepare and run the table from connected browser tools.">
   <link rel="stylesheet" href="shared/design-system.css" data-dmforge-design-system="1.0.0">
   <style>
     :root{--ink:#281a12;--paper:#f5e4b7;--paper2:#e4c77f;--red:#7c2b22;--red2:#481510;--gold:#bd8c34;--blue:#2f5e73;--green:#4a6944;--shadow:0 20px 60px #12090680}
     *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:82px}body{margin:0;min-height:100vh;background:#150b08;color:var(--ink);font:16px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.shell{width:min(1450px,100%);margin:auto;min-height:100vh;background:linear-gradient(#f9edcdf9,#e8d19cf9),repeating-linear-gradient(0deg,#0000 0 25px,#76562f0a 26px);box-shadow:var(--shadow)}
     .app-bar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:64px;padding:10px clamp(14px,4vw,42px);background:#21100cf5;color:#fff4d0;border-bottom:1px solid #bd8c347d;box-shadow:0 8px 24px #12090638;backdrop-filter:blur(12px)}.app-bar__brand{display:flex;align-items:center;gap:.65rem;color:#fff4d0;text-decoration:none;font:800 1.08rem var(--font-display,'Cinzel',serif);white-space:nowrap}.app-bar__mark{display:grid;place-items:center;width:38px;height:38px;border:1px solid #d5ab58;border-radius:10px;background:#4d2017}.app-bar__links{display:flex;align-items:center;gap:6px;overflow-x:auto;scrollbar-width:thin}.app-bar__links a{display:inline-flex;align-items:center;min-height:44px;padding:.65rem .8rem;border-radius:8px;color:#ffeab8;text-decoration:none;font-weight:750;white-space:nowrap}.app-bar__links a:hover,.app-bar__links a:focus-visible{background:#fff2c317;color:#fff}
-    .hero{padding:clamp(34px,7vw,82px) clamp(16px,6vw,80px);color:#fff1bf;background:radial-gradient(circle at 76% 30%,#9b61344a,#0000 27%),linear-gradient(135deg,#1d0d09,#5a2a18 58%,#26110c);border-bottom:5px solid var(--gold);position:relative;overflow:hidden}.hero::after{content:'⚒';position:absolute;right:5%;bottom:-10%;font-size:clamp(9rem,25vw,22rem);opacity:.08;transform:rotate(-12deg);pointer-events:none}.hero__content{position:relative;z-index:1;max-width:1040px}.eyebrow{font:800 .9rem var(--font-display,'Cinzel',serif);letter-spacing:.19em;text-transform:uppercase;color:#e4b85d}.hero h1{font:900 clamp(3rem,9vw,7rem)/.95 var(--font-display,'Cinzel',serif);margin:.3rem 0;text-shadow:0 5px 0 #260d09}.hero h1 span{color:#e3b458}.hero-copy{max-width:900px;font-size:clamp(1.08rem,2vw,1.35rem);margin:1rem 0 1.5rem}.hero-actions,.actions{display:flex;gap:10px;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:46px;border:1px solid var(--red2);border-radius:9px;padding:.82rem 1.15rem;color:#fff5d4;background:linear-gradient(#963b32,#611e19);font-weight:800;text-decoration:none;box-shadow:0 4px 0 #35100d;cursor:pointer}.btn.gold{background:linear-gradient(#d2aa56,#936823);border-color:#664514;color:#29190d}.btn.blue{background:linear-gradient(#4c7b92,#294d60);border-color:#183743}.btn.light{background:#fff4d1;color:var(--ink);border-color:#a17b3c;box-shadow:none}.btn:hover,.btn:focus-visible{filter:brightness(1.07);transform:translateY(-1px)}
-    main{padding:clamp(22px,4vw,56px)}.task-nav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:-26px auto 44px;position:relative;z-index:3;max-width:1260px}.task-nav a{display:flex;align-items:center;justify-content:center;min-height:62px;padding:.8rem;text-align:center;text-decoration:none;color:var(--ink);font-weight:800;background:#fffaf0;border:1px solid #b98935;border-radius:11px;box-shadow:0 8px 24px #39200f24}.task-nav a:hover,.task-nav a:focus-visible{background:#fff3cc;transform:translateY(-2px)}
+    .hero{padding:clamp(34px,7vw,82px) clamp(16px,6vw,80px);color:#fff1bf;background:radial-gradient(circle at 76% 30%,#9b61344a,#0000 27%),linear-gradient(135deg,#1d0d09,#5a2a18 58%,#26110c);border-bottom:5px solid var(--gold);position:relative;overflow:hidden}.hero::after{content:'⚒';position:absolute;right:5%;bottom:-10%;font-size:clamp(9rem,25vw,22rem);opacity:.08;transform:rotate(-12deg);pointer-events:none}.hero__content{position:relative;z-index:1;max-width:1180px}.eyebrow{font:800 .9rem var(--font-display,'Cinzel',serif);letter-spacing:.19em;text-transform:uppercase;color:#e4b85d}.hero h1{font:900 clamp(3rem,9vw,7rem)/.95 var(--font-display,'Cinzel',serif);margin:.3rem 0;text-shadow:0 5px 0 #260d09}.hero h1 span{color:#e3b458}.hero-copy{max-width:900px;font-size:clamp(1.08rem,2vw,1.35rem);margin:1rem 0 1.5rem}.system-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:28px}.system-choice{display:flex;min-height:230px;padding:24px;border:2px solid #d1a24c;border-radius:16px;color:#fff4d0;text-decoration:none;box-shadow:0 14px 35px #0006;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;transition:transform .18s ease,filter .18s ease}.system-choice::before{position:absolute;inset:18px 20px auto auto;font-size:4.5rem;line-height:1;opacity:.72}.system-choice--dnd{background:radial-gradient(circle at 82% 18%,#e7ba6347,transparent 34%),linear-gradient(145deg,#762e24,#35120e)}.system-choice--dnd::before{content:'⚔️'}.system-choice--coc{background:radial-gradient(circle at 82% 18%,#9fc3bd32,transparent 34%),linear-gradient(145deg,#173e3b,#101d22 65%,#080c11)}.system-choice--coc::before{content:'◉';color:#b9d8cf}.system-choice:hover,.system-choice:focus-visible{transform:translateY(-4px);filter:brightness(1.08)}.system-choice small{font-weight:850;letter-spacing:.13em;text-transform:uppercase;color:#edc46f}.system-choice strong{font:900 clamp(1.7rem,4vw,2.65rem)/1.05 var(--font-display,'Cinzel',serif);margin:.35rem 0}.system-choice span{max-width:520px;color:#fff4dc}.system-choice b{display:inline-flex;width:max-content;margin-top:14px;padding:.55rem .75rem;border:1px solid #ffffff52;border-radius:8px;background:#0004}
+    .hero-actions,.actions{display:flex;gap:10px;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:46px;border:1px solid var(--red2);border-radius:9px;padding:.82rem 1.15rem;color:#fff5d4;background:linear-gradient(#963b32,#611e19);font-weight:800;text-decoration:none;box-shadow:0 4px 0 #35100d;cursor:pointer}.btn.gold{background:linear-gradient(#d2aa56,#936823);border-color:#664514;color:#29190d}.btn.blue{background:linear-gradient(#4c7b92,#294d60);border-color:#183743}.btn.light{background:#fff4d1;color:var(--ink);border-color:#a17b3c;box-shadow:none}.btn:hover,.btn:focus-visible{filter:brightness(1.07);transform:translateY(-1px)}
+    main{padding:clamp(22px,4vw,56px)}.task-nav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:0 auto 44px;position:relative;z-index:3;max-width:1260px}.task-nav a{display:flex;align-items:center;justify-content:center;min-height:62px;padding:.8rem;text-align:center;text-decoration:none;color:var(--ink);font-weight:800;background:#fffaf0;border:1px solid #b98935;border-radius:11px;box-shadow:0 8px 24px #39200f24}.task-nav a:hover,.task-nav a:focus-visible{background:#fff3cc;transform:translateY(-2px)}
     .tool-section{margin:0 auto 54px;max-width:1260px}.section-head{max-width:800px;margin:0 0 22px}.section-head h2{font:800 clamp(1.8rem,4vw,3rem)/1.1 var(--font-display,'Cinzel',serif);margin:.25rem 0}.section-head p{font-size:1.05rem;margin:.45rem 0}.tool-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;align-items:stretch}.tool{height:100%;min-height:350px;background:#fff9e4;border:1px solid var(--gold);border-radius:14px;padding:20px;box-shadow:0 8px 24px #39200f1f;display:flex;flex-direction:column;position:relative;overflow:hidden}.tool::before{content:'';position:absolute;inset:0 0 auto;height:7px;background:var(--tool-color,var(--red))}.tool-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.tool-icon{font-size:3.25rem;line-height:1;margin:.45rem 0;filter:drop-shadow(0 7px 5px #0002)}.tool h3{font:800 1.45rem/1.2 var(--font-display,'Cinzel',serif);margin:.3rem 0;min-height:2.4em}.tool p{margin:.35rem 0}.tool ul{padding-left:1.15rem;margin:.8rem 0}.tool .actions{margin-top:auto;padding-top:14px}.tool .actions .btn{width:100%}.status{display:inline-block;width:max-content;max-width:100%;padding:.25rem .6rem;border-radius:999px;background:#ecdeb4;border:1px solid #aa833d;font-size:.76rem;font-weight:800;line-height:1.25}.status.live{background:#d8ecd4;border-color:#60855a;color:#31502d}.status.verified{background:#e9ddf3;border-color:#76588e;color:#513b65}
     .community{margin:48px auto;padding:clamp(22px,5vw,42px);max-width:1260px;display:grid;grid-template-columns:1fr auto;gap:25px;align-items:center;background:linear-gradient(120deg,#2b150e,#5a2a18);color:#ffecb6;border:3px double var(--gold);border-radius:14px}.community h2{font:800 clamp(2rem,5vw,3.5rem)/1.05 var(--font-display,'Cinzel',serif);color:#efc463;margin:.3rem 0}.community-mark{font-size:clamp(5rem,13vw,10rem)}.principles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:1260px;margin:48px auto}.principle{background:#2b150e;color:#ffecb6;border:2px solid #b48636;border-radius:10px;padding:20px;text-align:center}.principle b{display:block;font:800 1.2rem var(--font-display,'Cinzel',serif);color:#e5b75e;margin-bottom:.5rem}.roadmap{max-width:1260px;margin:auto;background:#fff7db;border:2px double var(--gold);border-radius:12px;padding:24px}.roadmap-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.phase{padding:15px;background:#f0dfad;border:1px solid #af8741;border-radius:8px}.phase h3{font-family:var(--font-display,'Cinzel',serif);margin-top:0}.footer{text-align:center;padding:28px;border-top:2px solid var(--gold);background:#26120d;color:#f8ddb0}.footer a{color:#f0c267}
-    @media(max-width:1050px){.task-nav{grid-template-columns:repeat(3,1fr)}.roadmap-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:760px){html{scroll-padding-top:70px}.app-bar{align-items:flex-start;padding-inline:12px}.app-bar__links{width:100%;padding-bottom:2px}.app-bar__brand span:last-child{display:none}.task-nav{grid-template-columns:repeat(2,1fr);margin-top:-18px}.tool{min-height:330px}.principles,.community{grid-template-columns:1fr}.community-mark{display:none}}@media(max-width:520px){.app-bar{display:block}.app-bar__brand{margin-bottom:7px}.task-nav{grid-template-columns:1fr}.tool-grid{grid-template-columns:1fr}.tool{min-height:auto}.hero-actions .btn,.community .btn{width:100%}.roadmap-grid{grid-template-columns:1fr}}
+    @media(max-width:1050px){.task-nav{grid-template-columns:repeat(3,1fr)}.roadmap-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:760px){html{scroll-padding-top:70px}.app-bar{align-items:flex-start;padding-inline:12px}.app-bar__links{width:100%;padding-bottom:2px}.app-bar__brand span:last-child{display:none}.system-choices{grid-template-columns:1fr}.task-nav{grid-template-columns:repeat(2,1fr)}.tool{min-height:330px}.principles,.community{grid-template-columns:1fr}.community-mark{display:none}}@media(max-width:520px){.app-bar{display:block}.app-bar__brand{margin-bottom:7px}.task-nav{grid-template-columns:1fr}.tool-grid{grid-template-columns:1fr}.tool{min-height:auto}.hero-actions .btn,.community .btn{width:100%}.roadmap-grid{grid-template-columns:1fr}}
   </style>
   <script type="application/ld+json">
   {
@@ -33,7 +34,7 @@
     "@type":"WebApplication",
     "name":"DM Forge",
     "url":"https://cbw29512.github.io/monstercardforge/",
-    "description":"A free browser-based toolkit for Dungeon Masters with campaign prep, verified rules references, roll cards, encounter building, initiative, printable cards, NPCs, loot, private search, player displays, and local recovery.",
+    "description":"A free browser-based toolkit for Dungeons & Dragons game masters and Cthulhu horror Keepers with campaign preparation, rules references, roll cards, encounter tools, printable cards, player displays, and local recovery.",
     "applicationCategory":"GameApplication",
     "operatingSystem":"Any modern web browser",
     "isAccessibleForFree":true,
@@ -46,28 +47,37 @@
   <nav class="app-bar" aria-label="DM Forge primary navigation">
     <a class="app-bar__brand" href="index.html" aria-label="DM Forge home"><span class="app-bar__mark" aria-hidden="true">⚒</span><span>DM Forge</span></a>
     <div class="app-bar__links">
-      <a href="#prepare">Prepare</a>
-      <a href="#run">Run the Game</a>
-      <a href="#create">Create &amp; Print</a>
-      <a href="#reference">Rules &amp; Safety</a>
+      <a href="#systems">Choose System</a>
+      <a href="#dnd-tools">D&amp;D Tools</a>
+      <a href="https://cbw29512.github.io/DungeonCards/?system=coc">Cthulhu Tools</a>
       <a href="community.html">Community</a>
     </div>
   </nav>
 
-  <header class="hero">
+  <header class="hero" id="systems">
     <div class="hero__content">
-      <div class="eyebrow">Every D&amp;D tool in one place</div>
+      <div class="eyebrow">One home for both tables</div>
       <h1>DM <span>Forge</span></h1>
-      <p class="hero-copy">Start with what you are doing right now. Plan a campaign, run tonight’s session, check a rule, build an encounter, create handouts, or open Cleric in a Box—without hunting through separate repositories.</p>
-      <div class="hero-actions">
-        <a class="btn gold" href="campaigns.html">Start in Campaign Hub</a>
-        <a class="btn" href="session-console.html">Run Tonight’s Session</a>
-        <a class="btn light" href="rules-compendium.html">Find a Rule or Card</a>
+      <p class="hero-copy">Choose the game you are running tonight. Each workspace keeps its own rules, cards, encounters, notes, and homebrew tools while sharing the same fast-at-the-table design.</p>
+      <div class="system-choices" aria-label="Choose a game system">
+        <a class="system-choice system-choice--dnd" href="#dnd-tools">
+          <small>Fantasy campaign suite</small>
+          <strong>Dungeons &amp; Dragons</strong>
+          <span>Campaigns, sessions, encounters, verified 5e and 5.5e references, printable cards, monsters, loot, NPCs, player displays, and Cleric in a Box.</span>
+          <b>Enter the D&amp;D forge</b>
+        </a>
+        <a class="system-choice system-choice--coc" href="https://cbw29512.github.io/DungeonCards/?system=coc">
+          <small>Investigation and horror suite</small>
+          <strong>Cthulhu Keeper Tools</strong>
+          <span>Percentile procedures, investigator references, Sanity and injury tools, combat guidance, weapons, creatures, occult prototypes, Keeper preparation, and source records.</span>
+          <b>Open the restricted archive</b>
+        </a>
       </div>
     </div>
   </header>
 
-  <main id="main-content">
+  <main id="dnd-tools">
+    <div class="section-head"><div class="eyebrow" style="color:var(--red)">Dungeons &amp; Dragons workspace</div><h2>Start with the job in front of you.</h2><p>These links take you directly to the connected D&amp;D tools instead of making you hunt through repositories.</p></div>
     <nav class="task-nav" aria-label="Common DM Forge tasks">
       <a href="campaigns.html">📚 Plan my campaign</a>
       <a href="session-console.html">🎛️ Run the table</a>
@@ -115,11 +125,11 @@
 
     <section class="community"><div><div class="eyebrow">Community-driven roadmap</div><h2>Tell us what needs fixing—or what DM Forge should build next.</h2><p>Join discussions, ask questions, vote on ideas, report bugs, submit sourced rules corrections, and propose new tools.</p><div class="actions"><a class="btn gold" href="community.html">Open Community Portal</a><a class="btn light" href="https://github.com/cbw29512/monstercardforge/discussions" target="_blank" rel="noopener">Visit the Forum</a></div></div><div class="community-mark" aria-hidden="true">💬</div></section>
 
-    <section class="principles"><div class="principle"><b>Fast at the Table</b>Every tool should reduce pauses, searching, and repeated questions.</div><div class="principle"><b>Persistent but Private</b>Safe summaries and player views connect the table without exposing DM records.</div><div class="principle"><b>Documented and Recoverable</b>Tests, source ledgers, recovery points, migrations, and rollback notes prevent drift and data loss.</div></section>
+    <section class="principles"><div class="principle"><b>Fast at the Table</b>Every tool should reduce pauses, searching, and repeated questions.</div><div class="principle"><b>Persistent but Private</b>Safe summaries and player views connect the table without exposing GM records.</div><div class="principle"><b>Documented and Recoverable</b>Tests, source ledgers, recovery points, migrations, and rollback notes prevent drift and data loss.</div></section>
 
-    <section class="roadmap"><div class="section-head" style="margin-bottom:18px"><div class="eyebrow" style="color:var(--red)">Release status</div><h2>The connected toolkit is built. Consolidation, physical validation, and catalog integration are active.</h2></div><div class="roadmap-grid"><div class="phase"><h3>Foundation</h3><p><b>Complete</b></p><p>Shared design, campaign architecture, privacy boundaries, recovery, rules ledger, and automated drift checks.</p></div><div class="phase"><h3>Core Tools</h3><p><b>Complete</b></p><p>Preparation, rules, combat, encounters, cards, NPCs, loot, player view, search, and artifact tracking.</p></div><div class="phase"><h3>D&amp;D Consolidation</h3><p><b>Active</b></p><p>DungeonCards is now the Rules Compendium companion; CharacterForge, adventures, maps, locations, and language tools follow controlled review.</p></div><div class="phase"><h3>Physical Validation</h3><p><b>Active</b></p><p>Real phones, tablets, screen readers, cross-network rooms, cardstock, duplex printing, and performance measurements remain.</p></div></div></section>
+    <section class="roadmap"><div class="section-head" style="margin-bottom:18px"><div class="eyebrow" style="color:var(--red)">Release status</div><h2>The connected D&amp;D toolkit is live. The Cthulhu Keeper workspace and licensed homebrew ingestion are expanding.</h2></div><div class="roadmap-grid"><div class="phase"><h3>Foundation</h3><p><b>Complete</b></p><p>Shared design, campaign architecture, privacy boundaries, recovery, rules ledgers, and automated drift checks.</p></div><div class="phase"><h3>D&amp;D Tools</h3><p><b>Live</b></p><p>Preparation, rules, combat, encounters, cards, NPCs, loot, player view, search, and artifact tracking.</p></div><div class="phase"><h3>Cthulhu Tools</h3><p><b>Expanding</b></p><p>Investigator and Keeper procedures, percentile tools, Sanity, injuries, weapons, creatures, investigation flow, and source records.</p></div><div class="phase"><h3>Homebrew Sources</h3><p><b>Controlled ingestion</b></p><p>Only attributed, permissioned, open-license, or creator-submitted sources will enter the shared library.</p></div></div></section>
   </main>
 
-  <footer class="footer"><b>DM Forge</b> · Maintained by <a href="https://github.com/cbw29512">cbw29512</a> · No analytics currently installed.<br><a href="campaigns.html">Campaign Hub</a> · <a href="rules-compendium.html">Rules &amp; Cards</a> · <a href="session-console.html">Session Console</a> · <a href="community.html">Community</a> · <a href="about.html">Rules &amp; Methodology</a> · <a href="backup-center.html">Protect My Campaign</a> · <a href="https://github.com/cbw29512/monstercardforge">Source</a></footer>
+  <footer class="footer"><b>DM Forge</b> · Maintained by <a href="https://github.com/cbw29512">cbw29512</a> · No analytics currently installed.<br><a href="#systems">Choose System</a> · <a href="campaigns.html">D&amp;D Campaign Hub</a> · <a href="https://cbw29512.github.io/DungeonCards/?system=coc">Cthulhu Keeper Tools</a> · <a href="community.html">Community</a> · <a href="about.html">Rules &amp; Methodology</a> · <a href="https://github.com/cbw29512/monstercardforge">Source</a></footer>
 </div></body>
 </html>

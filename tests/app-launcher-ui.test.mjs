@@ -16,6 +16,16 @@ test('DM Forge landing page uses one consistent app-card layout', () => {
   assert.equal((html.match(/<article class="tool"/g) || []).length, 12);
 });
 
+test('DM Forge home is the D&D and Cthulhu system chooser', () => {
+  assert.match(html, /aria-label="Choose a game system"/);
+  assert.match(html, /system-choice--dnd/);
+  assert.match(html, /system-choice--coc/);
+  assert.match(html, /Dungeons &amp; Dragons/);
+  assert.match(html, /Cthulhu Keeper Tools/);
+  assert.match(html, /DungeonCards\/\?system=coc/);
+  assert.match(html, /id="dnd-tools"/);
+});
+
 test('DM Forge provides task-first navigation and clear tool categories', () => {
   for (const requirement of [
     'aria-label="DM Forge primary navigation"',
