@@ -55,7 +55,7 @@ test('live DungeonCards My Encounter transfers verified SRD monsters into Encoun
   const goblin = page.locator('.monster-reference').filter({ has: goblinHeading }).first();
   await expect(goblin).toBeVisible();
   await goblin.getByRole('button', { name: 'Add to My Encounter' }).click();
-  await page.getByRole('button', { name: 'My Encounter' }).click();
+  await page.getByRole('button', { name: 'My Encounter', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Send My Encounter to DM Forge' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Send My Encounter to DM Forge' }).click();
