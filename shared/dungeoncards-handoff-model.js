@@ -49,6 +49,30 @@ export function validateDungeonCardsHandoff(payload, now = Date.now()) {
 
 const campaignKey = (value) => cleanText(value, 100).toLocaleLowerCase();
 
+export function createInitialEncounterForgeState(campaign, ruleset, options) {
+  if (!validRuleset(String(ruleset))) throw new Error('Cannot create a party profile for an invalid ruleset.');
+  const safeCampaign = cleanText(campaign, 100) || 'My Campaign';
+  const profile = {
+    id: options.createProfileId(),
+    campaign: safeCampaign,
+    name: 'Core Party',
+    ruleset: String(ruleset),
+    characters: Array.from({ length: 4 }, (_, index) => ({
+      id: options.createCharacterId(index),
+      name: `Character ${index + 1}`,
+      level: 5
+    })),
+    updatedAt: options.updatedAt
+  };
+  return {
+    version: 1,
+    activeProfileId: profile.id,
+    profiles: [profile],
+    encounters: [],
+    customMonsters: []
+  };
+}
+
 export function selectOrCreateEditionProfile(state, campaign, ruleset, options) {
   const profiles = Array.isArray(state?.profiles) ? state.profiles : [];
   const exact = profiles.find((entry) => (
