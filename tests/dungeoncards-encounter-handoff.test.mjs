@@ -43,6 +43,22 @@ test('DungeonCards handoff resolves authoritative records and uses strict valida
   }
 });
 
+test('fresh-browser imports wait for normal startup and create safe fallback state when needed', () => {
+  const adapter = read('shared/dungeoncards-encounter-adapter.js');
+  const model = read('shared/dungeoncards-handoff-model.js');
+  for (const requirement of [
+    'waitForEncounterForgeState',
+    'STORAGE_READY_ATTEMPTS',
+    'await delay(STORAGE_READY_DELAY_MS)',
+    'createInitialEncounterForgeState',
+    'localStorage.setItem(STORAGE_KEY, JSON.stringify(created))',
+    'const state = await waitForEncounterForgeState(campaign, ruleset)'
+  ]) assert.equal(adapter.includes(requirement), true, `Fresh-browser adapter lost ${requirement}`);
+  assert.equal(model.includes('export function createInitialEncounterForgeState'), true);
+  assert.equal(model.includes("name: 'Core Party'"), true);
+  assert.equal(model.includes('Array.from({ length: 4 }'), true);
+});
+
 test('imported DungeonCards encounters retain party, ruleset, source records, and computed difficulty', () => {
   const adapter = read('shared/dungeoncards-encounter-adapter.js');
   for (const requirement of [
