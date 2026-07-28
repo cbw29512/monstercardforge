@@ -50,7 +50,9 @@ test('live DungeonCards My Encounter transfers verified SRD monsters into Encoun
 
   await page.getByRole('button', { name: 'Open Monster Library' }).click();
   await page.getByLabel('Search monster library').fill('Goblin');
-  const goblin = page.locator('.monster-reference').filter({ hasText: /^Goblin/ }).first();
+  const goblinHeading = page.getByRole('heading', { name: /^Goblin/ }).first();
+  await expect(goblinHeading).toBeVisible();
+  const goblin = page.locator('.monster-reference').filter({ has: goblinHeading }).first();
   await expect(goblin).toBeVisible();
   await goblin.getByRole('button', { name: 'Add to My Encounter' }).click();
   await page.getByRole('button', { name: 'My Encounter' }).click();
