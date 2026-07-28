@@ -50,6 +50,7 @@ jobs:
         with:
           name: dm-forge-production-readiness-${{ github.run_id }}
           path: |
+            package-lock.json
             static-test-output.txt
             playwright-report/
             test-results/
