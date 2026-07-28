@@ -29,8 +29,8 @@ test('live DungeonCards deep link opens the D&D Compendium and returns to DM For
 
   await expect(page.getByRole('link', { name: 'DM Forge' })).toHaveAttribute('href', 'https://cbw29512.github.io/monstercardforge/');
   await expect(page.locator('.product-lockup span')).toHaveText('Rules Compendium & Roll Cards');
-  await expect(page.getByRole('button', { name: 'Compendium' })).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByRole('heading', { name: /SRD Compendium/i })).toBeVisible();
+  await expect(page.locator('#srd-compendium-title')).toHaveText('D&D SRD Compendium');
+  await expect(page.locator('.srd-compendium')).toBeVisible();
 });
 
 test('live DungeonCards My Encounter transfers verified SRD monsters into Encounter Forge', async ({ page }) => {
@@ -42,12 +42,14 @@ test('live DungeonCards My Encounter transfers verified SRD monsters into Encoun
   await page.goto(url.toString());
   await page.evaluate(() => {
     localStorage.removeItem('dmforge-dungeoncards-encounter-handoff-v1');
+    localStorage.removeItem('dungeon-monster-encounter-v3-dnd-2024');
+    localStorage.removeItem('dungeon-cards-workspace-v2-monster-dnd-2024');
     localStorage.removeItem('dungeon-cards:workspace:monster');
   });
   await page.reload();
 
   await page.getByRole('button', { name: 'Open Monster Library' }).click();
-  await page.getByLabel('Search monsters').fill('Goblin');
+  await page.getByLabel('Search monster library').fill('Goblin');
   const goblin = page.locator('.monster-reference').filter({ hasText: /^Goblin/ }).first();
   await expect(goblin).toBeVisible();
   await goblin.getByRole('button', { name: 'Add to My Encounter' }).click();
