@@ -132,6 +132,7 @@ jobs:
           PLAYWRIGHT_BASE_URL: ${{ env.LIVE_SITE_URL }}
           PLAYWRIGHT_SKIP_WEB_SERVER: "1"
           DM_FORGE_LIVE_COMPANIONS: "1"
+          DM_FORGE_DEPLOYED_EQUALS_TEST_SUITE: ${{ github.event_name == 'pull_request' && '0' || '1' }}
           DUNGEON_CARDS_URL: ${{ env.DUNGEON_CARDS_URL }}
         run: npm run test:browser
 
