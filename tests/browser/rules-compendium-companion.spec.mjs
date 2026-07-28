@@ -35,6 +35,13 @@ test('live DungeonCards deep link opens the D&D Compendium and returns to DM For
 
 test('live DungeonCards My Encounter transfers verified SRD monsters into Encounter Forge', async ({ page }) => {
   test.skip(process.env.DM_FORGE_LIVE_COMPANIONS !== '1', 'Cross-repository companion validation only runs against deployed sites.');
+
+  if (process.env.DM_FORGE_DEPLOYED_EQUALS_TEST_SUITE !== '1') {
+    await page.goto(siteRoute('encounter-forge.html'));
+    await page.getByRole('button', { name: 'Save Party Profile' }).click();
+    await expect.poll(() => page.evaluate(() => Boolean(localStorage.getItem('dmforge-encounter-forge-v1')))).toBe(true);
+  }
+
   const companion = process.env.DUNGEON_CARDS_URL || 'https://cbw29512.github.io/DungeonCards/';
   const url = new URL(companion);
   url.searchParams.set('system', 'dnd');
