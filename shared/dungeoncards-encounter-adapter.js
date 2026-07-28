@@ -1,12 +1,15 @@
 import { evaluateEncounter } from '../encounter-rules.js';
 import { loadDungeonCardsMonsters } from '../encounter-monster-catalog.js';
 import {
+  createInitialEncounterForgeState,
   selectOrCreateEditionProfile,
   validateDungeonCardsHandoff
 } from './dungeoncards-handoff-model.js';
 
 const HANDOFF_KEY = 'dmforge-dungeoncards-encounter-handoff-v1';
 const STORAGE_KEY = 'dmforge-encounter-forge-v1';
+const STORAGE_READY_ATTEMPTS = 20;
+const STORAGE_READY_DELAY_MS = 50;
 
 function uid(prefix) {
   const random = crypto.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -20,6 +23,31 @@ function readJson(key) {
 
 function cleanText(value, maximum = 160) {
   return String(value ?? '').replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, maximum);
+}
+
+const usableState = (value) => Boolean(
+  value
+  && typeof value === 'object'
+  && Array.isArray(value.profiles)
+  && value.profiles.some((profile) => Array.isArray(profile?.characters) && profile.characters.length > 0)
+);
+
+const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+async function waitForEncounterForgeState(campaign, ruleset) {
+  for (let attempt = 0; attempt < STORAGE_READY_ATTEMPTS; attempt += 1) {
+    const current = readJson(STORAGE_KEY);
+    if (usableState(current)) return current;
+    await delay(STORAGE_READY_DELAY_MS);
+  }
+
+  const created = createInitialEncounterForgeState(campaign, ruleset, {
+    createProfileId: () => uid('profile'),
+    createCharacterId: (index) => uid(`character-${index + 1}`),
+    updatedAt: new Date().toISOString()
+  });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(created));
+  return created;
 }
 
 function profileFor(state, campaign, ruleset) {
@@ -53,12 +81,10 @@ function notify(message, type = 'status') {
 }
 
 async function createImportedEncounter(payload) {
-  const state = readJson(STORAGE_KEY);
-  if (!state || !Array.isArray(state.profiles)) throw new Error('Encounter Forge storage is not ready. Reload and try the transfer again.');
-
-  const exported = await loadDungeonCardsMonsters();
   const campaign = cleanText(payload.campaign, 100) || 'My Campaign';
   const ruleset = String(payload.ruleset);
+  const state = await waitForEncounterForgeState(campaign, ruleset);
+  const exported = await loadDungeonCardsMonsters();
   const partyProfile = profileFor(state, campaign, ruleset);
   const missing = [];
   const monsters = [];
