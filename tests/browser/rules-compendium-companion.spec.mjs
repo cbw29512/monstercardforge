@@ -29,12 +29,19 @@ test('live DungeonCards deep link opens the D&D Compendium and returns to DM For
 
   await expect(page.getByRole('link', { name: 'DM Forge' })).toHaveAttribute('href', 'https://cbw29512.github.io/monstercardforge/');
   await expect(page.locator('.product-lockup span')).toHaveText('Rules Compendium & Roll Cards');
-  await expect(page.getByRole('button', { name: 'Compendium' })).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByRole('heading', { name: /SRD Compendium/i })).toBeVisible();
+  await expect(page.locator('#srd-compendium-title')).toHaveText('D&D SRD Compendium');
+  await expect(page.locator('.srd-compendium')).toBeVisible();
 });
 
 test('live DungeonCards My Encounter transfers verified SRD monsters into Encounter Forge', async ({ page }) => {
   test.skip(process.env.DM_FORGE_LIVE_COMPANIONS !== '1', 'Cross-repository companion validation only runs against deployed sites.');
+
+  if (process.env.DM_FORGE_DEPLOYED_EQUALS_TEST_SUITE !== '1') {
+    await page.goto(siteRoute('encounter-forge.html'));
+    await page.getByRole('button', { name: 'Save Party Profile' }).click();
+    await expect.poll(() => page.evaluate(() => Boolean(localStorage.getItem('dmforge-encounter-forge-v1')))).toBe(true);
+  }
+
   const companion = process.env.DUNGEON_CARDS_URL || 'https://cbw29512.github.io/DungeonCards/';
   const url = new URL(companion);
   url.searchParams.set('system', 'dnd');
@@ -42,16 +49,20 @@ test('live DungeonCards My Encounter transfers verified SRD monsters into Encoun
   await page.goto(url.toString());
   await page.evaluate(() => {
     localStorage.removeItem('dmforge-dungeoncards-encounter-handoff-v1');
+    localStorage.removeItem('dungeon-monster-encounter-v3-dnd-2024');
+    localStorage.removeItem('dungeon-cards-workspace-v2-monster-dnd-2024');
     localStorage.removeItem('dungeon-cards:workspace:monster');
   });
   await page.reload();
 
   await page.getByRole('button', { name: 'Open Monster Library' }).click();
-  await page.getByLabel('Search monsters').fill('Goblin');
-  const goblin = page.locator('.monster-reference').filter({ hasText: /^Goblin/ }).first();
+  await page.getByLabel('Search monster library').fill('Goblin');
+  const goblinHeading = page.getByRole('heading', { name: /^Goblin/ }).first();
+  await expect(goblinHeading).toBeVisible();
+  const goblin = page.locator('.monster-reference').filter({ has: goblinHeading }).first();
   await expect(goblin).toBeVisible();
   await goblin.getByRole('button', { name: 'Add to My Encounter' }).click();
-  await page.getByRole('button', { name: 'My Encounter' }).click();
+  await page.getByRole('button', { name: 'My Encounter', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Send My Encounter to DM Forge' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Send My Encounter to DM Forge' }).click();

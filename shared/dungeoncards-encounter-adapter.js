@@ -1,9 +1,15 @@
 import { evaluateEncounter } from '../encounter-rules.js';
 import { loadDungeonCardsMonsters } from '../encounter-monster-catalog.js';
+import {
+  createInitialEncounterForgeState,
+  selectOrCreateEditionProfile,
+  validateDungeonCardsHandoff
+} from './dungeoncards-handoff-model.js';
 
 const HANDOFF_KEY = 'dmforge-dungeoncards-encounter-handoff-v1';
 const STORAGE_KEY = 'dmforge-encounter-forge-v1';
-const MAX_HANDOFF_AGE_MS = 15 * 60 * 1000;
+const STORAGE_READY_ATTEMPTS = 20;
+const STORAGE_READY_DELAY_MS = 50;
 
 function uid(prefix) {
   const random = crypto.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -19,25 +25,37 @@ function cleanText(value, maximum = 160) {
   return String(value ?? '').replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, maximum);
 }
 
-function validHandoff(payload) {
-  if (!payload || payload.version !== 1 || !Array.isArray(payload.monsters) || !payload.monsters.length) return false;
-  if (!['2014', '2024'].includes(String(payload.ruleset))) return false;
-  const createdAt = Date.parse(payload.createdAt);
-  if (!Number.isFinite(createdAt) || Date.now() - createdAt > MAX_HANDOFF_AGE_MS) return false;
-  return payload.monsters.length <= 100;
+const usableState = (value) => Boolean(
+  value
+  && typeof value === 'object'
+  && Array.isArray(value.profiles)
+  && value.profiles.some((profile) => Array.isArray(profile?.characters) && profile.characters.length > 0)
+);
+
+const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+async function waitForEncounterForgeState(campaign, ruleset) {
+  for (let attempt = 0; attempt < STORAGE_READY_ATTEMPTS; attempt += 1) {
+    const current = readJson(STORAGE_KEY);
+    if (usableState(current)) return current;
+    await delay(STORAGE_READY_DELAY_MS);
+  }
+
+  const created = createInitialEncounterForgeState(campaign, ruleset, {
+    createProfileId: () => uid('profile'),
+    createCharacterId: (index) => uid(`character-${index + 1}`),
+    updatedAt: new Date().toISOString()
+  });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(created));
+  return created;
 }
 
 function profileFor(state, campaign, ruleset) {
-  const profiles = Array.isArray(state.profiles) ? state.profiles : [];
-  let profile = profiles.find((entry) => String(entry.campaign || '').toLocaleLowerCase() === campaign.toLocaleLowerCase())
-    || profiles.find((entry) => entry.id === state.activeProfileId)
-    || profiles[0];
-  if (!profile) throw new Error('Encounter Forge has no party profile available for this import.');
-  profile.campaign = campaign;
-  profile.ruleset = ruleset;
-  profile.updatedAt = new Date().toISOString();
-  state.activeProfileId = profile.id;
-  return profile;
+  return selectOrCreateEditionProfile(state, campaign, ruleset, {
+    createId: () => uid('profile'),
+    createCharacterId: (index) => uid(`character-${index + 1}`),
+    updatedAt: new Date().toISOString()
+  }).profile;
 }
 
 function catalogRuleset(value) {
@@ -63,12 +81,10 @@ function notify(message, type = 'status') {
 }
 
 async function createImportedEncounter(payload) {
-  const state = readJson(STORAGE_KEY);
-  if (!state || !Array.isArray(state.profiles)) throw new Error('Encounter Forge storage is not ready. Reload and try the transfer again.');
-
-  const exported = await loadDungeonCardsMonsters();
   const campaign = cleanText(payload.campaign, 100) || 'My Campaign';
   const ruleset = String(payload.ruleset);
+  const state = await waitForEncounterForgeState(campaign, ruleset);
+  const exported = await loadDungeonCardsMonsters();
   const partyProfile = profileFor(state, campaign, ruleset);
   const missing = [];
   const monsters = [];
@@ -79,9 +95,9 @@ async function createImportedEncounter(payload) {
       missing.push(cleanText(requested.name) || 'Unknown monster');
       continue;
     }
-    const quantity = Math.min(99, Math.max(1, Number(requested.quantity) || 1));
+    const quantity = Number(requested.quantity);
     const existing = monsters.find((entry) => entry.sourceId === source.sourceId);
-    if (existing) existing.quantity = Math.min(99, existing.quantity + quantity);
+    if (existing) existing.quantity += quantity;
     else monsters.push({ ...source, quantity });
   }
 
@@ -148,9 +164,10 @@ async function run() {
 
   if (parameters.get('importDungeonCards') !== '1') return;
   const payload = readJson(HANDOFF_KEY);
-  if (!validHandoff(payload)) {
+  const validation = validateDungeonCardsHandoff(payload);
+  if (!validation.valid) {
     localStorage.removeItem(HANDOFF_KEY);
-    notify('The DungeonCards transfer was missing, expired, or invalid. Return to My Encounter and send it again.', 'alert');
+    notify(`The DungeonCards transfer was rejected: ${validation.issue} Return to My Encounter and send it again.`, 'alert');
     return;
   }
 
