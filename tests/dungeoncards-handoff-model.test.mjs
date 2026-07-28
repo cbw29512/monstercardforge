@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   MAX_HANDOFF_AGE_MS,
   MAX_HANDOFF_CLOCK_SKEW_MS,
+  createInitialEncounterForgeState,
   selectOrCreateEditionProfile,
   validateDungeonCardsHandoff
 } from '../shared/dungeoncards-handoff-model.js';
@@ -48,6 +49,29 @@ test('rejects malformed quantities and more than 100 combatants', () => {
       { sourceRecordId: 'srd51-ogre', name: 'Ogre', ruleset: '2014', quantity: 2 }
     ]
   }), now).valid, false);
+});
+
+test('creates a complete exact-edition fallback party for a fresh browser', () => {
+  const state = createInitialEncounterForgeState(' Crooked Moon ', '2014', {
+    createProfileId: () => 'profile-2014',
+    createCharacterId: (index) => `character-${index + 1}`,
+    updatedAt: '2026-07-28T20:00:00.000Z'
+  });
+
+  assert.equal(state.version, 1);
+  assert.equal(state.activeProfileId, 'profile-2014');
+  assert.deepEqual(state.encounters, []);
+  assert.deepEqual(state.customMonsters, []);
+  assert.equal(state.profiles.length, 1);
+  assert.equal(state.profiles[0].campaign, 'Crooked Moon');
+  assert.equal(state.profiles[0].ruleset, '2014');
+  assert.equal(state.profiles[0].characters.length, 4);
+  assert.deepEqual(state.profiles[0].characters.map(({ name, level }) => ({ name, level })), [
+    { name: 'Character 1', level: 5 },
+    { name: 'Character 2', level: 5 },
+    { name: 'Character 3', level: 5 },
+    { name: 'Character 4', level: 5 }
+  ]);
 });
 
 test('reuses an exact campaign and edition profile without creating a duplicate', () => {
