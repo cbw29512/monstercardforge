@@ -35,12 +35,13 @@ test('community governance and request files exist', () => {
 test('community page is public, discoverable, and connected to the canonical design system', () => {
   const page = read('community.html');
   const sitemap = read('sitemap.xml');
-  assert.match(page, /<title>DM Forge Community Forum and Requests<\/title>/);
+  assert.match(page, /<title>DM Forge Community Feedback and Requests<\/title>/);
   assert.match(page, /<meta name="description" content="[^"]{70,180}">/);
   assert.equal(page.includes('<link rel="canonical" href="https://cbw29512.github.io/monstercardforge/community.html">'), true);
   assert.equal(page.includes('shared/design-system.css'), true);
   assert.match(page, /<h1>DM Forge Community<\/h1>/);
-  assert.equal(page.includes('https://github.com/cbw29512/monstercardforge/discussions'), true);
+  assert.equal(page.includes('https://github.com/cbw29512/monstercardforge/issues'), true);
+  assert.equal(page.includes('/discussions'), false, 'Disabled Discussions must not be a public destination');
   assert.equal(sitemap.includes('<loc>https://cbw29512.github.io/monstercardforge/community.html</loc>'), true);
 });
 
@@ -54,10 +55,10 @@ test('community page exposes every structured request path', () => {
   }
 });
 
-test('issue chooser routes conversation to the forum and blocks unstructured blank issues', () => {
+test('issue chooser links existing feedback and blocks unstructured blank issues', () => {
   const config = read('.github/ISSUE_TEMPLATE/config.yml');
   assert.match(config, /blank_issues_enabled:\s*false/);
-  assert.equal(config.includes('monstercardforge/discussions'), true);
+  assert.equal(config.includes('monstercardforge/issues'), true);
   assert.equal(config.includes('community.html'), true);
   assert.equal(config.includes('about.html'), true);
 });
